@@ -44,9 +44,9 @@
     <div class="container">
       <h1>Check-in diario</h1>
 
-      <form>
-        <label>¿Cómo te sientes hoy?</label>
-        <select required>
+      <form id="checkinForm">
+        <label for="estadoAnimo">¿Cómo te sientes hoy?</label>
+        <select id="estadoAnimo" required>
           <option value="">Selecciona</option>
           <option>Muy bien</option>
           <option>Bien</option>
@@ -55,24 +55,24 @@
           <option>Muy mal</option>
         </select>
 
-        <label>Nivel de estrés</label>
-        <select required>
+        <label for="nivelEstres">Nivel de estrés</label>
+        <select id="nivelEstres" required>
           <option value="">Selecciona</option>
           <option>Bajo</option>
           <option>Medio</option>
           <option>Alto</option>
         </select>
 
-        <label>¿Cómo dormiste?</label>
-        <select required>
+        <label for="sueno">¿Cómo dormiste?</label>
+        <select id="sueno" required>
           <option value="">Selecciona</option>
           <option>Bien</option>
           <option>Regular</option>
           <option>Mal</option>
         </select>
 
-        <label>Nivel de energía</label>
-        <select required>
+        <label for="energia">Nivel de energía</label>
+        <select id="energia" required>
           <option value="">Selecciona</option>
           <option>Alta</option>
           <option>Media</option>

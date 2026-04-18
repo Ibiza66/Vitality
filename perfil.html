@@ -47,64 +47,46 @@
       <div class="perfil-info">
         <div class="perfil-card">
           <h2>Información personal</h2>
-          <p><strong>Nombre:</strong> Constanza</p>
-          <p><strong>Categoría:</strong> Adulto</p>
-          <p><strong>Actividades favoritas:</strong> Caminar, escuchar música, ver películas</p>
+          <p><strong>Nombre:</strong> <span id="perfilNombre">No disponible</span></p>
+          <p><strong>Categoría:</strong> <span id="perfilCategoria">No disponible</span></p>
+          <p><strong>Actividades favoritas:</strong> <span id="perfilActividades">No disponible</span></p>
           <p><strong>Estado actual:</strong> Motivada</p>
         </div>
 
         <div class="perfil-card">
-          <h2>Resumen semanal</h2>
-          <p><strong>Promedio emocional:</strong> Bien</p>
-          <p><strong>Nivel de estrés promedio:</strong> Medio</p>
-          <p><strong>Días registrados:</strong> 5 de 7</p>
+          <h2>Editar perfil</h2>
+          <form id="perfilForm">
+            <select id="categoria" required>
+              <option value="">Selecciona tu categoría</option>
+              <option>Niño</option>
+              <option>Adolescente</option>
+              <option>Adulto</option>
+            </select>
+
+            <label for="actividades">¿Qué actividades te gustan?</label>
+            <textarea id="actividades" placeholder="Ej: caminar, escuchar música, ver películas" required></textarea>
+
+            <button type="submit">Guardar perfil</button>
+          </form>
         </div>
       </div>
 
+      <div class="perfil-card">
+        <h2>Resumen emocional</h2>
+        <p><strong>Estado emocional:</strong> <span id="resumenEstado">Sin datos</span></p>
+        <p><strong>Nivel de estrés:</strong> <span id="resumenEstres">Sin datos</span></p>
+        <p><strong>Cómo dormiste:</strong> <span id="resumenSueno">Sin datos</span></p>
+        <p><strong>Nivel de energía:</strong> <span id="resumenEnergia">Sin datos</span></p>
+      </div>
+
       <div class="perfil-grafico">
-        <h2>¿Cómo me he sentido esta semana?</h2>
+        <h2>¿Cómo me he sentido según mi último check-in?</h2>
 
-        <div class="grafico-barras">
+        <div class="grafico-barras" id="graficoCheckin">
           <div class="barra-item">
-            <span>Lun</span>
-            <div class="barra barra-4"></div>
-            <small>Bien</small>
-          </div>
-
-          <div class="barra-item">
-            <span>Mar</span>
-            <div class="barra barra-3"></div>
-            <small>Normal</small>
-          </div>
-
-          <div class="barra-item">
-            <span>Mié</span>
-            <div class="barra barra-2"></div>
-            <small>Mal</small>
-          </div>
-
-          <div class="barra-item">
-            <span>Jue</span>
-            <div class="barra barra-4"></div>
-            <small>Bien</small>
-          </div>
-
-          <div class="barra-item">
-            <span>Vie</span>
-            <div class="barra barra-5"></div>
-            <small>Muy bien</small>
-          </div>
-
-          <div class="barra-item">
-            <span>Sáb</span>
-            <div class="barra barra-3"></div>
-            <small>Normal</small>
-          </div>
-
-          <div class="barra-item">
-            <span>Dom</span>
-            <div class="barra barra-4"></div>
-            <small>Bien</small>
+            <span>Hoy</span>
+            <div class="barra barra-3" id="barraEstado"></div>
+            <small id="textoEstado">Sin datos</small>
           </div>
         </div>
       </div>
