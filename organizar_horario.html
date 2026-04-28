@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitality - Horario</title>
+  <title>Vitality - Organizar horario</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -42,96 +42,61 @@
 
   <main class="main-content">
     <div class="container horario-container">
-      <h1>Mi horario</h1>
+      <h1>Organizar horario</h1>
 
-      <div class="botones-horario">
-        <button type="button">Ver horario semanal</button>
-        <button type="button">Ver actividades de hoy</button>
-      </div>
+      <div class="seccion-horario">
+        <div class="perfil-card">
+          <h3>Agregar actividad fija</h3>
+          <form id="actividadFijaForm">
+            <label for="diaFijo">Día</label>
+            <select id="diaFijo" required>
+              <option value="">Selecciona un día</option>
+              <option>Lunes</option>
+              <option>Martes</option>
+              <option>Miércoles</option>
+              <option>Jueves</option>
+              <option>Viernes</option>
+              <option>Sábado</option>
+              <option>Domingo</option>
+            </select>
 
-      <h2>Horario semanal</h2>
-      <div class="tabla-semanal">
-        <table>
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Lunes</th>
-              <th>Martes</th>
-              <th>Miércoles</th>
-              <th>Jueves</th>
-              <th>Viernes</th>
-              <th>Sábado</th>
-              <th>Domingo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>08:00</td>
-              <td>Desayuno</td>
-              <td></td>
-              <td>Clases</td>
-              <td></td>
-              <td>Desayuno</td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>10:00</td>
-              <td>Estudiar</td>
-              <td>Reunión</td>
-              <td></td>
-              <td>Estudiar</td>
-              <td></td>
-              <td>Salir</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>13:00</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-            </tr>
-            <tr>
-              <td>16:00</td>
-              <td></td>
-              <td>Caminar</td>
-              <td></td>
-              <td>Tareas</td>
-              <td></td>
-              <td>Película</td>
-              <td>Descanso</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            <label for="horaFija">Hora</label>
+            <input type="time" id="horaFija" required>
 
-      <h2>Gestión de horario</h2>
+            <label for="actividadFija">Actividad</label>
+            <input type="text" id="actividadFija" placeholder="Ej: Clases, trabajo, estudiar" required>
 
-      <div class="botones-horario">
-        <a href="organizar_horario.html" class="boton-link">Agregar actividades</a>
-      </div>
+            <button type="submit">Guardar actividad fija</button>
+          </form>
+        </div>
 
-      <h2>Actividades fijas guardadas</h2>
-      <div class="actividades-hoy" id="listaActividadesFijas">
-        <div class="actividad-card">
-          <p>No hay actividades fijas guardadas todavía.</p>
+        <div class="perfil-card">
+          <h3>Agregar actividad especial</h3>
+          <form id="actividadEspecialForm">
+            <label for="tipoEspecial">Tipo</label>
+            <select id="tipoEspecial" required>
+              <option value="">Selecciona un tipo</option>
+              <option>Evento único</option>
+              <option>Semana de solemnes</option>
+              <option>Semana de vacaciones</option>
+              <option>Semana especial</option>
+            </select>
+
+            <label for="fechaEspecial">Fecha</label>
+            <input type="date" id="fechaEspecial" required>
+
+            <label for="horaEspecial">Hora</label>
+            <input type="time" id="horaEspecial" required>
+
+            <label for="actividadEspecial">Actividad</label>
+            <input type="text" id="actividadEspecial" placeholder="Ej: Solemne de Economía" required>
+
+            <button type="submit">Guardar actividad especial</button>
+          </form>
         </div>
       </div>
 
-      <h2>Actividades especiales guardadas</h2>
-      <div class="actividades-hoy" id="listaActividadesEspeciales">
-        <div class="actividad-card">
-          <p>No hay actividades especiales guardadas todavía.</p>
-        </div>
-      </div>
-
-      <p><a href="alertas.html">Ver alertas y recomendaciones</a></p>
-      <p><a href="chat.html">Hablar con Vitality</a></p>
-      <p><a href="checkin.html">Volver al check-in</a></p>
+      <p><a href="horario.html">Volver al horario</a></p>
     </div>
   </main>
 

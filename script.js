@@ -494,3 +494,134 @@ window.addEventListener("DOMContentLoaded", () => {
   mostrarResumenCheckinEnPerfil();
   mostrarAlertas();
 });
+/* =========================
+   HORARIO: ACTIVIDADES FIJAS Y ESPECIALES
+========================= */
+function obtenerActividadesFijas() {
+  const data = localStorage.getItem("actividadesFijasVitality");
+  return data ? JSON.parse(data) : [];
+}
+
+function guardarActividadesFijas(lista) {
+  localStorage.setItem("actividadesFijasVitality", JSON.stringify(lista));
+}
+
+function obtenerActividadesEspeciales() {
+  const data = localStorage.getItem("actividadesEspecialesVitality");
+  return data ? JSON.parse(data) : [];
+}
+
+function guardarActividadesEspeciales(lista) {
+  localStorage.setItem("actividadesEspecialesVitality", JSON.stringify(lista));
+}
+
+function guardarActividadFija(event) {
+  event.preventDefault();
+
+  const diaInput = document.getElementById("diaFijo");
+  const horaInput = document.getElementById("horaFija");
+  const actividadInput = document.getElementById("actividadFija");
+
+  if (!diaInput || !horaInput || !actividadInput) return;
+
+  const dia = diaInput.value.trim();
+  const hora = horaInput.value.trim();
+  const actividad = actividadInput.value.trim();
+
+  if (!dia || !hora || !actividad) {
+    alert("Por favor completa todos los campos de la actividad fija.");
+    return;
+  }
+
+  const actividadesFijas = obtenerActividadesFijas();
+  actividadesFijas.push({ dia, hora, actividad });
+  guardarActividadesFijas(actividadesFijas);
+
+  alert("Actividad fija guardada con éxito.");
+  event.target.reset();
+  mostrarActividadesFijas();
+}
+
+function guardarActividadEspecial(event) {
+  event.preventDefault();
+
+  const tipoInput = document.getElementById("tipoEspecial");
+  const fechaInput = document.getElementById("fechaEspecial");
+  const horaInput = document.getElementById("horaEspecial");
+  const actividadInput = document.getElementById("actividadEspecial");
+
+  if (!tipoInput || !fechaInput || !horaInput || !actividadInput) return;
+
+  const tipo = tipoInput.value.trim();
+  const fecha = fechaInput.value.trim();
+  const hora = horaInput.value.trim();
+  const actividad = actividadInput.value.trim();
+
+  if (!tipo || !fecha || !hora || !actividad) {
+    alert("Por favor completa todos los campos de la actividad especial.");
+    return;
+  }
+
+  const actividadesEspeciales = obtenerActividadesEspeciales();
+  actividadesEspeciales.push({ tipo, fecha, hora, actividad });
+  guardarActividadesEspeciales(actividadesEspeciales);
+
+  alert("Actividad especial guardada con éxito.");
+  event.target.reset();
+  mostrarActividadesEspeciales();
+}
+
+function mostrarActividadesFijas() {
+  const contenedor = document.getElementById("listaActividadesFijas");
+  if (!contenedor) return;
+
+  const actividadesFijas = obtenerActividadesFijas();
+
+  if (actividadesFijas.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay actividades fijas guardadas todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividadesFijas
+    .map(
+      (item) => `
+        <div class="actividad-card">
+          <strong>${item.dia} - ${item.hora}</strong>
+          <p>${item.actividad}</p>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function mostrarActividadesEspeciales() {
+  const contenedor = document.getElementById("listaActividadesEspeciales");
+  if (!contenedor) return;
+
+  const actividadesEspeciales = obtenerActividadesEspeciales();
+
+  if (actividadesEspeciales.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay actividades especiales guardadas todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividadesEspeciales
+    .map(
+      (item) => `
+        <div class="actividad-card">
+          <strong>${item.tipo}</strong>
+          <p>${item.fecha} - ${item.hora}</p>
+          <p>${item.actividad}</p>
+        </div>
+      `
+    )
+    .join("");
+}
