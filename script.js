@@ -461,40 +461,6 @@ function mostrarResumenCheckinEnPerfil() {
 }
 
 /* =========================
-   CARGA INICIAL
-========================= */
-window.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme");
-
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-mode");
-  }
-
-  const registroForm = document.getElementById("registroForm");
-  if (registroForm) {
-    registroForm.addEventListener("submit", registrarUsuario);
-  }
-
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", iniciarSesion);
-  }
-
-  const perfilForm = document.getElementById("perfilForm");
-  if (perfilForm) {
-    perfilForm.addEventListener("submit", guardarDatosPerfil);
-  }
-
-  const checkinForm = document.getElementById("checkinForm");
-  if (checkinForm) {
-    checkinForm.addEventListener("submit", guardarDatosCheckin);
-  }
-
-  mostrarDatosPerfil();
-  mostrarResumenCheckinEnPerfil();
-  mostrarAlertas();
-});
-/* =========================
    HORARIO: ACTIVIDADES FIJAS Y ESPECIALES
 ========================= */
 function obtenerActividadesFijas() {
@@ -534,7 +500,13 @@ function guardarActividadFija(event) {
   }
 
   const actividadesFijas = obtenerActividadesFijas();
-  actividadesFijas.push({ dia, hora, actividad });
+  actividadesFijas.push({
+    id: Date.now(),
+    dia,
+    hora,
+    actividad,
+    completada: false
+  });
   guardarActividadesFijas(actividadesFijas);
 
   alert("Actividad fija guardada con éxito.");
@@ -563,11 +535,48 @@ function guardarActividadEspecial(event) {
   }
 
   const actividadesEspeciales = obtenerActividadesEspeciales();
-  actividadesEspeciales.push({ tipo, fecha, hora, actividad });
+  actividadesEspeciales.push({
+    id: Date.now(),
+    tipo,
+    fecha,
+    hora,
+    actividad,
+    completada: false
+  });
   guardarActividadesEspeciales(actividadesEspeciales);
 
   alert("Actividad especial guardada con éxito.");
   event.target.reset();
+  mostrarActividadesEspeciales();
+}
+
+function alternarActividadFija(id) {
+  const actividadesFijas = obtenerActividadesFijas().map((item) =>
+    item.id === id ? { ...item, completada: !item.completada } : item
+  );
+
+  guardarActividadesFijas(actividadesFijas);
+  mostrarActividadesFijas();
+}
+
+function eliminarActividadFija(id) {
+  const actividadesFijas = obtenerActividadesFijas().filter((item) => item.id !== id);
+  guardarActividadesFijas(actividadesFijas);
+  mostrarActividadesFijas();
+}
+
+function alternarActividadEspecial(id) {
+  const actividadesEspeciales = obtenerActividadesEspeciales().map((item) =>
+    item.id === id ? { ...item, completada: !item.completada } : item
+  );
+
+  guardarActividadesEspeciales(actividadesEspeciales);
+  mostrarActividadesEspeciales();
+}
+
+function eliminarActividadEspecial(id) {
+  const actividadesEspeciales = obtenerActividadesEspeciales().filter((item) => item.id !== id);
+  guardarActividadesEspeciales(actividadesEspeciales);
   mostrarActividadesEspeciales();
 }
 
@@ -589,9 +598,16 @@ function mostrarActividadesFijas() {
   contenedor.innerHTML = actividadesFijas
     .map(
       (item) => `
-        <div class="actividad-card">
+        <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
           <strong>${item.dia} - ${item.hora}</strong>
           <p>${item.actividad}</p>
+          <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
+          <div class="acciones-actividad">
+            <button type="button" onclick="alternarActividadFija(${item.id})">
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" onclick="eliminarActividadFija(${item.id})">Eliminar</button>
+          </div>
         </div>
       `
     )
@@ -616,12 +632,66 @@ function mostrarActividadesEspeciales() {
   contenedor.innerHTML = actividadesEspeciales
     .map(
       (item) => `
-        <div class="actividad-card">
+        <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
           <strong>${item.tipo}</strong>
           <p>${item.fecha} - ${item.hora}</p>
           <p>${item.actividad}</p>
+          <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
+          <div class="acciones-actividad">
+            <button type="button" onclick="alternarActividadEspecial(${item.id})">
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" onclick="eliminarActividadEspecial(${item.id})">Eliminar</button>
+          </div>
         </div>
       `
     )
     .join("");
 }
+
+/* =========================
+   CARGA INICIAL
+========================= */
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+  }
+
+  const registroForm = document.getElementById("registroForm");
+  if (registroForm) {
+    registroForm.addEventListener("submit", registrarUsuario);
+  }
+
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", iniciarSesion);
+  }
+
+  const perfilForm = document.getElementById("perfilForm");
+  if (perfilForm) {
+    perfilForm.addEventListener("submit", guardarDatosPerfil);
+  }
+
+  const checkinForm = document.getElementById("checkinForm");
+  if (checkinForm) {
+    checkinForm.addEventListener("submit", guardarDatosCheckin);
+  }
+
+  const actividadFijaForm = document.getElementById("actividadFijaForm");
+  if (actividadFijaForm) {
+    actividadFijaForm.addEventListener("submit", guardarActividadFija);
+  }
+
+  const actividadEspecialForm = document.getElementById("actividadEspecialForm");
+  if (actividadEspecialForm) {
+    actividadEspecialForm.addEventListener("submit", guardarActividadEspecial);
+  }
+
+  mostrarDatosPerfil();
+  mostrarResumenCheckinEnPerfil();
+  mostrarAlertas();
+  mostrarActividadesFijas();
+  mostrarActividadesEspeciales();
+});
