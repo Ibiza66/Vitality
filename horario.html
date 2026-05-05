@@ -45,13 +45,25 @@
       <h1>Mi horario</h1>
 
       <div class="botones-horario">
+<<<<<<< HEAD
         <button type="button">Ver horario semanal</button>
         <button type="button">Ver actividades de hoy</button>
+=======
+        <button type="button" onclick="irASeccion('seccionHorarioSemanal')">Ver horario semanal</button>
+        <button type="button" onclick="mostrarSoloActividadesDeHoy()">Ver actividades de hoy</button>
+      </div>
+
+      <h2 id="seccionEventosHoy">Eventos importantes de hoy</h2>
+      <div class="actividades-hoy" id="listaEventosHoy">
+        <div class="actividad-card">
+          <p>No hay eventos especiales para hoy.</p>
+        </div>
+>>>>>>> 312f0c7 (Actualizo horario con tabla dinámica y eventos de hoy)
       </div>
 
       <h2>Horario semanal</h2>
       <div class="tabla-semanal">
-        <table>
+        <table id="tablaHorarioSemanal">
           <thead>
             <tr>
               <th>Hora</th>
@@ -126,6 +138,13 @@
       <div class="actividades-hoy" id="listaActividadesEspeciales">
         <div class="actividad-card">
           <p>No hay actividades especiales guardadas todavía.</p>
+        </div>
+      </div>
+
+      <h2 id="seccionHoy">Actividades de hoy</h2>
+      <div class="actividades-hoy" id="listaActividadesHoy">
+        <div class="actividad-card">
+          <p>No hay actividades para hoy.</p>
         </div>
       </div>
 

@@ -450,6 +450,16 @@ th {
   font-size: 0.95rem;
 }
 
+.evento-destacado {
+  border-left: 6px solid var(--accent);
+  background: var(--accent-light);
+}
+
+body.dark-mode .evento-destacado {
+  background: #2c3515;
+  border-left: 6px solid var(--accent);
+}
+
 /* FOOTER */
 .main-footer {
   background: var(--footer-bg);

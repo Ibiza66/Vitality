@@ -361,7 +361,7 @@ function mostrarAlertas() {
     alertasHTML += `
       <div class="alerta">
         <p><strong>Consejo de bienestar:</strong> Tu nivel de energía está bajo.</p>
-        <p><strong>Recomendación:</strong> Intenta descansar, hidratarte bien o hacer una actividad tranquila que disfrutes.</p>
+        <p><strong>Recomendación:</strong> Intenta descansar, hidratarte bien o hacer una actividad tranquila que te guste.</p>
       </div>
     `;
   }
@@ -512,6 +512,8 @@ function guardarActividadFija(event) {
   alert("Actividad fija guardada con éxito.");
   event.target.reset();
   mostrarActividadesFijas();
+  mostrarActividadesHoy();
+  rellenarTablaHorarioSemanal();
 }
 
 function guardarActividadEspecial(event) {
@@ -548,6 +550,8 @@ function guardarActividadEspecial(event) {
   alert("Actividad especial guardada con éxito.");
   event.target.reset();
   mostrarActividadesEspeciales();
+  mostrarActividadesHoy();
+  mostrarEventosEspecialesHoy();
 }
 
 function alternarActividadFija(id) {
@@ -557,12 +561,16 @@ function alternarActividadFija(id) {
 
   guardarActividadesFijas(actividadesFijas);
   mostrarActividadesFijas();
+  mostrarActividadesHoy();
+  rellenarTablaHorarioSemanal();
 }
 
 function eliminarActividadFija(id) {
   const actividadesFijas = obtenerActividadesFijas().filter((item) => item.id !== id);
   guardarActividadesFijas(actividadesFijas);
   mostrarActividadesFijas();
+  mostrarActividadesHoy();
+  rellenarTablaHorarioSemanal();
 }
 
 function alternarActividadEspecial(id) {
@@ -572,12 +580,16 @@ function alternarActividadEspecial(id) {
 
   guardarActividadesEspeciales(actividadesEspeciales);
   mostrarActividadesEspeciales();
+  mostrarActividadesHoy();
+  mostrarEventosEspecialesHoy();
 }
 
 function eliminarActividadEspecial(id) {
   const actividadesEspeciales = obtenerActividadesEspeciales().filter((item) => item.id !== id);
   guardarActividadesEspeciales(actividadesEspeciales);
   mostrarActividadesEspeciales();
+  mostrarActividadesHoy();
+  mostrarEventosEspecialesHoy();
 }
 
 function mostrarActividadesFijas() {
@@ -650,6 +662,224 @@ function mostrarActividadesEspeciales() {
 }
 
 /* =========================
+   ACTIVIDADES DE HOY
+========================= */
+function obtenerNombreDiaHoy() {
+  const dias = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado"
+  ];
+
+  const hoy = new Date();
+  return dias[hoy.getDay()];
+}
+
+function obtenerFechaHoyFormatoInput() {
+  const hoy = new Date();
+  const anio = hoy.getFullYear();
+  const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoy.getDate()).padStart(2, "0");
+  return `${anio}-${mes}-${dia}`;
+}
+
+function mostrarSoloActividadesDeHoy() {
+  mostrarActividadesHoy();
+  irASeccion("seccionHoy");
+}
+
+function mostrarActividadesHoy() {
+  const contenedor = document.getElementById("listaActividadesHoy");
+  if (!contenedor) return;
+
+  const diaHoy = obtenerNombreDiaHoy();
+  const fechaHoy = obtenerFechaHoyFormatoInput();
+
+  const actividadesFijas = obtenerActividadesFijas().filter(
+    (item) => item.dia === diaHoy
+  );
+
+  const actividadesEspeciales = obtenerActividadesEspeciales().filter(
+    (item) => item.fecha === fechaHoy
+  );
+
+  const actividadesHoy = [];
+
+  actividadesFijas.forEach((item) => {
+    actividadesHoy.push({
+      origen: "fija",
+      id: item.id,
+      tipo: "Fija",
+      titulo: `${item.dia} - ${item.hora}`,
+      descripcion: item.actividad,
+      estado: item.completada ? "Realizada" : "Pendiente",
+      completada: item.completada,
+      hora: item.hora
+    });
+  });
+
+  actividadesEspeciales.forEach((item) => {
+    actividadesHoy.push({
+      origen: "especial",
+      id: item.id,
+      tipo: item.tipo,
+      titulo: `${item.fecha} - ${item.hora}`,
+      descripcion: item.actividad,
+      estado: item.completada ? "Realizada" : "Pendiente",
+      completada: item.completada,
+      hora: item.hora
+    });
+  });
+
+  actividadesHoy.sort((a, b) => a.hora.localeCompare(b.hora));
+
+  if (actividadesHoy.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay actividades para hoy.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividadesHoy
+    .map((item) => {
+      const botonCompletar =
+        item.origen === "fija"
+          ? `onclick="alternarActividadFija(${item.id})"`
+          : `onclick="alternarActividadEspecial(${item.id})"`;
+
+      const botonEliminar =
+        item.origen === "fija"
+          ? `onclick="eliminarActividadFija(${item.id})"`
+          : `onclick="eliminarActividadEspecial(${item.id})"`;
+
+      return `
+        <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
+          <strong>${item.tipo}</strong>
+          <p>${item.titulo}</p>
+          <p>${item.descripcion}</p>
+          <p><strong>Estado:</strong> ${item.estado}</p>
+          <div class="acciones-actividad">
+            <button type="button" ${botonCompletar}>
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" ${botonEliminar}>Eliminar</button>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+/* =========================
+   EVENTOS ESPECIALES DE HOY
+========================= */
+function mostrarEventosEspecialesHoy() {
+  const contenedor = document.getElementById("listaEventosHoy");
+  if (!contenedor) return;
+
+  const fechaHoy = obtenerFechaHoyFormatoInput();
+
+  const eventosHoy = obtenerActividadesEspeciales()
+    .filter((item) => item.fecha === fechaHoy)
+    .sort((a, b) => a.hora.localeCompare(b.hora));
+
+  if (eventosHoy.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay eventos especiales para hoy.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = eventosHoy
+    .map(
+      (item) => `
+        <div class="actividad-card evento-destacado ${item.completada ? "actividad-completada" : ""}">
+          <strong>${item.tipo}</strong>
+          <p>${item.hora}</p>
+          <p>${item.actividad}</p>
+          <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
+          <div class="acciones-actividad">
+            <button type="button" onclick="alternarActividadEspecial(${item.id})">
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" onclick="eliminarActividadEspecial(${item.id})">Eliminar</button>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+}
+
+/* =========================
+   TABLA SEMANAL DINÁMICA
+========================= */
+function limpiarTablaHorarioSemanal() {
+  const tabla = document.getElementById("tablaHorarioSemanal");
+  if (!tabla) return;
+
+  const filas = tabla.querySelectorAll("tbody tr");
+
+  filas.forEach((fila) => {
+    const celdas = fila.querySelectorAll("td");
+    celdas.forEach((celda, index) => {
+      if (index !== 0) {
+        celda.textContent = "";
+      }
+    });
+  });
+}
+
+function obtenerIndiceDia(dia) {
+  const dias = {
+    "Lunes": 1,
+    "Martes": 2,
+    "Miércoles": 3,
+    "Jueves": 4,
+    "Viernes": 5,
+    "Sábado": 6,
+    "Domingo": 7
+  };
+
+  return dias[dia] || null;
+}
+
+function rellenarTablaHorarioSemanal() {
+  const tabla = document.getElementById("tablaHorarioSemanal");
+  if (!tabla) return;
+
+  limpiarTablaHorarioSemanal();
+
+  const actividadesFijas = obtenerActividadesFijas();
+  const filas = tabla.querySelectorAll("tbody tr");
+
+  actividadesFijas.forEach((actividad) => {
+    const indiceDia = obtenerIndiceDia(actividad.dia);
+    if (!indiceDia) return;
+
+    filas.forEach((fila) => {
+      const celdas = fila.querySelectorAll("td");
+      const horaFila = celdas[0]?.textContent.trim();
+
+      if (horaFila === actividad.hora && celdas[indiceDia]) {
+        if (celdas[indiceDia].textContent.trim() !== "") {
+          celdas[indiceDia].textContent += " / " + actividad.actividad;
+        } else {
+          celdas[indiceDia].textContent = actividad.actividad;
+        }
+      }
+    });
+  });
+}
+
+/* =========================
    CARGA INICIAL
 ========================= */
 window.addEventListener("DOMContentLoaded", () => {
@@ -694,4 +924,7 @@ window.addEventListener("DOMContentLoaded", () => {
   mostrarAlertas();
   mostrarActividadesFijas();
   mostrarActividadesEspeciales();
+  mostrarActividadesHoy();
+  mostrarEventosEspecialesHoy();
+  rellenarTablaHorarioSemanal();
 });

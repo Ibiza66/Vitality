@@ -43,6 +43,7 @@
   <main class="main-content">
     <div class="container horario-container">
       <h1>Organizar horario</h1>
+      <p>Aquí puedes agregar actividades fijas de la semana y también actividades especiales para días concretos.</p>
 
       <div class="seccion-horario">
         <div class="perfil-card">
@@ -51,20 +52,25 @@
             <label for="diaFijo">Día</label>
             <select id="diaFijo" required>
               <option value="">Selecciona un día</option>
-              <option>Lunes</option>
-              <option>Martes</option>
-              <option>Miércoles</option>
-              <option>Jueves</option>
-              <option>Viernes</option>
-              <option>Sábado</option>
-              <option>Domingo</option>
+              <option value="Lunes">Lunes</option>
+              <option value="Martes">Martes</option>
+              <option value="Miércoles">Miércoles</option>
+              <option value="Jueves">Jueves</option>
+              <option value="Viernes">Viernes</option>
+              <option value="Sábado">Sábado</option>
+              <option value="Domingo">Domingo</option>
             </select>
 
             <label for="horaFija">Hora</label>
             <input type="time" id="horaFija" required>
 
             <label for="actividadFija">Actividad</label>
-            <input type="text" id="actividadFija" placeholder="Ej: Clases, trabajo, estudiar" required>
+            <input
+              type="text"
+              id="actividadFija"
+              placeholder="Ej: Clases, trabajo, estudiar"
+              required
+            >
 
             <button type="submit">Guardar actividad fija</button>
           </form>
@@ -76,10 +82,10 @@
             <label for="tipoEspecial">Tipo</label>
             <select id="tipoEspecial" required>
               <option value="">Selecciona un tipo</option>
-              <option>Evento único</option>
-              <option>Semana de solemnes</option>
-              <option>Semana de vacaciones</option>
-              <option>Semana especial</option>
+              <option value="Evento único">Evento único</option>
+              <option value="Semana de solemnes">Semana de solemnes</option>
+              <option value="Semana de vacaciones">Semana de vacaciones</option>
+              <option value="Semana especial">Semana especial</option>
             </select>
 
             <label for="fechaEspecial">Fecha</label>
@@ -89,14 +95,21 @@
             <input type="time" id="horaEspecial" required>
 
             <label for="actividadEspecial">Actividad</label>
-            <input type="text" id="actividadEspecial" placeholder="Ej: Solemne de Economía" required>
+            <input
+              type="text"
+              id="actividadEspecial"
+              placeholder="Ej: Solemne de Economía"
+              required
+            >
 
             <button type="submit">Guardar actividad especial</button>
           </form>
         </div>
       </div>
 
-      <p><a href="horario.html">Volver al horario</a></p>
+      <div class="botones-horario">
+        <a href="horario.html" class="boton-link">Volver al horario</a>
+      </div>
     </div>
   </main>
 
