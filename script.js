@@ -67,6 +67,20 @@ function toggleTheme() {
 }
 
 /* =========================
+   NAVEGACIÓN EN HORARIO
+========================= */
+function irASeccion(idSeccion) {
+  const seccion = document.getElementById(idSeccion);
+
+  if (seccion) {
+    seccion.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+}
+
+/* =========================
    CHAT DE APOYO
 ========================= */
 let chatStep = 0;
@@ -481,18 +495,103 @@ function guardarActividadesEspeciales(lista) {
   localStorage.setItem("actividadesEspecialesVitality", JSON.stringify(lista));
 }
 
+/* =========================
+   EDITAR ACTIVIDADES
+========================= */
+function editarActividadFija(id) {
+  localStorage.setItem("editandoActividadFijaId", String(id));
+  window.location.href = "organizar_horario.html";
+}
+
+function editarActividadEspecial(id) {
+  localStorage.setItem("editandoActividadEspecialId", String(id));
+  window.location.href = "organizar_horario.html";
+}
+
+function cargarEdicionActividadFija() {
+  const idGuardado = localStorage.getItem("editandoActividadFijaId");
+  if (!idGuardado) return;
+
+  const actividadesFijas = obtenerActividadesFijas();
+  const actividad = actividadesFijas.find((item) => String(item.id) === idGuardado);
+  if (!actividad) return;
+
+  const titulo = document.getElementById("tituloActividadFija");
+  const inputId = document.getElementById("editandoActividadFijaId");
+  const dia = document.getElementById("diaFijo");
+  const hora = document.getElementById("horaFija");
+  const actividadInput = document.getElementById("actividadFija");
+  const boton = document.getElementById("btnGuardarActividadFija");
+
+  if (titulo) titulo.textContent = "Editar actividad fija";
+  if (inputId) inputId.value = actividad.id;
+  if (dia) dia.value = actividad.dia;
+  if (hora) hora.value = actividad.hora;
+  if (actividadInput) actividadInput.value = actividad.actividad;
+  if (boton) boton.textContent = "Guardar cambios";
+}
+
+function cargarEdicionActividadEspecial() {
+  const idGuardado = localStorage.getItem("editandoActividadEspecialId");
+  if (!idGuardado) return;
+
+  const actividadesEspeciales = obtenerActividadesEspeciales();
+  const actividad = actividadesEspeciales.find((item) => String(item.id) === idGuardado);
+  if (!actividad) return;
+
+  const titulo = document.getElementById("tituloActividadEspecial");
+  const inputId = document.getElementById("editandoActividadEspecialId");
+  const tipo = document.getElementById("tipoEspecial");
+  const fecha = document.getElementById("fechaEspecial");
+  const hora = document.getElementById("horaEspecial");
+  const actividadInput = document.getElementById("actividadEspecial");
+  const boton = document.getElementById("btnGuardarActividadEspecial");
+
+  if (titulo) titulo.textContent = "Editar actividad especial";
+  if (inputId) inputId.value = actividad.id;
+  if (tipo) tipo.value = actividad.tipo;
+  if (fecha) fecha.value = actividad.fecha;
+  if (hora) hora.value = actividad.hora;
+  if (actividadInput) actividadInput.value = actividad.actividad;
+  if (boton) boton.textContent = "Guardar cambios";
+}
+
+function limpiarEdicionActividadFija() {
+  localStorage.removeItem("editandoActividadFijaId");
+  const titulo = document.getElementById("tituloActividadFija");
+  const inputId = document.getElementById("editandoActividadFijaId");
+  const boton = document.getElementById("btnGuardarActividadFija");
+
+  if (titulo) titulo.textContent = "Agregar actividad fija";
+  if (inputId) inputId.value = "";
+  if (boton) boton.textContent = "Guardar actividad fija";
+}
+
+function limpiarEdicionActividadEspecial() {
+  localStorage.removeItem("editandoActividadEspecialId");
+  const titulo = document.getElementById("tituloActividadEspecial");
+  const inputId = document.getElementById("editandoActividadEspecialId");
+  const boton = document.getElementById("btnGuardarActividadEspecial");
+
+  if (titulo) titulo.textContent = "Agregar actividad especial";
+  if (inputId) inputId.value = "";
+  if (boton) boton.textContent = "Guardar actividad especial";
+}
+
 function guardarActividadFija(event) {
   event.preventDefault();
 
   const diaInput = document.getElementById("diaFijo");
   const horaInput = document.getElementById("horaFija");
   const actividadInput = document.getElementById("actividadFija");
+  const editandoIdInput = document.getElementById("editandoActividadFijaId");
 
   if (!diaInput || !horaInput || !actividadInput) return;
 
   const dia = diaInput.value.trim();
   const hora = horaInput.value.trim();
   const actividad = actividadInput.value.trim();
+  const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
 
   if (!dia || !hora || !actividad) {
     alert("Por favor completa todos los campos de la actividad fija.");
@@ -500,16 +599,35 @@ function guardarActividadFija(event) {
   }
 
   const actividadesFijas = obtenerActividadesFijas();
-  actividadesFijas.push({
-    id: Date.now(),
-    dia,
-    hora,
-    actividad,
-    completada: false
-  });
-  guardarActividadesFijas(actividadesFijas);
 
-  alert("Actividad fija guardada con éxito.");
+  if (editandoId) {
+    const actualizadas = actividadesFijas.map((item) =>
+      String(item.id) === editandoId
+        ? {
+            ...item,
+            dia,
+            hora,
+            actividad
+          }
+        : item
+    );
+
+    guardarActividadesFijas(actualizadas);
+    alert("Actividad fija actualizada con éxito.");
+    limpiarEdicionActividadFija();
+  } else {
+    actividadesFijas.push({
+      id: Date.now(),
+      dia,
+      hora,
+      actividad,
+      completada: false
+    });
+
+    guardarActividadesFijas(actividadesFijas);
+    alert("Actividad fija guardada con éxito.");
+  }
+
   event.target.reset();
   mostrarActividadesFijas();
   mostrarActividadesHoy();
@@ -523,6 +641,7 @@ function guardarActividadEspecial(event) {
   const fechaInput = document.getElementById("fechaEspecial");
   const horaInput = document.getElementById("horaEspecial");
   const actividadInput = document.getElementById("actividadEspecial");
+  const editandoIdInput = document.getElementById("editandoActividadEspecialId");
 
   if (!tipoInput || !fechaInput || !horaInput || !actividadInput) return;
 
@@ -530,6 +649,7 @@ function guardarActividadEspecial(event) {
   const fecha = fechaInput.value.trim();
   const hora = horaInput.value.trim();
   const actividad = actividadInput.value.trim();
+  const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
 
   if (!tipo || !fecha || !hora || !actividad) {
     alert("Por favor completa todos los campos de la actividad especial.");
@@ -537,17 +657,37 @@ function guardarActividadEspecial(event) {
   }
 
   const actividadesEspeciales = obtenerActividadesEspeciales();
-  actividadesEspeciales.push({
-    id: Date.now(),
-    tipo,
-    fecha,
-    hora,
-    actividad,
-    completada: false
-  });
-  guardarActividadesEspeciales(actividadesEspeciales);
 
-  alert("Actividad especial guardada con éxito.");
+  if (editandoId) {
+    const actualizadas = actividadesEspeciales.map((item) =>
+      String(item.id) === editandoId
+        ? {
+            ...item,
+            tipo,
+            fecha,
+            hora,
+            actividad
+          }
+        : item
+    );
+
+    guardarActividadesEspeciales(actualizadas);
+    alert("Actividad especial actualizada con éxito.");
+    limpiarEdicionActividadEspecial();
+  } else {
+    actividadesEspeciales.push({
+      id: Date.now(),
+      tipo,
+      fecha,
+      hora,
+      actividad,
+      completada: false
+    });
+
+    guardarActividadesEspeciales(actividadesEspeciales);
+    alert("Actividad especial guardada con éxito.");
+  }
+
   event.target.reset();
   mostrarActividadesEspeciales();
   mostrarActividadesHoy();
@@ -618,6 +758,7 @@ function mostrarActividadesFijas() {
             <button type="button" onclick="alternarActividadFija(${item.id})">
               ${item.completada ? "Desmarcar" : "Completar"}
             </button>
+            <button type="button" onclick="editarActividadFija(${item.id})">Editar</button>
             <button type="button" onclick="eliminarActividadFija(${item.id})">Eliminar</button>
           </div>
         </div>
@@ -653,6 +794,7 @@ function mostrarActividadesEspeciales() {
             <button type="button" onclick="alternarActividadEspecial(${item.id})">
               ${item.completada ? "Desmarcar" : "Completar"}
             </button>
+            <button type="button" onclick="editarActividadEspecial(${item.id})">Editar</button>
             <button type="button" onclick="eliminarActividadEspecial(${item.id})">Eliminar</button>
           </div>
         </div>
@@ -758,6 +900,11 @@ function mostrarActividadesHoy() {
           ? `onclick="eliminarActividadFija(${item.id})"`
           : `onclick="eliminarActividadEspecial(${item.id})"`;
 
+      const botonEditar =
+        item.origen === "fija"
+          ? `onclick="editarActividadFija(${item.id})"`
+          : `onclick="editarActividadEspecial(${item.id})"`;
+
       return `
         <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
           <strong>${item.tipo}</strong>
@@ -768,6 +915,7 @@ function mostrarActividadesHoy() {
             <button type="button" ${botonCompletar}>
               ${item.completada ? "Desmarcar" : "Completar"}
             </button>
+            <button type="button" ${botonEditar}>Editar</button>
             <button type="button" ${botonEliminar}>Eliminar</button>
           </div>
         </div>
@@ -810,6 +958,7 @@ function mostrarEventosEspecialesHoy() {
             <button type="button" onclick="alternarActividadEspecial(${item.id})">
               ${item.completada ? "Desmarcar" : "Completar"}
             </button>
+            <button type="button" onclick="editarActividadEspecial(${item.id})">Editar</button>
             <button type="button" onclick="eliminarActividadEspecial(${item.id})">Eliminar</button>
           </div>
         </div>
@@ -918,6 +1067,9 @@ window.addEventListener("DOMContentLoaded", () => {
   if (actividadEspecialForm) {
     actividadEspecialForm.addEventListener("submit", guardarActividadEspecial);
   }
+
+  cargarEdicionActividadFija();
+  cargarEdicionActividadEspecial();
 
   mostrarDatosPerfil();
   mostrarResumenCheckinEnPerfil();

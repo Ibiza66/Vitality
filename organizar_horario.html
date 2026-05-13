@@ -43,12 +43,14 @@
   <main class="main-content">
     <div class="container horario-container">
       <h1>Organizar horario</h1>
-      <p>Aquí puedes agregar actividades fijas de la semana y también actividades especiales para días concretos.</p>
+      <p>Aquí puedes agregar o editar actividades fijas de la semana y también actividades especiales para días concretos.</p>
 
       <div class="seccion-horario">
         <div class="perfil-card">
-          <h3>Agregar actividad fija</h3>
+          <h3 id="tituloActividadFija">Agregar actividad fija</h3>
           <form id="actividadFijaForm">
+            <input type="hidden" id="editandoActividadFijaId">
+
             <label for="diaFijo">Día</label>
             <select id="diaFijo" required>
               <option value="">Selecciona un día</option>
@@ -72,13 +74,15 @@
               required
             >
 
-            <button type="submit">Guardar actividad fija</button>
+            <button type="submit" id="btnGuardarActividadFija">Guardar actividad fija</button>
           </form>
         </div>
 
         <div class="perfil-card">
-          <h3>Agregar actividad especial</h3>
+          <h3 id="tituloActividadEspecial">Agregar actividad especial</h3>
           <form id="actividadEspecialForm">
+            <input type="hidden" id="editandoActividadEspecialId">
+
             <label for="tipoEspecial">Tipo</label>
             <select id="tipoEspecial" required>
               <option value="">Selecciona un tipo</option>
@@ -102,7 +106,7 @@
               required
             >
 
-            <button type="submit">Guardar actividad especial</button>
+            <button type="submit" id="btnGuardarActividadEspecial">Guardar actividad especial</button>
           </form>
         </div>
       </div>

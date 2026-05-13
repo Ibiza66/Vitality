@@ -44,9 +44,11 @@
   --done-bg: #e7f7db;
   --done-border: #4A9516;
   --done-text: #173600;
+
+  --edit-bg: #fff8d9;
+  --edit-border: #A6A819;
 }
 
-/* MODO OSCURO */
 body.dark-mode {
   --bg-main: #0f1411;
   --bg-card: #173600;
@@ -93,6 +95,9 @@ body.dark-mode {
   --done-bg: #21412a;
   --done-border: #A6E27C;
   --done-text: #EAEAEA;
+
+  --edit-bg: #3b3a18;
+  --edit-border: #FDFE8C;
 }
 
 /* RESET */
@@ -460,6 +465,34 @@ body.dark-mode .evento-destacado {
   border-left: 6px solid var(--accent);
 }
 
+/* MODO EDICIÓN */
+#tituloActividadFija,
+#tituloActividadEspecial {
+  position: relative;
+}
+
+#editandoActividadFijaId:not([value=""]),
+#editandoActividadEspecialId:not([value=""]) {
+  display: none;
+}
+
+.perfil-card.editando,
+.modo-edicion {
+  background: var(--edit-bg);
+  border-left: 6px solid var(--edit-border);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+#btnGuardarActividadFija,
+#btnGuardarActividadEspecial {
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+#btnGuardarActividadFija:hover,
+#btnGuardarActividadEspecial:hover {
+  transform: translateY(-1px);
+}
+
 /* FOOTER */
 .main-footer {
   background: var(--footer-bg);
@@ -757,7 +790,8 @@ body.dark-mode .evento-destacado {
   }
 
   .botones-horario button,
-  .theme-footer-btn {
+  .theme-footer-btn,
+  .boton-link {
     min-width: 100%;
     width: 100%;
   }
