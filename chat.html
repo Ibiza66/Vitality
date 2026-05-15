@@ -43,19 +43,22 @@
   <main class="main-content">
     <div class="container chat-container">
       <h1>Chat de apoyo</h1>
-      <p class="chat-subtitle">Habla con Vitality y cuéntale cómo te sientes.</p>
+      <p class="chat-subtitle">Habla con Vitality y recibe apoyo según cómo te has sentido hoy.</p>
 
       <div class="chat-box" id="chatBox">
         <div class="message bot">
           <p>Hola, soy Vitality 💚</p>
         </div>
-        <div class="message bot">
-          <p>Estoy aquí para acompañarte un momento. ¿Cómo te has sentido hoy?</p>
-        </div>
+      </div>
+
+      <div class="chat-quick-actions" id="chatQuickActions">
+        <button type="button" onclick="usarOpcionRapida('conversar')">Conversar</button>
+        <button type="button" onclick="usarOpcionRapida('organización')">Organizar mi día</button>
+        <button type="button" onclick="usarOpcionRapida('recomendación')">Dame una recomendación</button>
       </div>
 
       <form class="chat-input-area" onsubmit="sendMessage(event)">
-        <input type="text" id="userInput" placeholder="Escribe tu respuesta..." required>
+        <input type="text" id="userInput" placeholder="Escribe tu mensaje..." required>
         <button type="submit">Enviar</button>
       </form>
     </div>

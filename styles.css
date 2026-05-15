@@ -698,6 +698,30 @@ body.dark-mode .evento-destacado {
   border-top-right-radius: 4px;
 }
 
+.chat-quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+  margin-bottom: 18px;
+}
+
+.chat-quick-actions button {
+  width: auto;
+  min-width: 180px;
+  padding: 10px 16px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: white;
+  font-weight: bold;
+}
+
+.chat-quick-actions button:hover {
+  background: var(--primary-dark);
+}
+
 .chat-input-area {
   display: flex;
   gap: 12px;
@@ -825,6 +849,16 @@ body.dark-mode .evento-destacado {
 
   .message {
     max-width: 88%;
+  }
+
+  .chat-quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chat-quick-actions button {
+    width: 100%;
+    min-width: 100%;
   }
 
   .chat-input-area {
