@@ -48,6 +48,7 @@
       <div class="seccion-horario">
         <div class="perfil-card">
           <h3 id="tituloActividadFija">Agregar actividad fija</h3>
+
           <form id="actividadFijaForm">
             <input type="hidden" id="editandoActividadFijaId">
 
@@ -75,11 +76,21 @@
             >
 
             <button type="submit" id="btnGuardarActividadFija">Guardar actividad fija</button>
+
+            <button
+              type="button"
+              id="btnCancelarEdicionFija"
+              onclick="cancelarEdicionActividadFija()"
+              style="display: none;"
+            >
+              Cancelar edición
+            </button>
           </form>
         </div>
 
         <div class="perfil-card">
           <h3 id="tituloActividadEspecial">Agregar actividad especial</h3>
+
           <form id="actividadEspecialForm">
             <input type="hidden" id="editandoActividadEspecialId">
 
@@ -107,6 +118,15 @@
             >
 
             <button type="submit" id="btnGuardarActividadEspecial">Guardar actividad especial</button>
+
+            <button
+              type="button"
+              id="btnCancelarEdicionEspecial"
+              onclick="cancelarEdicionActividadEspecial()"
+              style="display: none;"
+            >
+              Cancelar edición
+            </button>
           </form>
         </div>
       </div>

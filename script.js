@@ -422,6 +422,34 @@ function editarActividadEspecial(id) {
   window.location.href = "organizar_horario.html";
 }
 
+function mostrarBotonCancelarFija() {
+  const botonCancelar = document.getElementById("btnCancelarEdicionFija");
+  if (botonCancelar) {
+    botonCancelar.style.display = "block";
+  }
+}
+
+function ocultarBotonCancelarFija() {
+  const botonCancelar = document.getElementById("btnCancelarEdicionFija");
+  if (botonCancelar) {
+    botonCancelar.style.display = "none";
+  }
+}
+
+function mostrarBotonCancelarEspecial() {
+  const botonCancelar = document.getElementById("btnCancelarEdicionEspecial");
+  if (botonCancelar) {
+    botonCancelar.style.display = "block";
+  }
+}
+
+function ocultarBotonCancelarEspecial() {
+  const botonCancelar = document.getElementById("btnCancelarEdicionEspecial");
+  if (botonCancelar) {
+    botonCancelar.style.display = "none";
+  }
+}
+
 function cargarEdicionActividadFija() {
   const idGuardado = localStorage.getItem("editandoActividadFijaId");
   if (!idGuardado) return;
@@ -443,6 +471,8 @@ function cargarEdicionActividadFija() {
   if (hora) hora.value = actividad.hora;
   if (actividadInput) actividadInput.value = actividad.actividad;
   if (boton) boton.textContent = "Guardar cambios";
+
+  mostrarBotonCancelarFija();
 }
 
 function cargarEdicionActividadEspecial() {
@@ -468,10 +498,13 @@ function cargarEdicionActividadEspecial() {
   if (hora) hora.value = actividad.hora;
   if (actividadInput) actividadInput.value = actividad.actividad;
   if (boton) boton.textContent = "Guardar cambios";
+
+  mostrarBotonCancelarEspecial();
 }
 
 function limpiarEdicionActividadFija() {
   localStorage.removeItem("editandoActividadFijaId");
+
   const titulo = document.getElementById("tituloActividadFija");
   const inputId = document.getElementById("editandoActividadFijaId");
   const boton = document.getElementById("btnGuardarActividadFija");
@@ -479,10 +512,13 @@ function limpiarEdicionActividadFija() {
   if (titulo) titulo.textContent = "Agregar actividad fija";
   if (inputId) inputId.value = "";
   if (boton) boton.textContent = "Guardar actividad fija";
+
+  ocultarBotonCancelarFija();
 }
 
 function limpiarEdicionActividadEspecial() {
   localStorage.removeItem("editandoActividadEspecialId");
+
   const titulo = document.getElementById("tituloActividadEspecial");
   const inputId = document.getElementById("editandoActividadEspecialId");
   const boton = document.getElementById("btnGuardarActividadEspecial");
@@ -490,6 +526,28 @@ function limpiarEdicionActividadEspecial() {
   if (titulo) titulo.textContent = "Agregar actividad especial";
   if (inputId) inputId.value = "";
   if (boton) boton.textContent = "Guardar actividad especial";
+
+  ocultarBotonCancelarEspecial();
+}
+
+function cancelarEdicionActividadFija() {
+  const form = document.getElementById("actividadFijaForm");
+
+  if (form) {
+    form.reset();
+  }
+
+  limpiarEdicionActividadFija();
+}
+
+function cancelarEdicionActividadEspecial() {
+  const form = document.getElementById("actividadEspecialForm");
+
+  if (form) {
+    form.reset();
+  }
+
+  limpiarEdicionActividadEspecial();
 }
 
 function guardarActividadFija(event) {
@@ -608,6 +666,9 @@ function guardarActividadEspecial(event) {
   mostrarEventosEspecialesHoy();
 }
 
+/* =========================
+   ACCIONES ACTIVIDADES
+========================= */
 function alternarActividadFija(id) {
   const actividadesFijas = obtenerActividadesFijas().map((item) =>
     item.id === id ? { ...item, completada: !item.completada } : item
@@ -621,6 +682,7 @@ function alternarActividadFija(id) {
 
 function eliminarActividadFija(id) {
   const actividadesFijas = obtenerActividadesFijas().filter((item) => item.id !== id);
+
   guardarActividadesFijas(actividadesFijas);
   mostrarActividadesFijas();
   mostrarActividadesHoy();
@@ -640,6 +702,7 @@ function alternarActividadEspecial(id) {
 
 function eliminarActividadEspecial(id) {
   const actividadesEspeciales = obtenerActividadesEspeciales().filter((item) => item.id !== id);
+
   guardarActividadesEspeciales(actividadesEspeciales);
   mostrarActividadesEspeciales();
   mostrarActividadesHoy();
@@ -740,6 +803,7 @@ function obtenerFechaHoyFormatoInput() {
   const anio = hoy.getFullYear();
   const mes = String(hoy.getMonth() + 1).padStart(2, "0");
   const dia = String(hoy.getDate()).padStart(2, "0");
+
   return `${anio}-${mes}-${dia}`;
 }
 
@@ -1270,6 +1334,7 @@ function limpiarTablaHorarioSemanal() {
 
   filas.forEach((fila) => {
     const celdas = fila.querySelectorAll("td");
+
     celdas.forEach((celda, index) => {
       if (index !== 0) {
         celda.textContent = "";
