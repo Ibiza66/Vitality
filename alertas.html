@@ -41,18 +41,79 @@
   </header>
 
   <main class="main-content">
-    <div class="container">
+    <div class="container horario-container">
       <h1>Alertas y recomendaciones</h1>
 
-      <div id="alertasContainer">
-        <div class="alerta">
-          <p><strong>Cargando alertas...</strong></p>
-          <p>Estamos revisando tu check-in más reciente.</p>
+      <p>
+        Aquí puedes revisar las alertas generadas según tu último check-in,
+        tus actividades del día y las recomendaciones preventivas de Vitality.
+      </p>
+
+      <div class="perfil-info">
+        <div class="perfil-card">
+          <h2>Estado detectado</h2>
+
+          <div id="alertasContainer">
+            <div class="alerta">
+              <p><strong>Cargando alertas...</strong></p>
+              <p>Estamos revisando tu check-in más reciente.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="perfil-card">
+          <h2>Acciones recomendadas</h2>
+
+          <p>
+            <strong>1. Revisa tu horario:</strong>
+            verifica si tienes actividades pendientes o eventos importantes para hoy.
+          </p>
+
+          <p>
+            <strong>2. Organiza tus prioridades:</strong>
+            si tienes muchas tareas, comienza por una actividad importante y deja pausas breves.
+          </p>
+
+          <p>
+            <strong>3. Usa el chat de apoyo:</strong>
+            si necesitas conversar o recibir una recomendación más personalizada, puedes hablar con Vitality.
+          </p>
+
+          <div class="botones-horario">
+            <a href="horario.html" class="boton-link">Ver horario</a>
+            <a href="chat.html" class="boton-link">Hablar con Vitality</a>
+          </div>
         </div>
       </div>
 
-      <p><a href="horario.html">Volver al horario</a></p>
-      <p><a href="checkin.html">Volver al check-in</a></p>
+      <div class="perfil-card">
+        <h2>Actividades relacionadas</h2>
+
+        <p>
+          Si tienes actividades registradas para hoy, Vitality puede ayudarte a relacionarlas con tu estado emocional.
+          Por ejemplo, si marcaste estrés alto y tienes varias actividades pendientes, la aplicación te recomendará priorizar y tomar pausas.
+        </p>
+
+        <div class="botones-horario">
+          <a href="horario.html#seccionHoy" class="boton-link">Ver actividades de hoy</a>
+          <a href="organizar_horario.html" class="boton-link">Agregar actividad</a>
+        </div>
+      </div>
+
+      <div class="perfil-card">
+        <h2>Recordatorio importante</h2>
+
+        <p>
+          Vitality entrega recomendaciones de apoyo preventivo y organización personal.
+          No reemplaza la ayuda profesional médica o psicológica.
+        </p>
+      </div>
+
+      <div class="botones-horario">
+        <a href="checkin.html" class="boton-link">Volver al check-in</a>
+        <a href="perfil.html" class="boton-link">Ver mi perfil</a>
+        <a href="horario.html" class="boton-link">Volver al horario</a>
+      </div>
     </div>
   </main>
 

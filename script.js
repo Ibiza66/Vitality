@@ -1381,6 +1381,14 @@ function crearContenedorNotificaciones() {
   return contenedor;
 }
 
+function cerrarNotificacionVitality(boton) {
+  const notificacion = boton.closest(".notificacion-vitality");
+
+  if (notificacion) {
+    notificacion.remove();
+  }
+}
+
 function mostrarNotificacionVitality(titulo, mensaje, tipo = "info") {
   const contenedor = crearContenedorNotificaciones();
 
@@ -1388,14 +1396,26 @@ function mostrarNotificacionVitality(titulo, mensaje, tipo = "info") {
   notificacion.className = `notificacion-vitality notificacion-${tipo}`;
 
   notificacion.innerHTML = `
-    <strong>${titulo}</strong>
+    <div class="notificacion-header">
+      <strong>${titulo}</strong>
+      <button
+        type="button"
+        class="cerrar-notificacion"
+        onclick="cerrarNotificacionVitality(this)"
+        aria-label="Cerrar notificación"
+      >
+        ×
+      </button>
+    </div>
     <p>${mensaje}</p>
   `;
 
   contenedor.appendChild(notificacion);
 
   setTimeout(() => {
-    notificacion.remove();
+    if (notificacion.parentElement) {
+      notificacion.remove();
+    }
   }, 7000);
 }
 

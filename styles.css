@@ -1005,3 +1005,35 @@ body.dark-mode .evento-destacado {
     padding: 8px;
   }
 }
+/* BOTÓN PARA CERRAR NOTIFICACIONES */
+.notificacion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.notificacion-header strong {
+  flex: 1;
+}
+
+.cerrar-notificacion {
+  width: auto;
+  min-width: auto;
+  margin: 0;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: none;
+  line-height: 1;
+}
+
+.cerrar-notificacion:hover {
+  background: var(--bg-main);
+  color: #c0392b;
+}
