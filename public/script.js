@@ -1,5 +1,5 @@
-/* =========================
-   MENÚ HAMBURGUESA Y PERFIL
+﻿/* =========================
+   MENÃš HAMBURGUESA Y PERFIL
 ========================= */
 function toggleMenu() {
   const menu = document.getElementById("menu");
@@ -67,7 +67,7 @@ function toggleTheme() {
 }
 
 /* =========================
-   NAVEGACIÓN EN HORARIO
+   NAVEGACIÃ“N EN HORARIO
 ========================= */
 function irASeccion(idSeccion) {
   const seccion = document.getElementById(idSeccion);
@@ -81,7 +81,7 @@ function irASeccion(idSeccion) {
 }
 
 /* =========================
-   REGISTRO E INICIO DE SESIÓN
+   REGISTRO E INICIO DE SESIÃ“N
 ========================= */
 function guardarUsuario(nombre, correo, password) {
   const usuario = { nombre, correo, password };
@@ -112,7 +112,7 @@ function registrarUsuario(event) {
   }
 
   guardarUsuario(nombre, correo, password);
-  alert("Cuenta creada con éxito.");
+  alert("Cuenta creada con Ã©xito.");
   window.location.href = "perfil.html";
 }
 
@@ -130,15 +130,15 @@ function iniciarSesion(event) {
   const usuario = obtenerUsuario();
 
   if (!usuario) {
-    alert("No existe una cuenta registrada. Por favor regístrate primero.");
+    alert("No existe una cuenta registrada. Por favor regÃ­strate primero.");
     return;
   }
 
   if (correo === usuario.correo && password === usuario.password) {
-    alert("Inicio de sesión exitoso.");
+    alert("Inicio de sesiÃ³n exitoso.");
     window.location.href = "horario.html";
   } else {
-    alert("Correo o contraseña incorrectos.");
+    alert("Correo o contraseÃ±a incorrectos.");
   }
 }
 
@@ -174,7 +174,7 @@ function guardarDatosPerfil(event) {
   guardarPerfil(categoria, actividades);
   mostrarDatosPerfil();
   mostrarPanelPerfilAvanzado();
-  alert("Perfil guardado con éxito.");
+  alert("Perfil guardado con Ã©xito.");
 }
 
 function mostrarDatosPerfil() {
@@ -252,12 +252,12 @@ function guardarDatosCheckin(event) {
   }
 
   guardarCheckin(estadoAnimo, nivelEstres, sueno, energia);
-  alert("Check-in guardado con éxito.");
+  alert("Check-in guardado con Ã©xito.");
   window.location.href = "alertas.html";
 }
 
 /* =========================
-   ALERTAS SEGÚN CHECK-IN
+   ALERTAS SEGÃšN CHECK-IN
 ========================= */
 function mostrarAlertas() {
   const alertasContainer = document.getElementById("alertasContainer");
@@ -280,8 +280,8 @@ function mostrarAlertas() {
   if (checkin.nivelEstres === "Alto") {
     alertasHTML += `
       <div class="alerta">
-        <p><strong>Estado detectado:</strong> Hoy registraste un nivel de estrés alto.</p>
-        <p><strong>Recomendación:</strong> Te recomendamos tomar una pausa, salir a caminar o escuchar música relajante.</p>
+        <p><strong>Estado detectado:</strong> Hoy registraste un nivel de estrÃ©s alto.</p>
+        <p><strong>RecomendaciÃ³n:</strong> Te recomendamos tomar una pausa, salir a caminar o escuchar mÃºsica relajante.</p>
       </div>
     `;
   }
@@ -289,8 +289,8 @@ function mostrarAlertas() {
   if (checkin.energia === "Baja") {
     alertasHTML += `
       <div class="alerta">
-        <p><strong>Consejo de bienestar:</strong> Tu nivel de energía está bajo.</p>
-        <p><strong>Recomendación:</strong> Intenta descansar, hidratarte bien o hacer una actividad tranquila que te guste.</p>
+        <p><strong>Consejo de bienestar:</strong> Tu nivel de energÃ­a estÃ¡ bajo.</p>
+        <p><strong>RecomendaciÃ³n:</strong> Intenta descansar, hidratarte bien o hacer una actividad tranquila que te guste.</p>
       </div>
     `;
   }
@@ -299,7 +299,7 @@ function mostrarAlertas() {
     alertasHTML += `
       <div class="alerta">
         <p><strong>Descanso insuficiente:</strong> Reportaste que dormiste mal.</p>
-        <p><strong>Recomendación:</strong> Considera acostarte más temprano hoy y reducir actividades exigentes esta noche.</p>
+        <p><strong>RecomendaciÃ³n:</strong> Considera acostarte mÃ¡s temprano hoy y reducir actividades exigentes esta noche.</p>
       </div>
     `;
   }
@@ -308,7 +308,7 @@ function mostrarAlertas() {
     alertasHTML += `
       <div class="alerta">
         <p><strong>Estado emocional:</strong> Hoy no te has sentido bien.</p>
-        <p><strong>Recomendación:</strong> Date un momento para ti, habla con alguien de confianza o usa el chat de apoyo de Vitality.</p>
+        <p><strong>RecomendaciÃ³n:</strong> Date un momento para ti, habla con alguien de confianza o usa el chat de apoyo de Vitality.</p>
       </div>
     `;
   }
@@ -317,14 +317,14 @@ function mostrarAlertas() {
     alertasHTML = `
       <div class="alerta">
         <p><strong>Buen trabajo.</strong> No detectamos alertas importantes en tu check-in de hoy.</p>
-        <p><strong>Sugerencia:</strong> Mantén tu rutina, tus pausas y tus hábitos saludables.</p>
+        <p><strong>Sugerencia:</strong> MantÃ©n tu rutina, tus pausas y tus hÃ¡bitos saludables.</p>
       </div>
     `;
   }
 
   alertasHTML += `
     <div class="alerta">
-      <p><strong>¿Necesitas apoyo?</strong> Puedes conversar con Vitality para recibir orientación y sugerencias personalizadas.</p>
+      <p><strong>Â¿Necesitas apoyo?</strong> Puedes conversar con Vitality para recibir orientaciÃ³n y sugerencias personalizadas.</p>
       <p><a href="chat.html">Hablar con Vitality</a></p>
     </div>
   `;
@@ -333,7 +333,7 @@ function mostrarAlertas() {
 }
 
 /* =========================
-   GRÁFICO DEL PERFIL SEGÚN CHECK-IN
+   GRÃFICO DEL PERFIL SEGÃšN CHECK-IN
 ========================= */
 function obtenerClaseBarra(estadoAnimo) {
   switch (estadoAnimo) {
@@ -420,7 +420,7 @@ function validarRangoHoras(horaInicio, horaFin) {
   if (!horaInicio || !horaFin) return false;
 
   if (horaFin <= horaInicio) {
-    alert("La hora de término debe ser posterior a la hora de inicio.");
+    alert("La hora de tÃ©rmino debe ser posterior a la hora de inicio.");
     return false;
   }
 
@@ -612,7 +612,7 @@ function guardarActividadFija(event) {
     );
 
     guardarActividadesFijas(actualizadas);
-    alert("Actividad fija actualizada con éxito.");
+    alert("Actividad fija actualizada con Ã©xito.");
     limpiarEdicionActividadFija();
   } else {
     actividadesFijas.push({
@@ -625,7 +625,7 @@ function guardarActividadFija(event) {
     });
 
     guardarActividadesFijas(actividadesFijas);
-    alert("Actividad fija guardada con éxito.");
+    alert("Actividad fija guardada con Ã©xito.");
   }
 
   event.target.reset();
@@ -678,7 +678,7 @@ function guardarActividadEspecial(event) {
     );
 
     guardarActividadesEspeciales(actualizadas);
-    alert("Actividad especial actualizada con éxito.");
+    alert("Actividad especial actualizada con Ã©xito.");
     limpiarEdicionActividadEspecial();
   } else {
     actividadesEspeciales.push({
@@ -692,7 +692,7 @@ function guardarActividadEspecial(event) {
     });
 
     guardarActividadesEspeciales(actividadesEspeciales);
-    alert("Actividad especial guardada con éxito.");
+    alert("Actividad especial guardada con Ã©xito.");
   }
 
   event.target.reset();
@@ -758,7 +758,7 @@ function mostrarActividadesFijas() {
   if (actividadesFijas.length === 0) {
     contenedor.innerHTML = `
       <div class="actividad-card">
-        <p>No hay actividades fijas guardadas todavía.</p>
+        <p>No hay actividades fijas guardadas todavÃ­a.</p>
       </div>
     `;
     return;
@@ -794,7 +794,7 @@ function mostrarActividadesEspeciales() {
   if (actividadesEspeciales.length === 0) {
     contenedor.innerHTML = `
       <div class="actividad-card">
-        <p>No hay actividades especiales guardadas todavía.</p>
+        <p>No hay actividades especiales guardadas todavÃ­a.</p>
       </div>
     `;
     return;
@@ -830,10 +830,10 @@ function obtenerNombreDiaHoy() {
     "Domingo",
     "Lunes",
     "Martes",
-    "Miércoles",
+    "MiÃ©rcoles",
     "Jueves",
     "Viernes",
-    "Sábado"
+    "SÃ¡bado"
   ];
 
   const hoy = new Date();
@@ -872,11 +872,11 @@ function obtenerMensajeHorarioHoy() {
   const resumen = obtenerResumenHorarioHoy();
 
   if (resumen.especiales.length > 0) {
-    return "Además, vi que hoy tienes un evento especial en tu horario. Si quieres, también puedo ayudarte a organizar ese día.";
+    return "AdemÃ¡s, vi que hoy tienes un evento especial en tu horario. Si quieres, tambiÃ©n puedo ayudarte a organizar ese dÃ­a.";
   }
 
   if (resumen.total >= 4) {
-    return "También noto que hoy tienes varias actividades en tu horario. Podemos ordenar tu día para que no se sienta tan pesado.";
+    return "TambiÃ©n noto que hoy tienes varias actividades en tu horario. Podemos ordenar tu dÃ­a para que no se sienta tan pesado.";
   }
 
   if (resumen.total > 0) {
@@ -1034,26 +1034,26 @@ function obtenerSaludoInicialChat() {
 
   if (!checkin) {
     return [
-      "Hola, soy Vitality 💚",
-      "No encontré un check-in reciente. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?"
+      "Hola, soy Vitality ðŸ’š",
+      "No encontrÃ© un check-in reciente. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?"
     ];
   }
 
-  let mensajePrincipal = "Hola, soy Vitality 💚";
+  let mensajePrincipal = "Hola, soy Vitality ðŸ’š";
   let mensajeSecundario = "";
 
   if (checkin.estadoAnimo === "Muy mal" || checkin.estadoAnimo === "Mal") {
-    mensajeSecundario = `Vi que hoy te has sentido ${checkin.estadoAnimo.toLowerCase()}. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?`;
+    mensajeSecundario = `Vi que hoy te has sentido ${checkin.estadoAnimo.toLowerCase()}. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?`;
   } else if (checkin.nivelEstres === "Alto") {
-    mensajeSecundario = "Noté que hoy marcaste estrés alto. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?";
+    mensajeSecundario = "NotÃ© que hoy marcaste estrÃ©s alto. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?";
   } else if (checkin.energia === "Baja") {
-    mensajeSecundario = "Vi que hoy tienes energía baja. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?";
+    mensajeSecundario = "Vi que hoy tienes energÃ­a baja. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?";
   } else if (checkin.sueno === "Mal") {
-    mensajeSecundario = "Noté que dormiste mal. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?";
+    mensajeSecundario = "NotÃ© que dormiste mal. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?";
   } else if (checkin.estadoAnimo === "Bien" || checkin.estadoAnimo === "Muy bien") {
-    mensajeSecundario = `Qué bueno que hoy te sientes ${checkin.estadoAnimo.toLowerCase()}. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?`;
+    mensajeSecundario = `QuÃ© bueno que hoy te sientes ${checkin.estadoAnimo.toLowerCase()}. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?`;
   } else {
-    mensajeSecundario = "Gracias por completar tu check-in. ¿Te gustaría conversar, organizar tu día o recibir una recomendación?";
+    mensajeSecundario = "Gracias por completar tu check-in. Â¿Te gustarÃ­a conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?";
   }
 
   const mensajeHorario = obtenerMensajeHorarioHoy();
@@ -1121,8 +1121,8 @@ function actualizarBotonesChat() {
   if (chatState === "inicio") {
     contenedor.innerHTML = `
       <button type="button" onclick="usarOpcionRapida('conversar')">Conversar</button>
-      <button type="button" onclick="usarOpcionRapida('organización')">Organizar mi día</button>
-      <button type="button" onclick="usarOpcionRapida('recomendación')">Dame una recomendación</button>
+      <button type="button" onclick="usarOpcionRapida('organizaciÃ³n')">Organizar mi dÃ­a</button>
+      <button type="button" onclick="usarOpcionRapida('recomendaciÃ³n')">Dame una recomendaciÃ³n</button>
     `;
     return;
   }
@@ -1130,7 +1130,7 @@ function actualizarBotonesChat() {
   if (chatState === "conversacion") {
     contenedor.innerHTML = `
       <button type="button" onclick="usarOpcionRapida('quiero seguir conversando')">Seguir conversando</button>
-      <button type="button" onclick="usarOpcionRapida('organizar mi día')">Organizar mi día</button>
+      <button type="button" onclick="usarOpcionRapida('organizar mi dÃ­a')">Organizar mi dÃ­a</button>
       <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
     `;
     return;
@@ -1138,7 +1138,7 @@ function actualizarBotonesChat() {
 
   if (chatState === "organizacion") {
     contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('sí')">Sí</button>
+      <button type="button" onclick="usarOpcionRapida('sÃ­')">SÃ­</button>
       <button type="button" onclick="usarOpcionRapida('no')">No</button>
       <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
     `;
@@ -1147,7 +1147,7 @@ function actualizarBotonesChat() {
 
   if (chatState === "recomendacion") {
     contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('otra')">Otra recomendación</button>
+      <button type="button" onclick="usarOpcionRapida('otra')">Otra recomendaciÃ³n</button>
       <button type="button" onclick="usarOpcionRapida('gracias')">Gracias</button>
       <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
     `;
@@ -1179,7 +1179,7 @@ function addMessage(text, sender) {
 function detectarIntencionPrincipal(msg) {
   if (
     msg.includes("organizar") ||
-    msg.includes("organización") ||
+    msg.includes("organizaciÃ³n") ||
     msg.includes("horario") ||
     msg.includes("pendiente") ||
     msg.includes("actividad") ||
@@ -1193,7 +1193,7 @@ function detectarIntencionPrincipal(msg) {
     msg.includes("recomend") ||
     msg.includes("consejo") ||
     msg.includes("suger") ||
-    msg.includes("qué hago") ||
+    msg.includes("quÃ© hago") ||
     msg.includes("que hago")
   ) {
     return "recomendacion";
@@ -1202,7 +1202,7 @@ function detectarIntencionPrincipal(msg) {
   if (
     msg.includes("convers") ||
     msg.includes("hablar") ||
-    msg.includes("acompaña") ||
+    msg.includes("acompaÃ±a") ||
     msg.includes("acompana") ||
     msg.includes("escuchar")
   ) {
@@ -1216,70 +1216,70 @@ function responderSegunCheckin() {
   const checkin = obtenerCheckin();
 
   if (!checkin) {
-    return "Cuéntame un poco más sobre cómo te has sentido hoy.";
+    return "CuÃ©ntame un poco mÃ¡s sobre cÃ³mo te has sentido hoy.";
   }
 
   if (checkin.nivelEstres === "Alto") {
-    return "Como hoy marcaste estrés alto, quiero ir con calma contigo. ¿Qué te está pesando más ahora mismo?";
+    return "Como hoy marcaste estrÃ©s alto, quiero ir con calma contigo. Â¿QuÃ© te estÃ¡ pesando mÃ¡s ahora mismo?";
   }
 
   if (checkin.estadoAnimo === "Mal" || checkin.estadoAnimo === "Muy mal") {
-    return "Estoy aquí contigo. ¿Quieres contarme qué fue lo más difícil de tu día?";
+    return "Estoy aquÃ­ contigo. Â¿Quieres contarme quÃ© fue lo mÃ¡s difÃ­cil de tu dÃ­a?";
   }
 
   if (checkin.energia === "Baja") {
-    return "Noté que hoy tienes poca energía. ¿Sientes más cansancio físico o mental?";
+    return "NotÃ© que hoy tienes poca energÃ­a. Â¿Sientes mÃ¡s cansancio fÃ­sico o mental?";
   }
 
   if (checkin.sueno === "Mal") {
-    return "Dormir mal afecta bastante el día. ¿Has sentido más sueño, irritación o poca concentración?";
+    return "Dormir mal afecta bastante el dÃ­a. Â¿Has sentido mÃ¡s sueÃ±o, irritaciÃ³n o poca concentraciÃ³n?";
   }
 
-  return "Cuéntame, ¿qué ha sido lo más importante de tu día?";
+  return "CuÃ©ntame, Â¿quÃ© ha sido lo mÃ¡s importante de tu dÃ­a?";
 }
 
 function responderOrganizacion() {
   const resumenHorario = obtenerResumenHorarioHoy();
 
   if (resumenHorario.especiales.length > 0) {
-    return "Hoy tienes un evento especial en tu horario. Yo te recomendaría partir por eso, luego dejar una tarea importante y después una pausa breve. ¿Quieres que lo ordenemos juntas?";
+    return "Hoy tienes un evento especial en tu horario. Yo te recomendarÃ­a partir por eso, luego dejar una tarea importante y despuÃ©s una pausa breve. Â¿Quieres que lo ordenemos juntas?";
   }
 
   if (resumenHorario.total >= 4) {
-    return "Hoy tienes varias actividades. Lo mejor sería dividir tu día en tres partes: primero lo urgente, después lo importante y luego lo que puede esperar. ¿Quieres empezar por identificar qué es urgente?";
+    return "Hoy tienes varias actividades. Lo mejor serÃ­a dividir tu dÃ­a en tres partes: primero lo urgente, despuÃ©s lo importante y luego lo que puede esperar. Â¿Quieres empezar por identificar quÃ© es urgente?";
   }
 
   if (resumenHorario.total > 0) {
-    return "Veo que hoy tienes algunas actividades registradas. Puedes partir por la más importante o por la más corta, según cómo te sientas ahora. ¿Qué prefieres?";
+    return "Veo que hoy tienes algunas actividades registradas. Puedes partir por la mÃ¡s importante o por la mÃ¡s corta, segÃºn cÃ³mo te sientas ahora. Â¿QuÃ© prefieres?";
   }
 
-  return "No veo muchas actividades registradas para hoy. Podemos armar una mini planificación simple: una tarea importante, una secundaria y un momento de descanso. ¿Te gustaría eso?";
+  return "No veo muchas actividades registradas para hoy. Podemos armar una mini planificaciÃ³n simple: una tarea importante, una secundaria y un momento de descanso. Â¿Te gustarÃ­a eso?";
 }
 
 function responderRecomendacion() {
   const checkin = obtenerCheckin();
 
   if (!checkin) {
-    return "Te recomendaría algo simple para hoy: respirar un poco, tomar agua, y darte un momento para bajar el ritmo. Después puedes decidir qué hacer con más calma.";
+    return "Te recomendarÃ­a algo simple para hoy: respirar un poco, tomar agua, y darte un momento para bajar el ritmo. DespuÃ©s puedes decidir quÃ© hacer con mÃ¡s calma.";
   }
 
   if (checkin.nivelEstres === "Alto") {
-    return "Mi recomendación para hoy sería bajar un poco la carga del momento: respira profundo, aléjate unos minutos de lo que te tensiona y enfócate solo en una cosa a la vez.";
+    return "Mi recomendaciÃ³n para hoy serÃ­a bajar un poco la carga del momento: respira profundo, alÃ©jate unos minutos de lo que te tensiona y enfÃ³cate solo en una cosa a la vez.";
   }
 
   if (checkin.energia === "Baja") {
-    return "Como hoy tienes energía baja, te recomendaría no exigirte con todo al mismo tiempo. Parte por una tarea pequeña, luego descansa un poco y después evalúa cómo sigues.";
+    return "Como hoy tienes energÃ­a baja, te recomendarÃ­a no exigirte con todo al mismo tiempo. Parte por una tarea pequeÃ±a, luego descansa un poco y despuÃ©s evalÃºa cÃ³mo sigues.";
   }
 
   if (checkin.sueno === "Mal") {
-    return "Como dormiste mal, hoy te conviene priorizar lo esencial, hidratarte bien y evitar sobrecargarte más de la cuenta.";
+    return "Como dormiste mal, hoy te conviene priorizar lo esencial, hidratarte bien y evitar sobrecargarte mÃ¡s de la cuenta.";
   }
 
   if (checkin.estadoAnimo === "Mal" || checkin.estadoAnimo === "Muy mal") {
-    return "Hoy te recomendaría darte un espacio amable: hacer una pausa, escuchar música tranquila, conversar con alguien de confianza o simplemente bajar la exigencia por un rato.";
+    return "Hoy te recomendarÃ­a darte un espacio amable: hacer una pausa, escuchar mÃºsica tranquila, conversar con alguien de confianza o simplemente bajar la exigencia por un rato.";
   }
 
-  return "Como hoy te has sentido relativamente bien, te recomendaría aprovechar este momento para organizar una o dos cosas importantes y dejar también un espacio para algo que disfrutes.";
+  return "Como hoy te has sentido relativamente bien, te recomendarÃ­a aprovechar este momento para organizar una o dos cosas importantes y dejar tambiÃ©n un espacio para algo que disfrutes.";
 }
 
 function generateSupportResponse(text) {
@@ -1302,11 +1302,11 @@ function generateSupportResponse(text) {
       return responderRecomendacion();
     }
 
-    if (msg.includes("sí") || msg.includes("si")) {
-      return "Perfecto. Puedes elegir entre conversar, organizar tu día o recibir una recomendación.";
+    if (msg.includes("sÃ­") || msg.includes("si")) {
+      return "Perfecto. Puedes elegir entre conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n.";
     }
 
-    return "Puedo ayudarte de tres formas: conversar, organizar tu día o darte una recomendación. ¿Cuál prefieres?";
+    return "Puedo ayudarte de tres formas: conversar, organizar tu dÃ­a o darte una recomendaciÃ³n. Â¿CuÃ¡l prefieres?";
   }
 
   if (chatState === "conversacion") {
@@ -1325,44 +1325,44 @@ function generateSupportResponse(text) {
       msg.includes("mal") ||
       msg.includes("cansad") ||
       msg.includes("estres") ||
-      msg.includes("estrés") ||
+      msg.includes("estrÃ©s") ||
       msg.includes("ansiedad")
     ) {
-      return "Gracias por contármelo. No tienes que resolver todo ahora mismo. Podemos seguir hablando o, si prefieres, también puedo ayudarte a ordenar tu día.";
+      return "Gracias por contÃ¡rmelo. No tienes que resolver todo ahora mismo. Podemos seguir hablando o, si prefieres, tambiÃ©n puedo ayudarte a ordenar tu dÃ­a.";
     }
 
-    return "Te estoy leyendo. Si quieres, puedes contarme un poco más, o también puedo cambiar y ayudarte a organizar tu día o darte una recomendación.";
+    return "Te estoy leyendo. Si quieres, puedes contarme un poco mÃ¡s, o tambiÃ©n puedo cambiar y ayudarte a organizar tu dÃ­a o darte una recomendaciÃ³n.";
   }
 
   if (chatState === "organizacion") {
-    if (msg.includes("sí") || msg.includes("si")) {
-      return "Perfecto. Entonces partamos por esto: dime cuál es tu tarea o actividad más urgente de hoy.";
+    if (msg.includes("sÃ­") || msg.includes("si")) {
+      return "Perfecto. Entonces partamos por esto: dime cuÃ¡l es tu tarea o actividad mÃ¡s urgente de hoy.";
     }
 
     if (msg.includes("no")) {
-      return "Está bien. Entonces podemos volver a conversar con calma o puedo darte una recomendación simple para hoy.";
+      return "EstÃ¡ bien. Entonces podemos volver a conversar con calma o puedo darte una recomendaciÃ³n simple para hoy.";
     }
 
     if (msg.includes("prueba") || msg.includes("solemne")) {
-      return "Si tienes una prueba o solemne, esa debería ir primero. Después intenta dejar solo una tarea importante más y no llenarte de cosas secundarias.";
+      return "Si tienes una prueba o solemne, esa deberÃ­a ir primero. DespuÃ©s intenta dejar solo una tarea importante mÃ¡s y no llenarte de cosas secundarias.";
     }
 
-    return "Para organizarte mejor, piensa en este orden: primero lo urgente, luego lo importante y después lo opcional. Si quieres, dime qué tienes pendiente y te ayudo a priorizar.";
+    return "Para organizarte mejor, piensa en este orden: primero lo urgente, luego lo importante y despuÃ©s lo opcional. Si quieres, dime quÃ© tienes pendiente y te ayudo a priorizar.";
   }
 
   if (chatState === "recomendacion") {
     if (msg.includes("otra")) {
-      return "Claro. Otra recomendación útil para hoy sería bajar un poco el ritmo y elegir solo una meta pequeña y realista para sentir más control.";
+      return "Claro. Otra recomendaciÃ³n Ãºtil para hoy serÃ­a bajar un poco el ritmo y elegir solo una meta pequeÃ±a y realista para sentir mÃ¡s control.";
     }
 
     if (msg.includes("gracias")) {
-      return "De nada 💚 Si quieres después podemos seguir conversando o ayudarte a organizar lo que te queda del día.";
+      return "De nada ðŸ’š Si quieres despuÃ©s podemos seguir conversando o ayudarte a organizar lo que te queda del dÃ­a.";
     }
 
-    return "Si quieres, también puedo darte una recomendación más emocional o una más práctica para organizar tu día. ¿Cuál prefieres?";
+    return "Si quieres, tambiÃ©n puedo darte una recomendaciÃ³n mÃ¡s emocional o una mÃ¡s prÃ¡ctica para organizar tu dÃ­a. Â¿CuÃ¡l prefieres?";
   }
 
-  return "Estoy aquí para ayudarte. ¿Prefieres conversar, organizar tu día o recibir una recomendación?";
+  return "Estoy aquÃ­ para ayudarte. Â¿Prefieres conversar, organizar tu dÃ­a o recibir una recomendaciÃ³n?";
 }
 /* =========================
    NOTIFICACIONES VISUALES
@@ -1415,9 +1415,9 @@ function mostrarNotificacionVitality(titulo, mensaje, tipo = "info") {
         type="button"
         class="cerrar-notificacion"
         onclick="cerrarNotificacionVitality(this)"
-        aria-label="Cerrar notificación"
+        aria-label="Cerrar notificaciÃ³n"
       >
-        ×
+        Ã—
       </button>
     </div>
     <p>${mensaje}</p>
@@ -1481,15 +1481,15 @@ function generarNotificacionesAutomaticas() {
     const primeraActividad = actividadesHoy[0];
 
     mostrarNotificacionVitality(
-      "📅 Próxima actividad",
+      "ðŸ“… PrÃ³xima actividad",
       `De ${obtenerRangoHora(primeraActividad.hora, primeraActividad.horaFin)} tienes: ${primeraActividad.nombre}.`,
       "info"
     );
 
     if (actividadesHoy.length > 1) {
       mostrarNotificacionVitality(
-        "🔔 Actividades pendientes",
-        `Además tienes ${actividadesHoy.length - 1} actividad(es) más pendiente(s) para hoy.`,
+        "ðŸ”” Actividades pendientes",
+        `AdemÃ¡s tienes ${actividadesHoy.length - 1} actividad(es) mÃ¡s pendiente(s) para hoy.`,
         "info"
       );
     }
@@ -1498,43 +1498,43 @@ function generarNotificacionesAutomaticas() {
   if (checkin) {
     if (checkin.nivelEstres === "Alto" && actividadesHoy.length > 0) {
       mostrarNotificacionVitality(
-        "⚠️ Recomendación Vitality",
-        "Como hoy registraste estrés alto, intenta hacer una pausa breve antes de comenzar tu próxima actividad.",
+        "âš ï¸ RecomendaciÃ³n Vitality",
+        "Como hoy registraste estrÃ©s alto, intenta hacer una pausa breve antes de comenzar tu prÃ³xima actividad.",
         "alerta"
       );
     } else if (checkin.nivelEstres === "Alto") {
       mostrarNotificacionVitality(
-        "⚠️ Estrés alto detectado",
-        "Hoy registraste estrés alto. Te recomendamos hacer una pausa breve antes de continuar.",
+        "âš ï¸ EstrÃ©s alto detectado",
+        "Hoy registraste estrÃ©s alto. Te recomendamos hacer una pausa breve antes de continuar.",
         "alerta"
       );
     }
 
     if (checkin.energia === "Baja" && actividadesHoy.length > 0) {
       mostrarNotificacionVitality(
-        "💡 Energía baja",
-        "Tu energía está baja hoy. Prioriza la actividad más importante y deja espacio para descansar.",
+        "ðŸ’¡ EnergÃ­a baja",
+        "Tu energÃ­a estÃ¡ baja hoy. Prioriza la actividad mÃ¡s importante y deja espacio para descansar.",
         "info"
       );
     } else if (checkin.energia === "Baja") {
       mostrarNotificacionVitality(
-        "💡 Energía baja",
-        "Tu energía está baja hoy. Intenta priorizar solo lo más importante.",
+        "ðŸ’¡ EnergÃ­a baja",
+        "Tu energÃ­a estÃ¡ baja hoy. Intenta priorizar solo lo mÃ¡s importante.",
         "info"
       );
     }
 
     if (checkin.sueno === "Mal") {
       mostrarNotificacionVitality(
-        "😴 Descanso insuficiente",
-        "Dormiste mal. Trata de no sobrecargarte y organiza tu día con calma.",
+        "ðŸ˜´ Descanso insuficiente",
+        "Dormiste mal. Trata de no sobrecargarte y organiza tu dÃ­a con calma.",
         "alerta"
       );
     }
 
     if (checkin.estadoAnimo === "Mal" || checkin.estadoAnimo === "Muy mal") {
       mostrarNotificacionVitality(
-        "💚 Apoyo emocional",
+        "ðŸ’š Apoyo emocional",
         "Hoy no te has sentido bien. Puedes usar el chat de apoyo para conversar un momento.",
         "peligro"
       );
@@ -1543,7 +1543,7 @@ function generarNotificacionesAutomaticas() {
 
   if (!checkin && actividadesHoy.length === 0) {
     mostrarNotificacionVitality(
-      "💚 Bienvenida a Vitality",
+      "ðŸ’š Bienvenida a Vitality",
       "Completa tu check-in y agrega actividades para recibir recomendaciones personalizadas.",
       "info"
     );
@@ -1583,19 +1583,19 @@ function obtenerProximaActividadPerfil() {
 
 function obtenerRecomendacionPerfil(checkin, pendientes) {
   if (!checkin) {
-    return "Completa tu check-in diario para que Vitality pueda entregarte una recomendación según tu estado emocional, energía, sueño y nivel de estrés.";
+    return "Completa tu check-in diario para que Vitality pueda entregarte una recomendaciÃ³n segÃºn tu estado emocional, energÃ­a, sueÃ±o y nivel de estrÃ©s.";
   }
 
   if (checkin.nivelEstres === "Alto" && checkin.energia === "Baja") {
-    return "Hoy registraste estrés alto y energía baja. Te recomendamos priorizar solo lo más importante, tomar una pausa breve y evitar sobrecargarte.";
+    return "Hoy registraste estrÃ©s alto y energÃ­a baja. Te recomendamos priorizar solo lo mÃ¡s importante, tomar una pausa breve y evitar sobrecargarte.";
   }
 
   if (checkin.nivelEstres === "Alto" && pendientes > 0) {
-    return "Hoy tienes estrés alto y actividades pendientes. Intenta ordenar tu día empezando por una sola tarea importante y dejando pausas entre actividades.";
+    return "Hoy tienes estrÃ©s alto y actividades pendientes. Intenta ordenar tu dÃ­a empezando por una sola tarea importante y dejando pausas entre actividades.";
   }
 
   if (checkin.sueno === "Mal") {
-    return "Como dormiste mal, te recomendamos reducir la exigencia del día, hidratarte bien y dejar espacio para descansar.";
+    return "Como dormiste mal, te recomendamos reducir la exigencia del dÃ­a, hidratarte bien y dejar espacio para descansar.";
   }
 
   if (checkin.estadoAnimo === "Mal" || checkin.estadoAnimo === "Muy mal") {
@@ -1603,21 +1603,21 @@ function obtenerRecomendacionPerfil(checkin, pendientes) {
   }
 
   if (checkin.energia === "Baja") {
-    return "Tu energía está baja hoy. Parte por una tarea pequeña y realista, luego descansa antes de continuar.";
+    return "Tu energÃ­a estÃ¡ baja hoy. Parte por una tarea pequeÃ±a y realista, luego descansa antes de continuar.";
   }
 
   if (pendientes > 0) {
-    return "Tienes actividades pendientes para hoy. Te recomendamos comenzar por la más importante y marcarla como completada cuando termines.";
+    return "Tienes actividades pendientes para hoy. Te recomendamos comenzar por la mÃ¡s importante y marcarla como completada cuando termines.";
   }
 
-  return "Tu check-in no muestra alertas importantes. Mantén tus hábitos, organiza tus tiempos y deja un espacio para algo que disfrutes.";
+  return "Tu check-in no muestra alertas importantes. MantÃ©n tus hÃ¡bitos, organiza tus tiempos y deja un espacio para algo que disfrutes.";
 }
 
 function obtenerNivelBienestar(checkin) {
   if (!checkin) {
     return {
       nivel: "Sin datos suficientes",
-      descripcion: "Completa tu check-in para estimar tu nivel de bienestar del día."
+      descripcion: "Completa tu check-in para estimar tu nivel de bienestar del dÃ­a."
     };
   }
 
@@ -1640,20 +1640,20 @@ function obtenerNivelBienestar(checkin) {
   if (puntaje >= 3) {
     return {
       nivel: "Alto",
-      descripcion: "Hoy tu bienestar general se ve favorable según tu último check-in."
+      descripcion: "Hoy tu bienestar general se ve favorable segÃºn tu Ãºltimo check-in."
     };
   }
 
   if (puntaje >= 0) {
     return {
       nivel: "Medio",
-      descripcion: "Tu bienestar se ve estable, aunque podrías cuidar tus pausas y tu organización."
+      descripcion: "Tu bienestar se ve estable, aunque podrÃ­as cuidar tus pausas y tu organizaciÃ³n."
     };
   }
 
   return {
     nivel: "Bajo",
-    descripcion: "Tu check-in muestra señales de cansancio, estrés o bajo ánimo. Conviene bajar la carga y buscar apoyo si lo necesitas."
+    descripcion: "Tu check-in muestra seÃ±ales de cansancio, estrÃ©s o bajo Ã¡nimo. Conviene bajar la carga y buscar apoyo si lo necesitas."
   };
 }
 
@@ -1718,16 +1718,16 @@ function mostrarPanelPerfilAvanzado() {
 }
 
 /* =========================
-   TABLA SEMANAL DINÁMICA
+   TABLA SEMANAL DINÃMICA
 ========================= */
 function obtenerIndiceDia(dia) {
   const dias = {
     "Lunes": 1,
     "Martes": 2,
-    "Miércoles": 3,
+    "MiÃ©rcoles": 3,
     "Jueves": 4,
     "Viernes": 5,
-    "Sábado": 6,
+    "SÃ¡bado": 6,
     "Domingo": 7
   };
 
@@ -1796,7 +1796,7 @@ function rellenarTablaHorarioSemanal() {
 
       if (horaFila === actividad.hora && celdas[indiceDia]) {
         const textoActividad = actividad.completada
-          ? `${actividad.actividad} (${obtenerRangoHora(actividad.hora, actividad.horaFin)}) ✓`
+          ? `${actividad.actividad} (${obtenerRangoHora(actividad.hora, actividad.horaFin)}) âœ“`
           : `${actividad.actividad} (${obtenerRangoHora(actividad.hora, actividad.horaFin)})`;
 
         if (celdas[indiceDia].textContent.trim() !== "") {
@@ -1864,3 +1864,108 @@ window.addEventListener("DOMContentLoaded", () => {
   iniciarChatInteligente();
   generarNotificacionesAutomaticas();
 });
+
+/* =========================
+   REGISTRO E INICIO DE SESIÓN CON BACKEND - CORRECCIÓN FINAL
+========================= */
+function guardarUsuario(usuario) {
+  localStorage.setItem("usuarioVitality", JSON.stringify(usuario));
+}
+
+function obtenerUsuario() {
+  const usuarioGuardado = localStorage.getItem("usuarioVitality");
+  return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+}
+
+async function registrarUsuario(event) {
+  event.preventDefault();
+
+  const nombreInput = document.getElementById("nombre");
+  const correoInput = document.getElementById("correo");
+  const passwordInput = document.getElementById("password");
+
+  if (!nombreInput || !correoInput || !passwordInput) return;
+
+  const nombre = nombreInput.value.trim();
+  const correo = correoInput.value.trim().toLowerCase();
+  const password = passwordInput.value.trim();
+
+  if (!nombre || !correo || !password) {
+    alert("Por favor completa todos los campos.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch("/api/usuarios/registro", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nombre,
+        correo,
+        password
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo registrar el usuario.");
+      return;
+    }
+
+    guardarUsuario(data.usuario);
+
+    alert("Cuenta creada con éxito.");
+    window.location.href = "perfil.html";
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    alert("Ocurrió un error al conectar con el servidor.");
+  }
+}
+
+async function iniciarSesion(event) {
+  event.preventDefault();
+
+  const correoInput = document.getElementById("correoLogin");
+  const passwordInput = document.getElementById("passwordLogin");
+
+  if (!correoInput || !passwordInput) return;
+
+  const correo = correoInput.value.trim().toLowerCase();
+  const password = passwordInput.value.trim();
+
+  if (!correo || !password) {
+    alert("Por favor ingresa tu correo y contraseña.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch("/api/usuarios/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        correo,
+        password
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "Correo o contraseña incorrectos.");
+      return;
+    }
+
+    guardarUsuario(data.usuario);
+
+    alert("Inicio de sesión exitoso.");
+    window.location.href = "horario.html";
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error);
+    alert("Ocurrió un error al conectar con el servidor.");
+  }
+}
