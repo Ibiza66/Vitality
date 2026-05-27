@@ -1969,3 +1969,916 @@ async function iniciarSesion(event) {
     alert("Ocurrió un error al conectar con el servidor.");
   }
 }
+
+/* =========================
+   PERFIL CON BACKEND Y MONGODB - CORRECCIÓN FINAL
+========================= */
+async function guardarPerfilBackend(categoria, actividades) {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    guardarPerfil(categoria, actividades);
+    return {
+      ok: false,
+      mensaje: "No hay usuario conectado al backend. Perfil guardado solo localmente."
+    };
+  }
+
+  try {
+    const respuesta = await fetch(`/api/perfiles/${usuario.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        categoria,
+        actividades
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudo guardar el perfil en MongoDB."
+      };
+    }
+
+    localStorage.setItem("perfilVitality", JSON.stringify({
+      categoria: data.perfil.categoria,
+      actividades: data.perfil.actividades
+    }));
+
+    return {
+      ok: true,
+      perfil: data.perfil
+    };
+  } catch (error) {
+    console.error("Error al guardar perfil en backend:", error);
+
+    guardarPerfil(categoria, actividades);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor. Perfil guardado solo localmente."
+    };
+  }
+}
+
+async function obtenerPerfilBackend() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return obtenerPerfil();
+  }
+
+  try {
+    const respuesta = await fetch(`/api/perfiles/${usuario.id}`);
+
+    if (respuesta.status === 404) {
+      return obtenerPerfil();
+    }
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return obtenerPerfil();
+    }
+
+    const perfil = {
+      categoria: data.categoria,
+      actividades: data.actividades
+    };
+
+    localStorage.setItem("perfilVitality", JSON.stringify(perfil));
+
+    return perfil;
+  } catch (error) {
+    console.error("Error al obtener perfil desde backend:", error);
+    return obtenerPerfil();
+  }
+}
+
+async function guardarDatosPerfil(event) {
+  event.preventDefault();
+
+  const categoriaInput = document.getElementById("categoria");
+  const actividadesInput = document.getElementById("actividades");
+
+  if (!categoriaInput || !actividadesInput) return;
+
+  const categoria = categoriaInput.value.trim();
+  const actividades = actividadesInput.value.trim();
+
+  if (!categoria || !actividades) {
+    alert("Por favor completa todos los campos del perfil.");
+    return;
+  }
+
+  const resultado = await guardarPerfilBackend(categoria, actividades);
+
+  await mostrarDatosPerfil();
+  mostrarPanelPerfilAvanzado();
+
+  if (resultado.ok) {
+    alert("Perfil guardado con éxito en MongoDB.");
+  } else {
+    alert(resultado.mensaje);
+  }
+}
+
+async function mostrarDatosPerfil() {
+  const usuario = obtenerUsuario();
+  const perfil = await obtenerPerfilBackend();
+
+  const nombreSpan = document.getElementById("perfilNombre");
+  const categoriaSpan = document.getElementById("perfilCategoria");
+  const actividadesSpan = document.getElementById("perfilActividades");
+
+  if (usuario && nombreSpan) {
+    nombreSpan.textContent = usuario.nombre;
+  }
+
+  if (perfil && categoriaSpan) {
+    categoriaSpan.textContent = perfil.categoria;
+  }
+
+  if (perfil && actividadesSpan) {
+    actividadesSpan.textContent = perfil.actividades;
+  }
+
+  const categoriaInput = document.getElementById("categoria");
+  const actividadesInput = document.getElementById("actividades");
+
+  if (perfil && categoriaInput) {
+    categoriaInput.value = perfil.categoria;
+  }
+
+  if (perfil && actividadesInput) {
+    actividadesInput.value = perfil.actividades;
+  }
+}
+
+/* =========================
+   CHECK-IN CON BACKEND Y MONGODB - CORRECCIÓN FINAL
+========================= */
+async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    guardarCheckin(estadoAnimo, nivelEstres, sueno, energia);
+
+    return {
+      ok: false,
+      mensaje: "No hay usuario conectado al backend. Check-in guardado solo localmente."
+    };
+  }
+
+  try {
+    const respuesta = await fetch("/api/checkins", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId: usuario.id,
+        estadoAnimo,
+        nivelEstres,
+        sueno,
+        energia
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudo guardar el check-in en MongoDB."
+      };
+    }
+
+    const checkinLocal = {
+      estadoAnimo: data.checkin.estadoAnimo,
+      nivelEstres: data.checkin.nivelEstres,
+      sueno: data.checkin.sueno,
+      energia: data.checkin.energia,
+      fecha: new Date(data.checkin.fecha).toLocaleDateString()
+    };
+
+    localStorage.setItem("checkinVitality", JSON.stringify(checkinLocal));
+
+    return {
+      ok: true,
+      checkin: data.checkin
+    };
+  } catch (error) {
+    console.error("Error al guardar check-in en backend:", error);
+
+    guardarCheckin(estadoAnimo, nivelEstres, sueno, energia);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor. Check-in guardado solo localmente."
+    };
+  }
+}
+
+async function obtenerUltimoCheckinBackend() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return obtenerCheckin();
+  }
+
+  try {
+    const respuesta = await fetch(`/api/checkins/ultimo/${usuario.id}`);
+
+    if (respuesta.status === 404) {
+      return obtenerCheckin();
+    }
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return obtenerCheckin();
+    }
+
+    const checkinLocal = {
+      estadoAnimo: data.estadoAnimo,
+      nivelEstres: data.nivelEstres,
+      sueno: data.sueno,
+      energia: data.energia,
+      fecha: new Date(data.fecha).toLocaleDateString()
+    };
+
+    localStorage.setItem("checkinVitality", JSON.stringify(checkinLocal));
+
+    return checkinLocal;
+  } catch (error) {
+    console.error("Error al obtener check-in desde backend:", error);
+    return obtenerCheckin();
+  }
+}
+
+async function guardarDatosCheckin(event) {
+  event.preventDefault();
+
+  const estadoAnimoInput = document.getElementById("estadoAnimo");
+  const nivelEstresInput = document.getElementById("nivelEstres");
+  const suenoInput = document.getElementById("sueno");
+  const energiaInput = document.getElementById("energia");
+
+  if (!estadoAnimoInput || !nivelEstresInput || !suenoInput || !energiaInput) {
+    return;
+  }
+
+  const estadoAnimo = estadoAnimoInput.value.trim();
+  const nivelEstres = nivelEstresInput.value.trim();
+  const sueno = suenoInput.value.trim();
+  const energia = energiaInput.value.trim();
+
+  if (!estadoAnimo || !nivelEstres || !sueno || !energia) {
+    alert("Por favor completa todo el check-in.");
+    return;
+  }
+
+  const resultado = await guardarCheckinBackend(
+    estadoAnimo,
+    nivelEstres,
+    sueno,
+    energia
+  );
+
+  if (resultado.ok) {
+    alert("Check-in guardado con éxito en MongoDB.");
+  } else {
+    alert(resultado.mensaje);
+  }
+
+  window.location.href = "alertas.html";
+}
+
+async function sincronizarCheckinBackendConInterfaz() {
+  await obtenerUltimoCheckinBackend();
+
+  mostrarResumenCheckinEnPerfil();
+  mostrarPanelPerfilAvanzado();
+  mostrarAlertas();
+
+  const chatBox = document.getElementById("chatBox");
+  if (chatBox) {
+    iniciarChatInteligente();
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  sincronizarCheckinBackendConInterfaz();
+});
+
+/* =========================
+   ACTIVIDADES CON BACKEND Y MONGODB - CORRECCIÓN FINAL
+========================= */
+function obtenerUsuarioBackendActual() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return null;
+  }
+
+  return usuario;
+}
+
+function transformarActividadBackendParaLocal(item) {
+  if (item.tipoActividad === "fija") {
+    return {
+      id: item._id,
+      dia: item.dia,
+      hora: item.hora,
+      horaFin: item.horaFin,
+      actividad: item.actividad,
+      completada: item.completada
+    };
+  }
+
+  return {
+    id: item._id,
+    tipo: item.tipoEspecial,
+    fecha: item.fecha,
+    hora: item.hora,
+    horaFin: item.horaFin,
+    actividad: item.actividad,
+    completada: item.completada
+  };
+}
+
+async function obtenerActividadesBackend() {
+  const usuario = obtenerUsuarioBackendActual();
+
+  if (!usuario) {
+    return {
+      ok: false,
+      mensaje: "No hay usuario conectado.",
+      fijas: obtenerActividadesFijas(),
+      especiales: obtenerActividadesEspeciales()
+    };
+  }
+
+  try {
+    const respuesta = await fetch(`/api/actividades/${usuario.id}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudieron obtener las actividades.",
+        fijas: obtenerActividadesFijas(),
+        especiales: obtenerActividadesEspeciales()
+      };
+    }
+
+    const fijas = data
+      .filter((item) => item.tipoActividad === "fija")
+      .map(transformarActividadBackendParaLocal);
+
+    const especiales = data
+      .filter((item) => item.tipoActividad === "especial")
+      .map(transformarActividadBackendParaLocal);
+
+    guardarActividadesFijas(fijas);
+    guardarActividadesEspeciales(especiales);
+
+    return {
+      ok: true,
+      fijas,
+      especiales
+    };
+  } catch (error) {
+    console.error("Error al obtener actividades desde backend:", error);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor.",
+      fijas: obtenerActividadesFijas(),
+      especiales: obtenerActividadesEspeciales()
+    };
+  }
+}
+
+async function sincronizarActividadesBackendConInterfaz() {
+  await obtenerActividadesBackend();
+
+  mostrarActividadesFijas();
+  mostrarActividadesEspeciales();
+  mostrarActividadesHoy();
+  mostrarEventosEspecialesHoy();
+  rellenarTablaHorarioSemanal();
+  mostrarPanelPerfilAvanzado();
+}
+
+async function guardarActividadFijaBackend(dia, hora, horaFin, actividad, editandoId) {
+  const usuario = obtenerUsuarioBackendActual();
+
+  if (!usuario) {
+    return {
+      ok: false,
+      mensaje: "No hay usuario conectado al backend."
+    };
+  }
+
+  const cuerpo = {
+    usuarioId: usuario.id,
+    tipoActividad: "fija",
+    dia,
+    fecha: "",
+    tipoEspecial: "",
+    hora,
+    horaFin,
+    actividad
+  };
+
+  try {
+    const url = editandoId
+      ? `/api/actividades/${editandoId}`
+      : "/api/actividades";
+
+    const metodo = editandoId ? "PUT" : "POST";
+
+    const respuesta = await fetch(url, {
+      method: metodo,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(cuerpo)
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudo guardar la actividad fija."
+      };
+    }
+
+    return {
+      ok: true,
+      data
+    };
+  } catch (error) {
+    console.error("Error al guardar actividad fija:", error);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor."
+    };
+  }
+}
+
+async function guardarActividadEspecialBackend(tipo, fecha, hora, horaFin, actividad, editandoId) {
+  const usuario = obtenerUsuarioBackendActual();
+
+  if (!usuario) {
+    return {
+      ok: false,
+      mensaje: "No hay usuario conectado al backend."
+    };
+  }
+
+  const cuerpo = {
+    usuarioId: usuario.id,
+    tipoActividad: "especial",
+    dia: "",
+    fecha,
+    tipoEspecial: tipo,
+    hora,
+    horaFin,
+    actividad
+  };
+
+  try {
+    const url = editandoId
+      ? `/api/actividades/${editandoId}`
+      : "/api/actividades";
+
+    const metodo = editandoId ? "PUT" : "POST";
+
+    const respuesta = await fetch(url, {
+      method: metodo,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(cuerpo)
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudo guardar la actividad especial."
+      };
+    }
+
+    return {
+      ok: true,
+      data
+    };
+  } catch (error) {
+    console.error("Error al guardar actividad especial:", error);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor."
+    };
+  }
+}
+
+async function guardarActividadFija(event) {
+  event.preventDefault();
+
+  const diaInput = document.getElementById("diaFijo");
+  const horaInput = document.getElementById("horaFija");
+  const horaFinInput = document.getElementById("horaFinFija");
+  const actividadInput = document.getElementById("actividadFija");
+  const editandoIdInput = document.getElementById("editandoActividadFijaId");
+
+  if (!diaInput || !horaInput || !horaFinInput || !actividadInput) return;
+
+  const dia = diaInput.value.trim();
+  const hora = horaInput.value.trim();
+  const horaFin = horaFinInput.value.trim();
+  const actividad = actividadInput.value.trim();
+  const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
+
+  if (!dia || !hora || !horaFin || !actividad) {
+    alert("Por favor completa todos los campos de la actividad fija.");
+    return;
+  }
+
+  if (!validarRangoHoras(hora, horaFin)) return;
+
+  const resultado = await guardarActividadFijaBackend(
+    dia,
+    hora,
+    horaFin,
+    actividad,
+    editandoId
+  );
+
+  if (!resultado.ok) {
+    alert(resultado.mensaje);
+    return;
+  }
+
+  event.target.reset();
+  limpiarEdicionActividadFija();
+
+  await sincronizarActividadesBackendConInterfaz();
+
+  alert(editandoId ? "Actividad fija actualizada en MongoDB." : "Actividad fija guardada en MongoDB.");
+}
+
+async function guardarActividadEspecial(event) {
+  event.preventDefault();
+
+  const tipoInput = document.getElementById("tipoEspecial");
+  const fechaInput = document.getElementById("fechaEspecial");
+  const horaInput = document.getElementById("horaEspecial");
+  const horaFinInput = document.getElementById("horaFinEspecial");
+  const actividadInput = document.getElementById("actividadEspecial");
+  const editandoIdInput = document.getElementById("editandoActividadEspecialId");
+
+  if (!tipoInput || !fechaInput || !horaInput || !horaFinInput || !actividadInput) return;
+
+  const tipo = tipoInput.value.trim();
+  const fecha = fechaInput.value.trim();
+  const hora = horaInput.value.trim();
+  const horaFin = horaFinInput.value.trim();
+  const actividad = actividadInput.value.trim();
+  const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
+
+  if (!tipo || !fecha || !hora || !horaFin || !actividad) {
+    alert("Por favor completa todos los campos de la actividad especial.");
+    return;
+  }
+
+  if (!validarRangoHoras(hora, horaFin)) return;
+
+  const resultado = await guardarActividadEspecialBackend(
+    tipo,
+    fecha,
+    hora,
+    horaFin,
+    actividad,
+    editandoId
+  );
+
+  if (!resultado.ok) {
+    alert(resultado.mensaje);
+    return;
+  }
+
+  event.target.reset();
+  limpiarEdicionActividadEspecial();
+
+  await sincronizarActividadesBackendConInterfaz();
+
+  alert(editandoId ? "Actividad especial actualizada en MongoDB." : "Actividad especial guardada en MongoDB.");
+}
+
+async function alternarActividadFija(id) {
+  try {
+    const respuesta = await fetch(`/api/actividades/${id}/completar`, {
+      method: "PATCH"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo actualizar la actividad.");
+      return;
+    }
+
+    await sincronizarActividadesBackendConInterfaz();
+  } catch (error) {
+    console.error("Error al completar actividad fija:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function alternarActividadEspecial(id) {
+  try {
+    const respuesta = await fetch(`/api/actividades/${id}/completar`, {
+      method: "PATCH"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo actualizar la actividad.");
+      return;
+    }
+
+    await sincronizarActividadesBackendConInterfaz();
+  } catch (error) {
+    console.error("Error al completar actividad especial:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function eliminarActividadFija(id) {
+  const confirmar = confirm("¿Seguro que quieres eliminar esta actividad fija?");
+
+  if (!confirmar) return;
+
+  try {
+    const respuesta = await fetch(`/api/actividades/${id}`, {
+      method: "DELETE"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo eliminar la actividad.");
+      return;
+    }
+
+    await sincronizarActividadesBackendConInterfaz();
+  } catch (error) {
+    console.error("Error al eliminar actividad fija:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function eliminarActividadEspecial(id) {
+  const confirmar = confirm("¿Seguro que quieres eliminar esta actividad especial?");
+
+  if (!confirmar) return;
+
+  try {
+    const respuesta = await fetch(`/api/actividades/${id}`, {
+      method: "DELETE"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo eliminar la actividad.");
+      return;
+    }
+
+    await sincronizarActividadesBackendConInterfaz();
+  } catch (error) {
+    console.error("Error al eliminar actividad especial:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+function mostrarActividadesFijas() {
+  const contenedor = document.getElementById("listaActividadesFijas");
+  if (!contenedor) return;
+
+  const actividadesFijas = obtenerActividadesFijas();
+
+  if (actividadesFijas.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay actividades fijas guardadas todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividadesFijas
+    .map(
+      (item) => `
+        <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
+          <strong>${item.dia}</strong>
+          <p><strong>Horario:</strong> ${obtenerRangoHora(item.hora, item.horaFin)}</p>
+          <p>${item.actividad}</p>
+          <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
+          <div class="acciones-actividad">
+            <button type="button" onclick="alternarActividadFija('${item.id}')">
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" onclick="editarActividadFija('${item.id}')">Editar</button>
+            <button type="button" onclick="eliminarActividadFija('${item.id}')">Eliminar</button>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function mostrarActividadesEspeciales() {
+  const contenedor = document.getElementById("listaActividadesEspeciales");
+  if (!contenedor) return;
+
+  const actividadesEspeciales = obtenerActividadesEspeciales();
+
+  if (actividadesEspeciales.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay actividades especiales guardadas todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividadesEspeciales
+    .map(
+      (item) => `
+        <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
+          <strong>${item.tipo}</strong>
+          <p>${item.fecha}</p>
+          <p><strong>Horario:</strong> ${obtenerRangoHora(item.hora, item.horaFin)}</p>
+          <p>${item.actividad}</p>
+          <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
+          <div class="acciones-actividad">
+            <button type="button" onclick="alternarActividadEspecial('${item.id}')">
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" onclick="editarActividadEspecial('${item.id}')">Editar</button>
+            <button type="button" onclick="eliminarActividadEspecial('${item.id}')">Eliminar</button>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function mostrarActividadesHoy() {
+  const contenedor = document.getElementById("listaActividadesHoy");
+  if (!contenedor) return;
+
+  const diaHoy = obtenerNombreDiaHoy();
+  const fechaHoy = obtenerFechaHoyFormatoInput();
+
+  const actividadesFijas = obtenerActividadesFijas().filter(
+    (item) => item.dia === diaHoy
+  );
+
+  const actividadesEspeciales = obtenerActividadesEspeciales().filter(
+    (item) => item.fecha === fechaHoy
+  );
+
+  const actividadesHoy = [];
+
+  actividadesFijas.forEach((item) => {
+    actividadesHoy.push({
+      origen: "fija",
+      id: item.id,
+      tipo: "Fija",
+      titulo: `${item.dia} | ${obtenerRangoHora(item.hora, item.horaFin)}`,
+      descripcion: item.actividad,
+      estado: item.completada ? "Realizada" : "Pendiente",
+      completada: item.completada,
+      hora: item.hora
+    });
+  });
+
+  actividadesEspeciales.forEach((item) => {
+    actividadesHoy.push({
+      origen: "especial",
+      id: item.id,
+      tipo: item.tipo,
+      titulo: `${item.fecha} | ${obtenerRangoHora(item.hora, item.horaFin)}`,
+      descripcion: item.actividad,
+      estado: item.completada ? "Realizada" : "Pendiente",
+      completada: item.completada,
+      hora: item.hora
+    });
+  });
+
+  actividadesHoy.sort((a, b) => (a.hora || "").localeCompare(b.hora || ""));
+
+  if (actividadesHoy.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay actividades para hoy.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividadesHoy
+    .map((item) => {
+      const botonCompletar =
+        item.origen === "fija"
+          ? `onclick="alternarActividadFija('${item.id}')"`
+          : `onclick="alternarActividadEspecial('${item.id}')"`;
+
+      const botonEliminar =
+        item.origen === "fija"
+          ? `onclick="eliminarActividadFija('${item.id}')"`
+          : `onclick="eliminarActividadEspecial('${item.id}')"`;
+
+      const botonEditar =
+        item.origen === "fija"
+          ? `onclick="editarActividadFija('${item.id}')"`
+          : `onclick="editarActividadEspecial('${item.id}')"`;
+
+      return `
+        <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
+          <strong>${item.tipo}</strong>
+          <p>${item.titulo}</p>
+          <p>${item.descripcion}</p>
+          <p><strong>Estado:</strong> ${item.estado}</p>
+          <div class="acciones-actividad">
+            <button type="button" ${botonCompletar}>
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" ${botonEditar}>Editar</button>
+            <button type="button" ${botonEliminar}>Eliminar</button>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function mostrarEventosEspecialesHoy() {
+  const contenedor = document.getElementById("listaEventosHoy");
+  if (!contenedor) return;
+
+  const fechaHoy = obtenerFechaHoyFormatoInput();
+
+  const eventosHoy = obtenerActividadesEspeciales()
+    .filter((item) => item.fecha === fechaHoy)
+    .sort((a, b) => (a.hora || "").localeCompare(b.hora || ""));
+
+  if (eventosHoy.length === 0) {
+    contenedor.innerHTML = `
+      <div class="actividad-card">
+        <p>No hay eventos especiales para hoy.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = eventosHoy
+    .map(
+      (item) => `
+        <div class="actividad-card evento-destacado ${item.completada ? "actividad-completada" : ""}">
+          <strong>${item.tipo}</strong>
+          <p><strong>Horario:</strong> ${obtenerRangoHora(item.hora, item.horaFin)}</p>
+          <p>${item.actividad}</p>
+          <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
+          <div class="acciones-actividad">
+            <button type="button" onclick="alternarActividadEspecial('${item.id}')">
+              ${item.completada ? "Desmarcar" : "Completar"}
+            </button>
+            <button type="button" onclick="editarActividadEspecial('${item.id}')">Editar</button>
+            <button type="button" onclick="eliminarActividadEspecial('${item.id}')">Eliminar</button>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  sincronizarActividadesBackendConInterfaz();
+});
