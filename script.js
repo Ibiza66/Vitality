@@ -1364,7 +1364,6 @@ function generateSupportResponse(text) {
 
   return "Estoy aquí para ayudarte. ¿Prefieres conversar, organizar tu día o recibir una recomendación?";
 }
-
 /* =========================
    NOTIFICACIONES VISUALES
 ========================= */
@@ -1382,14 +1381,28 @@ function crearContenedorNotificaciones() {
 }
 
 function cerrarNotificacionVitality(boton) {
+  sessionStorage.setItem("notificacionesVitalityCerradas", "true");
+
   const notificacion = boton.closest(".notificacion-vitality");
 
   if (notificacion) {
     notificacion.remove();
   }
+
+  const contenedor = document.getElementById("notificacionesVitality");
+
+  if (contenedor && contenedor.children.length === 0) {
+    contenedor.remove();
+  }
 }
 
 function mostrarNotificacionVitality(titulo, mensaje, tipo = "info") {
+  const notificacionesCerradas = sessionStorage.getItem("notificacionesVitalityCerradas");
+
+  if (notificacionesCerradas === "true") {
+    return;
+  }
+
   const contenedor = crearContenedorNotificaciones();
 
   const notificacion = document.createElement("div");
@@ -1415,6 +1428,10 @@ function mostrarNotificacionVitality(titulo, mensaje, tipo = "info") {
   setTimeout(() => {
     if (notificacion.parentElement) {
       notificacion.remove();
+    }
+
+    if (contenedor.children.length === 0) {
+      contenedor.remove();
     }
   }, 7000);
 }
@@ -1451,6 +1468,12 @@ function obtenerActividadesHoyOrdenadas() {
 }
 
 function generarNotificacionesAutomaticas() {
+  const notificacionesCerradas = sessionStorage.getItem("notificacionesVitalityCerradas");
+
+  if (notificacionesCerradas === "true") {
+    return;
+  }
+
   const checkin = obtenerCheckin();
   const actividadesHoy = obtenerActividadesHoyOrdenadas();
 
