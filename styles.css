@@ -366,6 +366,83 @@ a:hover {
   box-shadow: 0 2px 8px var(--shadow);
 }
 
+/* NOTIFICACIONES VITALITY */
+.notificaciones-vitality {
+  position: fixed;
+  top: 95px;
+  right: 20px;
+  width: 330px;
+  max-width: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 3000;
+  pointer-events: none;
+}
+
+.notificacion-vitality {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-left: 6px solid var(--primary);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px var(--shadow);
+  text-align: left;
+  animation: aparecerNotificacion 0.3s ease;
+  pointer-events: auto;
+}
+
+.notificacion-vitality strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--primary-dark);
+}
+
+.notificacion-vitality p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.notificacion-info {
+  border-left-color: var(--secondary);
+}
+
+.notificacion-alerta {
+  border-left-color: #c98a00;
+}
+
+.notificacion-alerta strong {
+  color: #8a5f00;
+}
+
+.notificacion-peligro {
+  border-left-color: #c0392b;
+}
+
+.notificacion-peligro strong {
+  color: #c0392b;
+}
+
+body.dark-mode .notificacion-alerta strong {
+  color: #FDFE8C;
+}
+
+body.dark-mode .notificacion-peligro strong {
+  color: #ffb4ac;
+}
+
+@keyframes aparecerNotificacion {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* HORARIO */
 .botones-horario {
   display: flex;
@@ -491,6 +568,17 @@ body.dark-mode .evento-destacado {
 #btnGuardarActividadFija:hover,
 #btnGuardarActividadEspecial:hover {
   transform: translateY(-1px);
+}
+
+#btnCancelarEdicionFija,
+#btnCancelarEdicionEspecial {
+  background: var(--secondary);
+  color: white;
+}
+
+#btnCancelarEdicionFija:hover,
+#btnCancelarEdicionEspecial:hover {
+  background: var(--primary-dark);
 }
 
 /* FOOTER */
@@ -636,11 +724,25 @@ body.dark-mode .evento-destacado {
   background: linear-gradient(to top, var(--primary), var(--primary-light));
 }
 
-.barra-1 { height: 50px; }
-.barra-2 { height: 80px; }
-.barra-3 { height: 110px; }
-.barra-4 { height: 140px; }
-.barra-5 { height: 170px; }
+.barra-1 {
+  height: 50px;
+}
+
+.barra-2 {
+  height: 80px;
+}
+
+.barra-3 {
+  height: 110px;
+}
+
+.barra-4 {
+  height: 140px;
+}
+
+.barra-5 {
+  height: 170px;
+}
 
 .barra-item small {
   color: var(--text-main);
@@ -798,6 +900,14 @@ body.dark-mode .evento-destacado {
     width: 95%;
     padding: 20px;
     margin: 20px auto;
+  }
+
+  .notificaciones-vitality {
+    top: 85px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
   }
 
   .tabla-semanal {

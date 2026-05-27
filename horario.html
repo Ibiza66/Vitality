@@ -45,8 +45,12 @@
       <h1>Mi horario</h1>
 
       <div class="botones-horario">
-        <button type="button" onclick="irASeccion('seccionHorarioSemanal')">Ver horario semanal</button>
-        <button type="button" onclick="mostrarSoloActividadesDeHoy()">Ver actividades de hoy</button>
+        <button type="button" onclick="irASeccion('seccionHorarioSemanal')">
+          Ver horario semanal
+        </button>
+        <button type="button" onclick="mostrarSoloActividadesDeHoy()">
+          Ver actividades de hoy
+        </button>
       </div>
 
       <h2 id="seccionEventosHoy">Eventos importantes de hoy</h2>
@@ -57,6 +61,7 @@
       </div>
 
       <h2 id="seccionHorarioSemanal">Horario semanal</h2>
+
       <div class="tabla-semanal">
         <table id="tablaHorarioSemanal">
           <thead>
@@ -71,46 +76,10 @@
               <th>Domingo</th>
             </tr>
           </thead>
+
           <tbody>
             <tr>
-              <td>08:00</td>
-              <td>Desayuno</td>
-              <td></td>
-              <td>Clases</td>
-              <td></td>
-              <td>Desayuno</td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>10:00</td>
-              <td>Estudiar</td>
-              <td>Reunión</td>
-              <td></td>
-              <td>Estudiar</td>
-              <td></td>
-              <td>Salir</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>13:00</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-              <td>Almuerzo</td>
-            </tr>
-            <tr>
-              <td>16:00</td>
-              <td></td>
-              <td>Caminar</td>
-              <td></td>
-              <td>Tareas</td>
-              <td></td>
-              <td>Película</td>
-              <td>Descanso</td>
+              <td colspan="8">No hay actividades fijas registradas.</td>
             </tr>
           </tbody>
         </table>
@@ -119,7 +88,9 @@
       <h2>Gestión de horario</h2>
 
       <div class="botones-horario">
-        <a href="organizar_horario.html" class="boton-link">Agregar actividades</a>
+        <a href="organizar_horario.html" class="boton-link">
+          Agregar actividades
+        </a>
       </div>
 
       <h2 id="seccionActividades">Actividades fijas guardadas</h2>
@@ -179,7 +150,9 @@
 
       <div class="footer-tools">
         <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
+        <button class="theme-footer-btn" onclick="toggleTheme()">
+          🌙 / ☀️ Cambiar tema
+        </button>
         <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
       </div>
     </div>

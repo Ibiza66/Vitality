@@ -173,6 +173,7 @@ function guardarDatosPerfil(event) {
 
   guardarPerfil(categoria, actividades);
   mostrarDatosPerfil();
+  mostrarPanelPerfilAvanzado();
   alert("Perfil guardado con éxito.");
 }
 
@@ -409,6 +410,23 @@ function guardarActividadesEspeciales(lista) {
   localStorage.setItem("actividadesEspecialesVitality", JSON.stringify(lista));
 }
 
+function obtenerRangoHora(inicio, fin) {
+  if (inicio && fin) return `${inicio} - ${fin}`;
+  if (inicio) return inicio;
+  return "Sin hora";
+}
+
+function validarRangoHoras(horaInicio, horaFin) {
+  if (!horaInicio || !horaFin) return false;
+
+  if (horaFin <= horaInicio) {
+    alert("La hora de término debe ser posterior a la hora de inicio.");
+    return false;
+  }
+
+  return true;
+}
+
 /* =========================
    EDITAR ACTIVIDADES
 ========================= */
@@ -462,13 +480,15 @@ function cargarEdicionActividadFija() {
   const inputId = document.getElementById("editandoActividadFijaId");
   const dia = document.getElementById("diaFijo");
   const hora = document.getElementById("horaFija");
+  const horaFin = document.getElementById("horaFinFija");
   const actividadInput = document.getElementById("actividadFija");
   const boton = document.getElementById("btnGuardarActividadFija");
 
   if (titulo) titulo.textContent = "Editar actividad fija";
   if (inputId) inputId.value = actividad.id;
   if (dia) dia.value = actividad.dia;
-  if (hora) hora.value = actividad.hora;
+  if (hora) hora.value = actividad.hora || "";
+  if (horaFin) horaFin.value = actividad.horaFin || "";
   if (actividadInput) actividadInput.value = actividad.actividad;
   if (boton) boton.textContent = "Guardar cambios";
 
@@ -488,6 +508,7 @@ function cargarEdicionActividadEspecial() {
   const tipo = document.getElementById("tipoEspecial");
   const fecha = document.getElementById("fechaEspecial");
   const hora = document.getElementById("horaEspecial");
+  const horaFin = document.getElementById("horaFinEspecial");
   const actividadInput = document.getElementById("actividadEspecial");
   const boton = document.getElementById("btnGuardarActividadEspecial");
 
@@ -495,7 +516,8 @@ function cargarEdicionActividadEspecial() {
   if (inputId) inputId.value = actividad.id;
   if (tipo) tipo.value = actividad.tipo;
   if (fecha) fecha.value = actividad.fecha;
-  if (hora) hora.value = actividad.hora;
+  if (hora) hora.value = actividad.hora || "";
+  if (horaFin) horaFin.value = actividad.horaFin || "";
   if (actividadInput) actividadInput.value = actividad.actividad;
   if (boton) boton.textContent = "Guardar cambios";
 
@@ -555,20 +577,24 @@ function guardarActividadFija(event) {
 
   const diaInput = document.getElementById("diaFijo");
   const horaInput = document.getElementById("horaFija");
+  const horaFinInput = document.getElementById("horaFinFija");
   const actividadInput = document.getElementById("actividadFija");
   const editandoIdInput = document.getElementById("editandoActividadFijaId");
 
-  if (!diaInput || !horaInput || !actividadInput) return;
+  if (!diaInput || !horaInput || !horaFinInput || !actividadInput) return;
 
   const dia = diaInput.value.trim();
   const hora = horaInput.value.trim();
+  const horaFin = horaFinInput.value.trim();
   const actividad = actividadInput.value.trim();
   const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
 
-  if (!dia || !hora || !actividad) {
+  if (!dia || !hora || !horaFin || !actividad) {
     alert("Por favor completa todos los campos de la actividad fija.");
     return;
   }
+
+  if (!validarRangoHoras(hora, horaFin)) return;
 
   const actividadesFijas = obtenerActividadesFijas();
 
@@ -579,6 +605,7 @@ function guardarActividadFija(event) {
             ...item,
             dia,
             hora,
+            horaFin,
             actividad
           }
         : item
@@ -592,6 +619,7 @@ function guardarActividadFija(event) {
       id: Date.now(),
       dia,
       hora,
+      horaFin,
       actividad,
       completada: false
     });
@@ -604,6 +632,7 @@ function guardarActividadFija(event) {
   mostrarActividadesFijas();
   mostrarActividadesHoy();
   rellenarTablaHorarioSemanal();
+  mostrarPanelPerfilAvanzado();
 }
 
 function guardarActividadEspecial(event) {
@@ -612,21 +641,25 @@ function guardarActividadEspecial(event) {
   const tipoInput = document.getElementById("tipoEspecial");
   const fechaInput = document.getElementById("fechaEspecial");
   const horaInput = document.getElementById("horaEspecial");
+  const horaFinInput = document.getElementById("horaFinEspecial");
   const actividadInput = document.getElementById("actividadEspecial");
   const editandoIdInput = document.getElementById("editandoActividadEspecialId");
 
-  if (!tipoInput || !fechaInput || !horaInput || !actividadInput) return;
+  if (!tipoInput || !fechaInput || !horaInput || !horaFinInput || !actividadInput) return;
 
   const tipo = tipoInput.value.trim();
   const fecha = fechaInput.value.trim();
   const hora = horaInput.value.trim();
+  const horaFin = horaFinInput.value.trim();
   const actividad = actividadInput.value.trim();
   const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
 
-  if (!tipo || !fecha || !hora || !actividad) {
+  if (!tipo || !fecha || !hora || !horaFin || !actividad) {
     alert("Por favor completa todos los campos de la actividad especial.");
     return;
   }
+
+  if (!validarRangoHoras(hora, horaFin)) return;
 
   const actividadesEspeciales = obtenerActividadesEspeciales();
 
@@ -638,6 +671,7 @@ function guardarActividadEspecial(event) {
             tipo,
             fecha,
             hora,
+            horaFin,
             actividad
           }
         : item
@@ -652,6 +686,7 @@ function guardarActividadEspecial(event) {
       tipo,
       fecha,
       hora,
+      horaFin,
       actividad,
       completada: false
     });
@@ -664,6 +699,7 @@ function guardarActividadEspecial(event) {
   mostrarActividadesEspeciales();
   mostrarActividadesHoy();
   mostrarEventosEspecialesHoy();
+  mostrarPanelPerfilAvanzado();
 }
 
 /* =========================
@@ -678,6 +714,7 @@ function alternarActividadFija(id) {
   mostrarActividadesFijas();
   mostrarActividadesHoy();
   rellenarTablaHorarioSemanal();
+  mostrarPanelPerfilAvanzado();
 }
 
 function eliminarActividadFija(id) {
@@ -687,6 +724,7 @@ function eliminarActividadFija(id) {
   mostrarActividadesFijas();
   mostrarActividadesHoy();
   rellenarTablaHorarioSemanal();
+  mostrarPanelPerfilAvanzado();
 }
 
 function alternarActividadEspecial(id) {
@@ -698,6 +736,7 @@ function alternarActividadEspecial(id) {
   mostrarActividadesEspeciales();
   mostrarActividadesHoy();
   mostrarEventosEspecialesHoy();
+  mostrarPanelPerfilAvanzado();
 }
 
 function eliminarActividadEspecial(id) {
@@ -707,6 +746,7 @@ function eliminarActividadEspecial(id) {
   mostrarActividadesEspeciales();
   mostrarActividadesHoy();
   mostrarEventosEspecialesHoy();
+  mostrarPanelPerfilAvanzado();
 }
 
 function mostrarActividadesFijas() {
@@ -728,7 +768,8 @@ function mostrarActividadesFijas() {
     .map(
       (item) => `
         <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
-          <strong>${item.dia} - ${item.hora}</strong>
+          <strong>${item.dia}</strong>
+          <p><strong>Horario:</strong> ${obtenerRangoHora(item.hora, item.horaFin)}</p>
           <p>${item.actividad}</p>
           <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
           <div class="acciones-actividad">
@@ -764,7 +805,8 @@ function mostrarActividadesEspeciales() {
       (item) => `
         <div class="actividad-card ${item.completada ? "actividad-completada" : ""}">
           <strong>${item.tipo}</strong>
-          <p>${item.fecha} - ${item.hora}</p>
+          <p>${item.fecha}</p>
+          <p><strong>Horario:</strong> ${obtenerRangoHora(item.hora, item.horaFin)}</p>
           <p>${item.actividad}</p>
           <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
           <div class="acciones-actividad">
@@ -871,7 +913,7 @@ function mostrarActividadesHoy() {
       origen: "fija",
       id: item.id,
       tipo: "Fija",
-      titulo: `${item.dia} - ${item.hora}`,
+      titulo: `${item.dia} | ${obtenerRangoHora(item.hora, item.horaFin)}`,
       descripcion: item.actividad,
       estado: item.completada ? "Realizada" : "Pendiente",
       completada: item.completada,
@@ -884,7 +926,7 @@ function mostrarActividadesHoy() {
       origen: "especial",
       id: item.id,
       tipo: item.tipo,
-      titulo: `${item.fecha} - ${item.hora}`,
+      titulo: `${item.fecha} | ${obtenerRangoHora(item.hora, item.horaFin)}`,
       descripcion: item.actividad,
       estado: item.completada ? "Realizada" : "Pendiente",
       completada: item.completada,
@@ -892,7 +934,7 @@ function mostrarActividadesHoy() {
     });
   });
 
-  actividadesHoy.sort((a, b) => a.hora.localeCompare(b.hora));
+  actividadesHoy.sort((a, b) => (a.hora || "").localeCompare(b.hora || ""));
 
   if (actividadesHoy.length === 0) {
     contenedor.innerHTML = `
@@ -950,7 +992,7 @@ function mostrarEventosEspecialesHoy() {
 
   const eventosHoy = obtenerActividadesEspeciales()
     .filter((item) => item.fecha === fechaHoy)
-    .sort((a, b) => a.hora.localeCompare(b.hora));
+    .sort((a, b) => (a.hora || "").localeCompare(b.hora || ""));
 
   if (eventosHoy.length === 0) {
     contenedor.innerHTML = `
@@ -966,7 +1008,7 @@ function mostrarEventosEspecialesHoy() {
       (item) => `
         <div class="actividad-card evento-destacado ${item.completada ? "actividad-completada" : ""}">
           <strong>${item.tipo}</strong>
-          <p>${item.hora}</p>
+          <p><strong>Horario:</strong> ${obtenerRangoHora(item.hora, item.horaFin)}</p>
           <p>${item.actividad}</p>
           <p><strong>Estado:</strong> ${item.completada ? "Realizada" : "Pendiente"}</p>
           <div class="acciones-actividad">
@@ -1324,25 +1366,317 @@ function generateSupportResponse(text) {
 }
 
 /* =========================
-   TABLA SEMANAL DINÁMICA
+   NOTIFICACIONES VISUALES
 ========================= */
-function limpiarTablaHorarioSemanal() {
-  const tabla = document.getElementById("tablaHorarioSemanal");
-  if (!tabla) return;
+function crearContenedorNotificaciones() {
+  let contenedor = document.getElementById("notificacionesVitality");
 
-  const filas = tabla.querySelectorAll("tbody tr");
+  if (!contenedor) {
+    contenedor = document.createElement("div");
+    contenedor.id = "notificacionesVitality";
+    contenedor.className = "notificaciones-vitality";
+    document.body.appendChild(contenedor);
+  }
 
-  filas.forEach((fila) => {
-    const celdas = fila.querySelectorAll("td");
-
-    celdas.forEach((celda, index) => {
-      if (index !== 0) {
-        celda.textContent = "";
-      }
-    });
-  });
+  return contenedor;
 }
 
+function mostrarNotificacionVitality(titulo, mensaje, tipo = "info") {
+  const contenedor = crearContenedorNotificaciones();
+
+  const notificacion = document.createElement("div");
+  notificacion.className = `notificacion-vitality notificacion-${tipo}`;
+
+  notificacion.innerHTML = `
+    <strong>${titulo}</strong>
+    <p>${mensaje}</p>
+  `;
+
+  contenedor.appendChild(notificacion);
+
+  setTimeout(() => {
+    notificacion.remove();
+  }, 7000);
+}
+
+function obtenerActividadesHoyOrdenadas() {
+  const resumenHorario = obtenerResumenHorarioHoy();
+  const actividadesHoy = [];
+
+  resumenHorario.fijas.forEach((actividad) => {
+    if (!actividad.completada) {
+      actividadesHoy.push({
+        tipo: "Actividad fija",
+        hora: actividad.hora,
+        horaFin: actividad.horaFin,
+        nombre: actividad.actividad
+      });
+    }
+  });
+
+  resumenHorario.especiales.forEach((actividad) => {
+    if (!actividad.completada) {
+      actividadesHoy.push({
+        tipo: actividad.tipo || "Actividad especial",
+        hora: actividad.hora,
+        horaFin: actividad.horaFin,
+        nombre: actividad.actividad
+      });
+    }
+  });
+
+  actividadesHoy.sort((a, b) => (a.hora || "").localeCompare(b.hora || ""));
+
+  return actividadesHoy;
+}
+
+function generarNotificacionesAutomaticas() {
+  const checkin = obtenerCheckin();
+  const actividadesHoy = obtenerActividadesHoyOrdenadas();
+
+  if (actividadesHoy.length > 0) {
+    const primeraActividad = actividadesHoy[0];
+
+    mostrarNotificacionVitality(
+      "📅 Próxima actividad",
+      `De ${obtenerRangoHora(primeraActividad.hora, primeraActividad.horaFin)} tienes: ${primeraActividad.nombre}.`,
+      "info"
+    );
+
+    if (actividadesHoy.length > 1) {
+      mostrarNotificacionVitality(
+        "🔔 Actividades pendientes",
+        `Además tienes ${actividadesHoy.length - 1} actividad(es) más pendiente(s) para hoy.`,
+        "info"
+      );
+    }
+  }
+
+  if (checkin) {
+    if (checkin.nivelEstres === "Alto" && actividadesHoy.length > 0) {
+      mostrarNotificacionVitality(
+        "⚠️ Recomendación Vitality",
+        "Como hoy registraste estrés alto, intenta hacer una pausa breve antes de comenzar tu próxima actividad.",
+        "alerta"
+      );
+    } else if (checkin.nivelEstres === "Alto") {
+      mostrarNotificacionVitality(
+        "⚠️ Estrés alto detectado",
+        "Hoy registraste estrés alto. Te recomendamos hacer una pausa breve antes de continuar.",
+        "alerta"
+      );
+    }
+
+    if (checkin.energia === "Baja" && actividadesHoy.length > 0) {
+      mostrarNotificacionVitality(
+        "💡 Energía baja",
+        "Tu energía está baja hoy. Prioriza la actividad más importante y deja espacio para descansar.",
+        "info"
+      );
+    } else if (checkin.energia === "Baja") {
+      mostrarNotificacionVitality(
+        "💡 Energía baja",
+        "Tu energía está baja hoy. Intenta priorizar solo lo más importante.",
+        "info"
+      );
+    }
+
+    if (checkin.sueno === "Mal") {
+      mostrarNotificacionVitality(
+        "😴 Descanso insuficiente",
+        "Dormiste mal. Trata de no sobrecargarte y organiza tu día con calma.",
+        "alerta"
+      );
+    }
+
+    if (checkin.estadoAnimo === "Mal" || checkin.estadoAnimo === "Muy mal") {
+      mostrarNotificacionVitality(
+        "💚 Apoyo emocional",
+        "Hoy no te has sentido bien. Puedes usar el chat de apoyo para conversar un momento.",
+        "peligro"
+      );
+    }
+  }
+
+  if (!checkin && actividadesHoy.length === 0) {
+    mostrarNotificacionVitality(
+      "💚 Bienvenida a Vitality",
+      "Completa tu check-in y agrega actividades para recibir recomendaciones personalizadas.",
+      "info"
+    );
+  }
+}
+
+/* =========================
+   PANEL AVANZADO DEL PERFIL
+========================= */
+function contarActividadesHoyPerfil() {
+  const resumen = obtenerResumenHorarioHoy();
+
+  const actividadesHoy = [
+    ...resumen.fijas,
+    ...resumen.especiales
+  ];
+
+  const completadas = actividadesHoy.filter((item) => item.completada).length;
+  const pendientes = actividadesHoy.filter((item) => !item.completada).length;
+
+  return {
+    total: actividadesHoy.length,
+    completadas,
+    pendientes
+  };
+}
+
+function obtenerProximaActividadPerfil() {
+  const actividadesHoy = obtenerActividadesHoyOrdenadas();
+
+  if (actividadesHoy.length === 0) {
+    return null;
+  }
+
+  return actividadesHoy[0];
+}
+
+function obtenerRecomendacionPerfil(checkin, pendientes) {
+  if (!checkin) {
+    return "Completa tu check-in diario para que Vitality pueda entregarte una recomendación según tu estado emocional, energía, sueño y nivel de estrés.";
+  }
+
+  if (checkin.nivelEstres === "Alto" && checkin.energia === "Baja") {
+    return "Hoy registraste estrés alto y energía baja. Te recomendamos priorizar solo lo más importante, tomar una pausa breve y evitar sobrecargarte.";
+  }
+
+  if (checkin.nivelEstres === "Alto" && pendientes > 0) {
+    return "Hoy tienes estrés alto y actividades pendientes. Intenta ordenar tu día empezando por una sola tarea importante y dejando pausas entre actividades.";
+  }
+
+  if (checkin.sueno === "Mal") {
+    return "Como dormiste mal, te recomendamos reducir la exigencia del día, hidratarte bien y dejar espacio para descansar.";
+  }
+
+  if (checkin.estadoAnimo === "Mal" || checkin.estadoAnimo === "Muy mal") {
+    return "Hoy no te has sentido bien. Puede ayudarte hablar con alguien de confianza, tomar una pausa o usar el chat de apoyo de Vitality.";
+  }
+
+  if (checkin.energia === "Baja") {
+    return "Tu energía está baja hoy. Parte por una tarea pequeña y realista, luego descansa antes de continuar.";
+  }
+
+  if (pendientes > 0) {
+    return "Tienes actividades pendientes para hoy. Te recomendamos comenzar por la más importante y marcarla como completada cuando termines.";
+  }
+
+  return "Tu check-in no muestra alertas importantes. Mantén tus hábitos, organiza tus tiempos y deja un espacio para algo que disfrutes.";
+}
+
+function obtenerNivelBienestar(checkin) {
+  if (!checkin) {
+    return {
+      nivel: "Sin datos suficientes",
+      descripcion: "Completa tu check-in para estimar tu nivel de bienestar del día."
+    };
+  }
+
+  let puntaje = 0;
+
+  if (checkin.estadoAnimo === "Muy bien") puntaje += 2;
+  if (checkin.estadoAnimo === "Bien") puntaje += 1;
+  if (checkin.estadoAnimo === "Mal") puntaje -= 1;
+  if (checkin.estadoAnimo === "Muy mal") puntaje -= 2;
+
+  if (checkin.nivelEstres === "Bajo") puntaje += 1;
+  if (checkin.nivelEstres === "Alto") puntaje -= 2;
+
+  if (checkin.sueno === "Bien") puntaje += 1;
+  if (checkin.sueno === "Mal") puntaje -= 1;
+
+  if (checkin.energia === "Alta") puntaje += 1;
+  if (checkin.energia === "Baja") puntaje -= 1;
+
+  if (puntaje >= 3) {
+    return {
+      nivel: "Alto",
+      descripcion: "Hoy tu bienestar general se ve favorable según tu último check-in."
+    };
+  }
+
+  if (puntaje >= 0) {
+    return {
+      nivel: "Medio",
+      descripcion: "Tu bienestar se ve estable, aunque podrías cuidar tus pausas y tu organización."
+    };
+  }
+
+  return {
+    nivel: "Bajo",
+    descripcion: "Tu check-in muestra señales de cansancio, estrés o bajo ánimo. Conviene bajar la carga y buscar apoyo si lo necesitas."
+  };
+}
+
+function mostrarPanelPerfilAvanzado() {
+  const checkin = obtenerCheckin();
+  const conteo = contarActividadesHoyPerfil();
+  const proxima = obtenerProximaActividadPerfil();
+  const bienestar = obtenerNivelBienestar(checkin);
+
+  const perfilEstadoActual = document.getElementById("perfilEstadoActual");
+
+  const perfilResumenEstado = document.getElementById("perfilResumenEstado");
+  const perfilResumenEstres = document.getElementById("perfilResumenEstres");
+  const perfilResumenSueno = document.getElementById("perfilResumenSueno");
+  const perfilResumenEnergia = document.getElementById("perfilResumenEnergia");
+
+  const perfilTotalActividades = document.getElementById("perfilTotalActividades");
+  const perfilActividadesPendientes = document.getElementById("perfilActividadesPendientes");
+  const perfilActividadesCompletadas = document.getElementById("perfilActividadesCompletadas");
+
+  const perfilProximaActividad = document.getElementById("perfilProximaActividad");
+  const perfilProximaHora = document.getElementById("perfilProximaHora");
+  const perfilProximaTipo = document.getElementById("perfilProximaTipo");
+
+  const perfilRecomendacion = document.getElementById("perfilRecomendacion");
+  const perfilNivelBienestar = document.getElementById("perfilNivelBienestar");
+  const perfilDescripcionBienestar = document.getElementById("perfilDescripcionBienestar");
+
+  if (checkin) {
+    if (perfilEstadoActual) perfilEstadoActual.textContent = checkin.estadoAnimo;
+    if (perfilResumenEstado) perfilResumenEstado.textContent = checkin.estadoAnimo;
+    if (perfilResumenEstres) perfilResumenEstres.textContent = checkin.nivelEstres;
+    if (perfilResumenSueno) perfilResumenSueno.textContent = checkin.sueno;
+    if (perfilResumenEnergia) perfilResumenEnergia.textContent = checkin.energia;
+  }
+
+  if (perfilTotalActividades) perfilTotalActividades.textContent = conteo.total;
+  if (perfilActividadesPendientes) perfilActividadesPendientes.textContent = conteo.pendientes;
+  if (perfilActividadesCompletadas) perfilActividadesCompletadas.textContent = conteo.completadas;
+
+  if (proxima) {
+    if (perfilProximaActividad) perfilProximaActividad.textContent = proxima.nombre;
+    if (perfilProximaHora) perfilProximaHora.textContent = obtenerRangoHora(proxima.hora, proxima.horaFin);
+    if (perfilProximaTipo) perfilProximaTipo.textContent = proxima.tipo;
+  } else {
+    if (perfilProximaActividad) perfilProximaActividad.textContent = "No hay actividades pendientes para hoy";
+    if (perfilProximaHora) perfilProximaHora.textContent = "Sin horario";
+    if (perfilProximaTipo) perfilProximaTipo.textContent = "Sin tipo";
+  }
+
+  if (perfilRecomendacion) {
+    perfilRecomendacion.textContent = obtenerRecomendacionPerfil(checkin, conteo.pendientes);
+  }
+
+  if (perfilNivelBienestar) {
+    perfilNivelBienestar.textContent = bienestar.nivel;
+  }
+
+  if (perfilDescripcionBienestar) {
+    perfilDescripcionBienestar.textContent = bienestar.descripcion;
+  }
+}
+
+/* =========================
+   TABLA SEMANAL DINÁMICA
+========================= */
 function obtenerIndiceDia(dia) {
   const dias = {
     "Lunes": 1,
@@ -1357,14 +1691,57 @@ function obtenerIndiceDia(dia) {
   return dias[dia] || null;
 }
 
+function obtenerHorasActividadesFijas() {
+  const actividadesFijas = obtenerActividadesFijas();
+
+  const horas = actividadesFijas
+    .map((actividad) => actividad.hora)
+    .filter((hora) => hora && hora.trim() !== "");
+
+  const horasUnicas = [...new Set(horas)];
+
+  horasUnicas.sort((a, b) => a.localeCompare(b));
+
+  return horasUnicas;
+}
+
+function crearFilaHorario(hora) {
+  return `
+    <tr>
+      <td>${hora}</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  `;
+}
+
 function rellenarTablaHorarioSemanal() {
   const tabla = document.getElementById("tablaHorarioSemanal");
   if (!tabla) return;
 
-  limpiarTablaHorarioSemanal();
+  const tbody = tabla.querySelector("tbody");
+  if (!tbody) return;
 
   const actividadesFijas = obtenerActividadesFijas();
-  const filas = tabla.querySelectorAll("tbody tr");
+  const horas = obtenerHorasActividadesFijas();
+
+  if (actividadesFijas.length === 0 || horas.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8">No hay actividades fijas registradas.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = horas.map((hora) => crearFilaHorario(hora)).join("");
+
+  const filas = tbody.querySelectorAll("tr");
 
   actividadesFijas.forEach((actividad) => {
     const indiceDia = obtenerIndiceDia(actividad.dia);
@@ -1375,10 +1752,14 @@ function rellenarTablaHorarioSemanal() {
       const horaFila = celdas[0]?.textContent.trim();
 
       if (horaFila === actividad.hora && celdas[indiceDia]) {
+        const textoActividad = actividad.completada
+          ? `${actividad.actividad} (${obtenerRangoHora(actividad.hora, actividad.horaFin)}) ✓`
+          : `${actividad.actividad} (${obtenerRangoHora(actividad.hora, actividad.horaFin)})`;
+
         if (celdas[indiceDia].textContent.trim() !== "") {
-          celdas[indiceDia].textContent += " / " + actividad.actividad;
+          celdas[indiceDia].textContent += " / " + textoActividad;
         } else {
-          celdas[indiceDia].textContent = actividad.actividad;
+          celdas[indiceDia].textContent = textoActividad;
         }
       }
     });
@@ -1430,6 +1811,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   mostrarDatosPerfil();
   mostrarResumenCheckinEnPerfil();
+  mostrarPanelPerfilAvanzado();
   mostrarAlertas();
   mostrarActividadesFijas();
   mostrarActividadesEspeciales();
@@ -1437,4 +1819,5 @@ window.addEventListener("DOMContentLoaded", () => {
   mostrarEventosEspecialesHoy();
   rellenarTablaHorarioSemanal();
   iniciarChatInteligente();
+  generarNotificacionesAutomaticas();
 });

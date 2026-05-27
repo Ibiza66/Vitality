@@ -43,40 +43,94 @@
   <main class="main-content">
     <div class="container perfil-container">
       <h1>Mi perfil</h1>
+      <p>Revisa tu información personal, tu último check-in, tus actividades del día y una recomendación de Vitality.</p>
 
       <div class="perfil-info">
         <div class="perfil-card">
           <h2>Información personal</h2>
-          <p><strong>Nombre:</strong> <span id="perfilNombre">No disponible</span></p>
-          <p><strong>Categoría:</strong> <span id="perfilCategoria">No disponible</span></p>
-          <p><strong>Actividades favoritas:</strong> <span id="perfilActividades">No disponible</span></p>
-          <p><strong>Estado actual:</strong> Motivada</p>
+
+          <p><strong>Nombre:</strong> <span id="perfilNombre">Aún no hay usuario registrado</span></p>
+          <p><strong>Categoría:</strong> <span id="perfilCategoria">Aún no has seleccionado una categoría</span></p>
+          <p><strong>Actividades favoritas:</strong> <span id="perfilActividades">Aún no has agregado actividades favoritas</span></p>
+          <p><strong>Estado actual:</strong> <span id="perfilEstadoActual">Completa tu check-in para ver tu estado actual</span></p>
         </div>
 
         <div class="perfil-card">
           <h2>Editar perfil</h2>
+
           <form id="perfilForm">
+            <label for="categoria">Categoría</label>
             <select id="categoria" required>
               <option value="">Selecciona tu categoría</option>
-              <option>Niño</option>
-              <option>Adolescente</option>
-              <option>Adulto</option>
+              <option value="Niño">Niño</option>
+              <option value="Adolescente">Adolescente</option>
+              <option value="Adulto">Adulto</option>
             </select>
 
             <label for="actividades">¿Qué actividades te gustan?</label>
-            <textarea id="actividades" placeholder="Ej: caminar, escuchar música, ver películas" required></textarea>
+            <textarea
+              id="actividades"
+              placeholder="Ej: caminar, escuchar música, ver películas"
+              required
+            ></textarea>
 
             <button type="submit">Guardar perfil</button>
           </form>
         </div>
       </div>
 
+      <div class="perfil-info">
+        <div class="perfil-card">
+          <h2>Resumen del día</h2>
+
+          <p><strong>Estado emocional:</strong> <span id="perfilResumenEstado">Sin check-in registrado</span></p>
+          <p><strong>Estrés:</strong> <span id="perfilResumenEstres">Sin check-in registrado</span></p>
+          <p><strong>Sueño:</strong> <span id="perfilResumenSueno">Sin check-in registrado</span></p>
+          <p><strong>Energía:</strong> <span id="perfilResumenEnergia">Sin check-in registrado</span></p>
+          <p><strong>Actividades de hoy:</strong> <span id="perfilTotalActividades">0</span></p>
+          <p><strong>Pendientes:</strong> <span id="perfilActividadesPendientes">0</span></p>
+          <p><strong>Completadas:</strong> <span id="perfilActividadesCompletadas">0</span></p>
+        </div>
+
+        <div class="perfil-card">
+          <h2>Próxima actividad</h2>
+
+          <p><strong>Actividad:</strong> <span id="perfilProximaActividad">No hay actividades pendientes para hoy</span></p>
+          <p><strong>Horario:</strong> <span id="perfilProximaHora">Sin horario</span></p>
+          <p><strong>Tipo:</strong> <span id="perfilProximaTipo">Sin tipo</span></p>
+
+          <div class="botones-horario">
+            <a href="horario.html" class="boton-link">Ver horario</a>
+            <a href="organizar_horario.html" class="boton-link">Agregar actividad</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="perfil-card">
+        <h2>Recomendación Vitality</h2>
+        <p id="perfilRecomendacion">
+          Completa tu check-in y agrega actividades para recibir una recomendación personalizada.
+        </p>
+      </div>
+
+      <div class="perfil-card">
+        <h2>Nivel de bienestar estimado</h2>
+        <p>
+          <strong>Resultado:</strong>
+          <span id="perfilNivelBienestar">Sin datos suficientes</span>
+        </p>
+        <p id="perfilDescripcionBienestar">
+          Este indicador se calcula de forma simple según tu último check-in. No corresponde a un diagnóstico médico ni psicológico.
+        </p>
+      </div>
+
       <div class="perfil-card">
         <h2>Resumen emocional</h2>
-        <p><strong>Estado emocional:</strong> <span id="resumenEstado">Sin datos</span></p>
-        <p><strong>Nivel de estrés:</strong> <span id="resumenEstres">Sin datos</span></p>
-        <p><strong>Cómo dormiste:</strong> <span id="resumenSueno">Sin datos</span></p>
-        <p><strong>Nivel de energía:</strong> <span id="resumenEnergia">Sin datos</span></p>
+
+        <p><strong>Estado emocional:</strong> <span id="resumenEstado">Sin check-in registrado</span></p>
+        <p><strong>Nivel de estrés:</strong> <span id="resumenEstres">Sin check-in registrado</span></p>
+        <p><strong>Cómo dormiste:</strong> <span id="resumenSueno">Sin check-in registrado</span></p>
+        <p><strong>Nivel de energía:</strong> <span id="resumenEnergia">Sin check-in registrado</span></p>
       </div>
 
       <div class="perfil-grafico">
@@ -86,14 +140,17 @@
           <div class="barra-item">
             <span>Hoy</span>
             <div class="barra barra-3" id="barraEstado"></div>
-            <small id="textoEstado">Sin datos</small>
+            <small id="textoEstado">Sin check-in registrado</small>
           </div>
         </div>
       </div>
 
-      <p><a href="checkin.html">Ir al check-in</a></p>
-      <p><a href="chat.html">Hablar con Vitality</a></p>
-      <p><a href="registro.html">Volver al registro</a></p>
+      <div class="botones-horario">
+        <a href="checkin.html" class="boton-link">Ir al check-in</a>
+        <a href="horario.html" class="boton-link">Ver horario</a>
+        <a href="alertas.html" class="boton-link">Ver alertas</a>
+        <a href="chat.html" class="boton-link">Hablar con Vitality</a>
+      </div>
     </div>
   </main>
 
