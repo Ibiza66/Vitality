@@ -2498,3 +2498,211 @@ async function mostrarHistorialCheckins() {
 window.addEventListener("DOMContentLoaded", () => {
   mostrarHistorialCheckins();
 });
+/* =========================
+   ESTADÍSTICAS EMOCIONALES EN PERFIL
+========================= */
+function estadisticasEscaparTexto(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function estadisticasFormatearFecha(fecha) {
+  if (!fecha) return "Sin fecha";
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return "Sin fecha";
+  }
+
+  return fechaObjeto.toLocaleString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function obtenerUsuarioEstadisticas() {
+  try {
+    const usuarioGuardado = localStorage.getItem("usuarioVitality");
+    return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  } catch (error) {
+    console.error("Error al obtener usuario para estadísticas:", error);
+    return null;
+  }
+}
+
+async function obtenerHistorialCheckinsParaEstadisticas() {
+  const usuario = obtenerUsuarioEstadisticas();
+
+  if (!usuario || !usuario.id) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`/api/checkins/historial/${usuario.id}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener historial emocional:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con historial emocional:", error);
+    return [];
+  }
+}
+
+function obtenerValorMasFrecuente(lista) {
+  if (!lista || lista.length === 0) {
+    return "Sin datos";
+  }
+
+  const conteo = {};
+
+  lista.forEach((valor) => {
+    if (!valor) return;
+    conteo[valor] = (conteo[valor] || 0) + 1;
+  });
+
+  let valorMasFrecuente = "Sin datos";
+  let mayorCantidad = 0;
+
+  Object.entries(conteo).forEach(([valor, cantidad]) => {
+    if (cantidad > mayorCantidad) {
+      valorMasFrecuente = valor;
+      mayorCantidad = cantidad;
+    }
+  });
+
+  return valorMasFrecuente;
+}
+
+function calcularPorcentaje(cantidad, total) {
+  if (!total || total === 0) return 0;
+  return Math.round((cantidad / total) * 100);
+}
+
+function generarLecturaEstadisticas(historial) {
+  if (!historial || historial.length === 0) {
+    return "Aún no hay información suficiente para generar una lectura emocional.";
+  }
+
+  const total = historial.length;
+
+  const estresAlto = historial.filter((item) => item.nivelEstres === "Alto").length;
+  const energiaBaja = historial.filter((item) => item.energia === "Baja").length;
+  const malSueno = historial.filter((item) => item.sueno === "Mal").length;
+  const animoBajo = historial.filter(
+    (item) => item.estadoAnimo === "Mal" || item.estadoAnimo === "Muy mal"
+  ).length;
+
+  if (estresAlto >= Math.ceil(total / 2)) {
+    return "En varios check-ins aparece estrés alto. Sería recomendable cuidar las pausas y evitar sobrecargar el día.";
+  }
+
+  if (energiaBaja >= Math.ceil(total / 2)) {
+    return "Se observa energía baja de forma frecuente. Podría ser útil priorizar tareas importantes y dejar espacios de descanso.";
+  }
+
+  if (malSueno >= Math.ceil(total / 2)) {
+    return "El sueño aparece como un factor importante. Dormir mejor podría ayudarte a mejorar tu energía y concentración.";
+  }
+
+  if (animoBajo >= Math.ceil(total / 2)) {
+    return "Tu historial muestra varios registros de bajo ánimo. Puede ayudarte conversar con alguien de confianza o usar el chat de apoyo.";
+  }
+
+  return "Tu historial emocional se ve relativamente estable. Sigue registrando tus check-ins para tener una visión más completa.";
+}
+
+async function mostrarEstadisticasEmocionales() {
+  const contenedor = document.getElementById("estadisticasEmocionalesContainer");
+
+  if (!contenedor) return;
+
+  const historial = await obtenerHistorialCheckinsParaEstadisticas();
+
+  if (!historial || historial.length === 0) {
+    contenedor.innerHTML = `
+      <div class="estadistica-emocional-item">
+        <h3>Sin datos</h3>
+        <p>Completa tu check-in diario para generar estadísticas emocionales.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const total = historial.length;
+  const ultimoCheckin = historial[0];
+
+  const estados = historial.map((item) => item.estadoAnimo);
+  const estadoMasFrecuente = obtenerValorMasFrecuente(estados);
+
+  const cantidadEstresAlto = historial.filter(
+    (item) => item.nivelEstres === "Alto"
+  ).length;
+
+  const cantidadEnergiaBaja = historial.filter(
+    (item) => item.energia === "Baja"
+  ).length;
+
+  const porcentajeEstresAlto = calcularPorcentaje(cantidadEstresAlto, total);
+  const porcentajeEnergiaBaja = calcularPorcentaje(cantidadEnergiaBaja, total);
+
+  const ultimaFecha = estadisticasFormatearFecha(
+    ultimoCheckin.createdAt || ultimoCheckin.fecha
+  );
+
+  const lectura = generarLecturaEstadisticas(historial);
+
+  contenedor.innerHTML = `
+    <div class="estadistica-emocional-item">
+      <h3>${total}</h3>
+      <p>Total de check-ins mostrados</p>
+    </div>
+
+    <div class="estadistica-emocional-item">
+      <h3>${estadisticasEscaparTexto(estadoMasFrecuente)}</h3>
+      <p>Estado emocional más frecuente</p>
+    </div>
+
+    <div class="estadistica-emocional-item">
+      <h3>${cantidadEstresAlto}</h3>
+      <p>Veces con estrés alto (${porcentajeEstresAlto}%)</p>
+    </div>
+
+    <div class="estadistica-emocional-item">
+      <h3>${cantidadEnergiaBaja}</h3>
+      <p>Veces con energía baja (${porcentajeEnergiaBaja}%)</p>
+    </div>
+
+    <div class="estadistica-emocional-item estadistica-emocional-ancha">
+      <h3>Último registro</h3>
+      <p>${estadisticasEscaparTexto(ultimaFecha)}</p>
+    </div>
+
+    <div class="estadistica-emocional-item estadistica-emocional-ancha">
+      <h3>Lectura general</h3>
+      <p>${estadisticasEscaparTexto(lectura)}</p>
+    </div>
+  `;
+}
+
+function iniciarEstadisticasEmocionales() {
+  mostrarEstadisticasEmocionales();
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarEstadisticasEmocionales);
+} else {
+  iniciarEstadisticasEmocionales();
+}
