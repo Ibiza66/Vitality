@@ -2706,3 +2706,130 @@ if (document.readyState === "loading") {
 } else {
   iniciarEstadisticasEmocionales();
 }
+/* =========================
+   TENDENCIA EMOCIONAL EN PERFIL
+========================= */
+function obtenerPuntajeEstadoEmocional(estado) {
+  const valores = {
+    "Muy mal": 1,
+    "Mal": 2,
+    "Normal": 3,
+    "Bien": 4,
+    "Muy bien": 5
+  };
+
+  return valores[estado] || 3;
+}
+
+function obtenerColorClaseEstado(estado) {
+  if (estado === "Muy mal") return "tendencia-muy-mal";
+  if (estado === "Mal") return "tendencia-mal";
+  if (estado === "Normal") return "tendencia-normal";
+  if (estado === "Bien") return "tendencia-bien";
+  if (estado === "Muy bien") return "tendencia-muy-bien";
+
+  return "tendencia-normal";
+}
+
+function formatearFechaTendencia(fecha) {
+  if (!fecha) return "Sin fecha";
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return "Sin fecha";
+  }
+
+  return fechaObjeto.toLocaleDateString("es-CL", {
+    day: "2-digit",
+    month: "2-digit"
+  });
+}
+
+function escaparTextoTendencia(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+async function obtenerHistorialCheckinsParaTendencia() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`/api/checkins/historial/${usuario.id}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener historial para tendencia:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con tendencia emocional:", error);
+    return [];
+  }
+}
+
+async function mostrarTendenciaEmocional() {
+  const contenedor = document.getElementById("tendenciaEmocionalContainer");
+
+  if (!contenedor) return;
+
+  const historial = await obtenerHistorialCheckinsParaTendencia();
+
+  if (!historial || historial.length === 0) {
+    contenedor.innerHTML = `
+      <div class="tendencia-vacia">
+        <p>No hay check-ins suficientes para mostrar la tendencia emocional.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const ultimosRegistros = historial
+    .slice(0, 7)
+    .reverse();
+
+  contenedor.innerHTML = ultimosRegistros
+    .map((checkin) => {
+      const estado = checkin.estadoAnimo || "Normal";
+      const puntaje = obtenerPuntajeEstadoEmocional(estado);
+      const altura = puntaje * 20;
+      const claseEstado = obtenerColorClaseEstado(estado);
+      const fecha = formatearFechaTendencia(checkin.createdAt || checkin.fecha);
+
+      return `
+        <div class="tendencia-item">
+          <div class="tendencia-barra-contenedor">
+            <div
+              class="tendencia-barra ${claseEstado}"
+              style="height: ${altura}%;"
+              title="${escaparTextoTendencia(estado)}"
+            ></div>
+          </div>
+
+          <small>${escaparTextoTendencia(fecha)}</small>
+          <span>${escaparTextoTendencia(estado)}</span>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function iniciarTendenciaEmocional() {
+  mostrarTendenciaEmocional();
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarTendenciaEmocional);
+} else {
+  iniciarTendenciaEmocional();
+}
