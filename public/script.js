@@ -2358,3 +2358,54 @@ window.addEventListener("DOMContentLoaded", async () => {
   iniciarChatInteligente();
   generarNotificacionesAutomaticas();
 });
+/* =========================
+   CONTROL DE SESIÓN Y PROTECCIÓN DE PÁGINAS
+========================= */
+function obtenerPaginaActual() {
+  const ruta = window.location.pathname;
+  const pagina = ruta.substring(ruta.lastIndexOf("/") + 1);
+
+  return pagina || "index.html";
+}
+
+function paginaRequiereSesion(pagina) {
+  const paginasProtegidas = [
+    "perfil.html",
+    "checkin.html",
+    "horario.html",
+    "organizar_horario.html",
+    "alertas.html",
+    "chat.html"
+  ];
+
+  return paginasProtegidas.includes(pagina);
+}
+
+function protegerPaginaActual() {
+  const pagina = obtenerPaginaActual();
+  const usuario = obtenerUsuario();
+
+  if (paginaRequiereSesion(pagina) && !usuario) {
+    alert("Debes iniciar sesión para acceder a esta página.");
+    window.location.href = "index.html";
+  }
+}
+
+function cerrarSesion() {
+  localStorage.removeItem("usuarioVitality");
+  localStorage.removeItem("perfilVitality");
+  localStorage.removeItem("checkinVitality");
+  localStorage.removeItem("actividadesFijasVitality");
+  localStorage.removeItem("actividadesEspecialesVitality");
+  localStorage.removeItem("editandoActividadFijaId");
+  localStorage.removeItem("editandoActividadEspecialId");
+
+  sessionStorage.removeItem("notificacionesVitalityCerradas");
+
+  alert("Sesión cerrada correctamente.");
+  window.location.href = "index.html";
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  protegerPaginaActual();
+});
