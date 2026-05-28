@@ -1251,3 +1251,56 @@ body.dark-mode .evento-destacado {
 .dark-mode .btn-eliminar-checkin:hover {
   background: #b83232;
 }
+/* =========================
+   RACHA DE CHECK-INS
+========================= */
+.racha-checkin-card {
+  margin-top: 25px;
+}
+
+.racha-checkin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.racha-checkin-item {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-top: 5px solid #4a9c25;
+}
+
+.racha-checkin-item h3 {
+  margin-bottom: 8px;
+  color: #0d5c63;
+  font-size: 1.4rem;
+}
+
+.racha-checkin-item p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.racha-checkin-ancha {
+  grid-column: span 2;
+  text-align: left;
+}
+
+.dark-mode .racha-checkin-item {
+  background: rgba(20, 40, 42, 0.9);
+  color: #f1f1f1;
+}
+
+.dark-mode .racha-checkin-item h3 {
+  color: #9ee493;
+}
+
+@media (max-width: 700px) {
+  .racha-checkin-ancha {
+    grid-column: span 1;
+  }
+}

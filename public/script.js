@@ -2923,3 +2923,169 @@ async function mostrarHistorialCheckins() {
     })
     .join("");
 }
+/* =========================
+   RACHA DE CHECK-INS EN PERFIL
+========================= */
+function rachaEscaparTexto(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function obtenerFechaSimpleCheckin(fecha) {
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function restarDiasFechaSimple(fechaSimple, dias) {
+  const fecha = new Date(`${fechaSimple}T00:00:00`);
+  fecha.setDate(fecha.getDate() - dias);
+
+  const anio = fecha.getFullYear();
+  const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+  const dia = String(fecha.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function calcularRachaCheckins(historial) {
+  if (!historial || historial.length === 0) {
+    return {
+      rachaActual: 0,
+      totalDiasRegistrados: 0,
+      ultimoDiaRegistrado: "Sin datos"
+    };
+  }
+
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) => obtenerFechaSimpleCheckin(item.createdAt || item.fecha))
+        .filter(Boolean)
+    )
+  ].sort((a, b) => b.localeCompare(a));
+
+  if (diasUnicos.length === 0) {
+    return {
+      rachaActual: 0,
+      totalDiasRegistrados: 0,
+      ultimoDiaRegistrado: "Sin datos"
+    };
+  }
+
+  const hoy = obtenerFechaSimpleCheckin(new Date());
+  const ayer = restarDiasFechaSimple(hoy, 1);
+
+  let inicioRacha = null;
+
+  if (diasUnicos.includes(hoy)) {
+    inicioRacha = hoy;
+  } else if (diasUnicos.includes(ayer)) {
+    inicioRacha = ayer;
+  } else {
+    return {
+      rachaActual: 0,
+      totalDiasRegistrados: diasUnicos.length,
+      ultimoDiaRegistrado: diasUnicos[0]
+    };
+  }
+
+  let racha = 0;
+  let diaEsperado = inicioRacha;
+
+  while (diasUnicos.includes(diaEsperado)) {
+    racha += 1;
+    diaEsperado = restarDiasFechaSimple(diaEsperado, 1);
+  }
+
+  return {
+    rachaActual: racha,
+    totalDiasRegistrados: diasUnicos.length,
+    ultimoDiaRegistrado: diasUnicos[0]
+  };
+}
+
+function obtenerMensajeRacha(rachaActual) {
+  if (rachaActual === 0) {
+    return "Completa tu check-in de hoy para comenzar una nueva racha.";
+  }
+
+  if (rachaActual === 1) {
+    return "Bien. Ya registraste tu check-in más reciente. Intenta repetirlo mañana para formar el hábito.";
+  }
+
+  if (rachaActual < 4) {
+    return "Vas construyendo una buena constancia. Sigue completando tu check-in diario.";
+  }
+
+  if (rachaActual < 7) {
+    return "Muy bien. Tu racha muestra compromiso con tu bienestar emocional.";
+  }
+
+  return "Excelente. Mantienes una racha sólida de check-ins. Sigue así.";
+}
+
+async function mostrarRachaCheckins() {
+  const contenedor = document.getElementById("rachaCheckinContainer");
+
+  if (!contenedor) return;
+
+  const historial = await obtenerHistorialCheckinsBackend();
+
+  if (!historial || historial.length === 0) {
+    contenedor.innerHTML = `
+      <div class="racha-checkin-item">
+        <h3>Sin datos</h3>
+        <p>Completa tu primer check-in para comenzar una racha.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const datosRacha = calcularRachaCheckins(historial);
+  const mensaje = obtenerMensajeRacha(datosRacha.rachaActual);
+
+  contenedor.innerHTML = `
+    <div class="racha-checkin-item">
+      <h3>${datosRacha.rachaActual}</h3>
+      <p>Racha actual de días</p>
+    </div>
+
+    <div class="racha-checkin-item">
+      <h3>${datosRacha.totalDiasRegistrados}</h3>
+      <p>Días distintos registrados</p>
+    </div>
+
+    <div class="racha-checkin-item racha-checkin-ancha">
+      <h3>Último día registrado</h3>
+      <p>${rachaEscaparTexto(datosRacha.ultimoDiaRegistrado)}</p>
+    </div>
+
+    <div class="racha-checkin-item racha-checkin-ancha">
+      <h3>Mensaje Vitality</h3>
+      <p>${rachaEscaparTexto(mensaje)}</p>
+    </div>
+  `;
+}
+
+function iniciarRachaCheckins() {
+  mostrarRachaCheckins();
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarRachaCheckins);
+} else {
+  iniciarRachaCheckins();
+}
