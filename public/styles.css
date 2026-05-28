@@ -1221,3 +1221,33 @@ body.dark-mode .evento-destacado {
 .dark-mode .tendencia-item small {
   color: #9ee493;
 }
+/* =========================
+   BOTÓN ELIMINAR CHECK-IN
+========================= */
+.acciones-historial {
+  margin-top: 12px;
+}
+
+.btn-eliminar-checkin {
+  background: #b83232;
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-eliminar-checkin:hover {
+  background: #8f2525;
+  transform: translateY(-2px);
+}
+
+.dark-mode .btn-eliminar-checkin {
+  background: #d94a4a;
+}
+
+.dark-mode .btn-eliminar-checkin:hover {
+  background: #b83232;
+}

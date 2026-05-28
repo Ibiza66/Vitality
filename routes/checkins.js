@@ -125,5 +125,40 @@ router.get("/historial/:usuarioId", async (req, res) => {
     });
   }
 });
+/* =========================
+   ELIMINAR CHECK-IN
+========================= */
+router.delete("/:checkinId", async (req, res) => {
+  try {
+    const checkinId = String(req.params.checkinId || "")
+      .replace(/[^a-fA-F0-9]/g, "")
+      .trim();
 
+    if (!mongoose.Types.ObjectId.isValid(checkinId)) {
+      return res.status(400).json({
+        mensaje: "ID de check-in no válido.",
+        idRecibido: req.params.checkinId,
+        idLimpio: checkinId
+      });
+    }
+
+    const checkinEliminado = await Checkin.findByIdAndDelete(checkinId);
+
+    if (!checkinEliminado) {
+      return res.status(404).json({
+        mensaje: "No se encontró el check-in."
+      });
+    }
+
+    res.json({
+      mensaje: "Check-in eliminado correctamente.",
+      checkin: checkinEliminado
+    });
+  } catch (error) {
+    res.status(500).json({
+      mensaje: "Error al eliminar check-in.",
+      error: error.message
+    });
+  }
+});
 module.exports = router;

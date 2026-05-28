@@ -2833,3 +2833,93 @@ if (document.readyState === "loading") {
 } else {
   iniciarTendenciaEmocional();
 }
+/* =========================
+   ELIMINAR CHECK-IN DESDE HISTORIAL
+========================= */
+async function eliminarCheckinHistorial(checkinId) {
+  const confirmar = confirm("¿Seguro que quieres eliminar este check-in del historial?");
+
+  if (!confirmar) return;
+
+  try {
+    const respuesta = await fetch(`/api/checkins/${checkinId}`, {
+      method: "DELETE"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo eliminar el check-in.");
+      return;
+    }
+
+    alert("Check-in eliminado correctamente.");
+
+    await obtenerUltimoCheckinBackend();
+
+    if (typeof mostrarHistorialCheckins === "function") {
+      await mostrarHistorialCheckins();
+    }
+
+    if (typeof mostrarEstadisticasEmocionales === "function") {
+      await mostrarEstadisticasEmocionales();
+    }
+
+    if (typeof mostrarTendenciaEmocional === "function") {
+      await mostrarTendenciaEmocional();
+    }
+
+    mostrarResumenCheckinEnPerfil();
+    mostrarPanelPerfilAvanzado();
+    mostrarAlertas();
+  } catch (error) {
+    console.error("Error al eliminar check-in:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+/* =========================
+   HISTORIAL EMOCIONAL CON BOTÓN ELIMINAR
+========================= */
+async function mostrarHistorialCheckins() {
+  const contenedor = document.getElementById("historialCheckinsContainer");
+
+  if (!contenedor) return;
+
+  const historial = await obtenerHistorialCheckinsBackend();
+
+  if (!historial || historial.length === 0) {
+    contenedor.innerHTML = `
+      <div class="historial-item">
+        <p>No hay check-ins registrados todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = historial
+    .map((checkin) => {
+      const fecha = historialFormatearFecha(checkin.createdAt || checkin.fecha);
+
+      return `
+        <div class="historial-item">
+          <h3>${historialEscaparTexto(fecha)}</h3>
+          <p><strong>Estado emocional:</strong> ${historialEscaparTexto(checkin.estadoAnimo)}</p>
+          <p><strong>Estrés:</strong> ${historialEscaparTexto(checkin.nivelEstres)}</p>
+          <p><strong>Sueño:</strong> ${historialEscaparTexto(checkin.sueno)}</p>
+          <p><strong>Energía:</strong> ${historialEscaparTexto(checkin.energia)}</p>
+
+          <div class="acciones-historial">
+            <button
+              type="button"
+              class="btn-eliminar-checkin"
+              onclick="eliminarCheckinHistorial('${historialEscaparTexto(checkin._id)}')"
+            >
+              Eliminar check-in
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
