@@ -2409,3 +2409,92 @@ function cerrarSesion() {
 window.addEventListener("DOMContentLoaded", () => {
   protegerPaginaActual();
 });
+/* =========================
+   HISTORIAL EMOCIONAL EN PERFIL
+========================= */
+function historialEscaparTexto(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function historialFormatearFecha(fecha) {
+  if (!fecha) return "Sin fecha";
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return "Sin fecha";
+  }
+
+  return fechaObjeto.toLocaleString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+async function obtenerHistorialCheckinsBackend() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`/api/checkins/historial/${usuario.id}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener historial emocional:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con el historial emocional:", error);
+    return [];
+  }
+}
+
+async function mostrarHistorialCheckins() {
+  const contenedor = document.getElementById("historialCheckinsContainer");
+
+  if (!contenedor) return;
+
+  const historial = await obtenerHistorialCheckinsBackend();
+
+  if (!historial || historial.length === 0) {
+    contenedor.innerHTML = `
+      <div class="historial-item">
+        <p>No hay check-ins registrados todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = historial
+    .map((checkin) => {
+      const fecha = historialFormatearFecha(checkin.createdAt || checkin.fecha);
+
+      return `
+        <div class="historial-item">
+          <h3>${historialEscaparTexto(fecha)}</h3>
+          <p><strong>Estado emocional:</strong> ${historialEscaparTexto(checkin.estadoAnimo)}</p>
+          <p><strong>Estrés:</strong> ${historialEscaparTexto(checkin.nivelEstres)}</p>
+          <p><strong>Sueño:</strong> ${historialEscaparTexto(checkin.sueno)}</p>
+          <p><strong>Energía:</strong> ${historialEscaparTexto(checkin.energia)}</p>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  mostrarHistorialCheckins();
+});
