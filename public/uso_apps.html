@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Control de uso de apps | Vitality</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+    <a href="horario.html" class="logo-link">
+      <h1>Vitality</h1>
+    </a>
+
+    <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+  </header>
+
+  <nav id="menu" class="menu">
+    <a href="horario.html">Horario</a>
+    <a href="perfil.html">Mi perfil</a>
+    <a href="checkin.html">Check-in diario</a>
+    <a href="alertas.html">Alertas</a>
+    <a href="chat.html">Chat Vitality</a>
+    <a href="uso_apps.html">Uso de apps</a>
+    <button type="button" onclick="toggleTheme()">Cambiar tema</button>
+  </nav>
+
+  <nav id="profileMenu" class="profile-menu">
+    <a href="perfil.html">Mi perfil</a>
+    <button type="button" onclick="cerrarSesion()">Cerrar sesión</button>
+  </nav>
+
+  <main class="container">
+    <section class="card uso-apps-card">
+      <h2>Control de uso de apps</h2>
+      <p>
+        Registra una app, su límite diario y el tiempo usado. Si se supera el límite,
+        Vitality mostrará una alerta de bienestar digital.
+      </p>
+
+      <form id="usoAppForm" class="uso-app-form">
+        <label for="usoAppNombre">App monitoreada</label>
+        <select id="usoAppNombre" required>
+          <option value="">Selecciona una app</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Instagram">Instagram</option>
+          <option value="YouTube">YouTube</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Otra">Otra</option>
+        </select>
+
+        <label for="usoAppPackage">Identificador / package</label>
+        <input
+          type="text"
+          id="usoAppPackage"
+          placeholder="Ej: com.zhiliaoapp.musically"
+        >
+
+        <label for="usoAppLimite">Límite diario en minutos</label>
+        <input
+          type="number"
+          id="usoAppLimite"
+          min="1"
+          placeholder="Ej: 60"
+          required
+        >
+
+        <label for="usoAppMinutos">Minutos usados hoy</label>
+        <input
+          type="number"
+          id="usoAppMinutos"
+          min="0"
+          placeholder="Ej: 75"
+          required
+        >
+
+        <button type="submit">Guardar monitoreo</button>
+      </form>
+    </section>
+
+    <section class="card uso-apps-card">
+      <h2>Apps monitoreadas</h2>
+      <div id="listaUsoApps" class="uso-apps-lista">
+        <p>Cargando apps monitoreadas...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Vitality - Bienestar digital y emocional</p>
+  </footer>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

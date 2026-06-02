@@ -1610,3 +1610,282 @@ body.dark-mode #userInput {
     width: 100%;
   }
 }
+
+/* =========================
+   CONTROL DE USO DE APPS
+========================= */
+.uso-apps-card {
+  margin-top: 25px;
+}
+
+.uso-app-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.uso-app-form label {
+  font-weight: bold;
+  color: var(--secondary);
+}
+
+.uso-app-form input,
+.uso-app-form select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  background: var(--input-bg);
+  color: var(--input-text);
+}
+
+.uso-apps-lista {
+  display: grid;
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.uso-app-item {
+  background: var(--bg-card);
+  border-left: 5px solid var(--secondary);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 12px var(--shadow);
+  text-align: left;
+}
+
+.uso-app-item h3 {
+  margin: 0 0 8px;
+  color: var(--secondary);
+}
+
+.uso-app-excedida {
+  border-left-color: #b83232;
+  background: rgba(255, 235, 235, 0.95);
+}
+
+.uso-app-alerta-texto {
+  color: #b83232;
+  font-weight: bold;
+}
+
+.uso-app-acciones {
+  margin-top: 12px;
+}
+
+.uso-app-acciones button {
+  width: auto;
+  min-width: 120px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 10px;
+  background: #b83232;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.alerta-uso-apps-global {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+  padding: 14px 18px;
+  background: #fff3cd;
+  color: #5c4300;
+  border-bottom: 2px solid #f0c36d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.alerta-uso-apps-global p {
+  margin: 4px 0;
+}
+
+.alerta-uso-apps-global button {
+  width: auto;
+  border: none;
+  background: transparent;
+  color: #5c4300;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+body.dark-mode .uso-app-item {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+body.dark-mode .uso-app-excedida {
+  background: rgba(80, 30, 30, 0.9);
+}
+
+body.dark-mode .uso-app-form input,
+body.dark-mode .uso-app-form select {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--border);
+}
+
+body.dark-mode .alerta-uso-apps-global {
+  background: #4a3300;
+  color: #fff3cd;
+  border-bottom-color: #b8860b;
+}
+
+body.dark-mode .alerta-uso-apps-global button {
+  color: #fff3cd;
+}
+
+@media (max-width: 700px) {
+  .alerta-uso-apps-global {
+    align-items: flex-start;
+    font-size: 0.9rem;
+  }
+
+  .uso-app-acciones button {
+    width: 100%;
+  }
+}
+/* =========================
+   CORRECCIÓN NAVBAR USO APPS
+========================= */
+header {
+  width: 100%;
+  min-height: 95px;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card, #ffffff);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 20;
+}
+
+.menu-btn,
+.profile-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: transparent;
+  color: #115c67;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-link {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-decoration: none;
+  color: #173600;
+  text-align: center;
+}
+
+.logo-link h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #173600;
+}
+
+.menu,
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 95px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  z-index: 100;
+}
+
+.menu {
+  left: 20px;
+}
+
+.profile-menu {
+  right: 20px;
+}
+
+.menu a,
+.profile-menu a,
+.menu button,
+.profile-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  margin: 4px 0;
+  text-align: left;
+  text-decoration: none;
+  color: #173600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.menu a:hover,
+.profile-menu a:hover,
+.menu button:hover,
+.profile-menu button:hover {
+  background: #e8f7dc;
+  border-radius: 8px;
+}
+
+/* Modo oscuro navbar */
+body.dark-mode header {
+  background: #14282a;
+}
+
+body.dark-mode .menu,
+body.dark-mode .profile-menu {
+  background: #14282a;
+}
+
+body.dark-mode .menu a,
+body.dark-mode .profile-menu a,
+body.dark-mode .menu button,
+body.dark-mode .profile-menu button,
+body.dark-mode .logo-link h1,
+body.dark-mode .menu-btn,
+body.dark-mode .profile-btn {
+  color: #f1f1f1;
+}
+
+body.dark-mode .menu a:hover,
+body.dark-mode .profile-menu a:hover,
+body.dark-mode .menu button:hover,
+body.dark-mode .profile-menu button:hover {
+  background: rgba(166, 226, 124, 0.18);
+}
+
+/* Responsive navbar */
+@media (max-width: 700px) {
+  header {
+    min-height: 80px;
+    padding: 10px 18px;
+  }
+
+  .menu,
+  .profile-menu {
+    top: 80px;
+  }
+
+  .logo-link h1 {
+    font-size: 1rem;
+  }
+
+  .menu-btn,
+  .profile-btn {
+    font-size: 1.7rem;
+  }
+}

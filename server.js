@@ -10,6 +10,7 @@ const checkinsRoutes = require("./routes/checkins");
 const actividadesRoutes = require("./routes/actividades");
 const objetivosRoutes = require("./routes/objetivos");
 const iaRoutes = require("./routes/ia");
+const usoAppsRoutes = require("./routes/usoApps");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/checkins", checkinsRoutes);
 app.use("/api/actividades", actividadesRoutes);
 app.use("/api/objetivos", objetivosRoutes);
 app.use("/api/ia", iaRoutes);
+app.use("/api/uso-apps", usoAppsRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

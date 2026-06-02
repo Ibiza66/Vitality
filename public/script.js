@@ -3493,3 +3493,264 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 
+
+/* =========================
+   CONTROL DE USO DE APPS
+========================= */
+function obtenerUsuarioUsoApps() {
+  try {
+    const usuarioGuardado = localStorage.getItem("usuarioVitality");
+    return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  } catch (error) {
+    console.error("Error al obtener usuario para uso de apps:", error);
+    return null;
+  }
+}
+
+function usoAppsEscaparTexto(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function usoAppExcedida(usoApp) {
+  return Number(usoApp.minutosUsados) > Number(usoApp.limiteMinutos);
+}
+
+async function obtenerUsoAppsBackend() {
+  const usuario = obtenerUsuarioUsoApps();
+
+  if (!usuario || !usuario.id) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`/api/uso-apps/${usuario.id}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener uso de apps:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con uso de apps:", error);
+    return [];
+  }
+}
+
+async function guardarUsoAppBackend(event) {
+  event.preventDefault();
+
+  const usuario = obtenerUsuarioUsoApps();
+
+  if (!usuario || !usuario.id) {
+    alert("Debes iniciar sesión para monitorear apps.");
+    return;
+  }
+
+  const nombreInput = document.getElementById("usoAppNombre");
+  const packageInput = document.getElementById("usoAppPackage");
+  const limiteInput = document.getElementById("usoAppLimite");
+  const minutosInput = document.getElementById("usoAppMinutos");
+
+  if (!nombreInput || !limiteInput || !minutosInput) return;
+
+  const nombreApp = nombreInput.value.trim();
+  const packageName = packageInput ? packageInput.value.trim() : "";
+  const limiteMinutos = Number(limiteInput.value);
+  const minutosUsados = Number(minutosInput.value);
+
+  if (!nombreApp || Number.isNaN(limiteMinutos) || Number.isNaN(minutosUsados)) {
+    alert("Completa correctamente los datos de uso de la app.");
+    return;
+  }
+
+  if (limiteMinutos <= 0 || minutosUsados < 0) {
+    alert("El límite debe ser mayor a 0 y los minutos usados no pueden ser negativos.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch("/api/uso-apps", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId: usuario.id,
+        nombreApp,
+        packageName,
+        limiteMinutos,
+        minutosUsados
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo guardar el monitoreo.");
+      return;
+    }
+
+    event.target.reset();
+
+    await mostrarUsoApps();
+
+    if (minutosUsados > limiteMinutos) {
+      mostrarAlertaUsoExcesivoGlobal({
+        nombreApp,
+        limiteMinutos,
+        minutosUsados
+      });
+    } else {
+      alert("Monitoreo guardado correctamente.");
+    }
+  } catch (error) {
+    console.error("Error al guardar uso de app:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function eliminarUsoApp(usoAppId) {
+  const confirmar = confirm("¿Seguro que quieres eliminar esta app del monitoreo?");
+
+  if (!confirmar) return;
+
+  try {
+    const respuesta = await fetch(`/api/uso-apps/${usoAppId}`, {
+      method: "DELETE"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo eliminar la app monitoreada.");
+      return;
+    }
+
+    await mostrarUsoApps();
+  } catch (error) {
+    console.error("Error al eliminar uso de app:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function mostrarUsoApps() {
+  const contenedor = document.getElementById("listaUsoApps");
+
+  if (!contenedor) return;
+
+  const usos = await obtenerUsoAppsBackend();
+
+  if (!usos || usos.length === 0) {
+    contenedor.innerHTML = `
+      <div class="uso-app-item">
+        <p>No hay apps monitoreadas todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = usos
+    .map((uso) => {
+      const excedida = usoAppExcedida(uso);
+      const clase = excedida ? "uso-app-excedida" : "";
+      const estado = excedida ? "Exceso detectado" : "Dentro del límite";
+
+      return `
+        <div class="uso-app-item ${clase}">
+          <h3>${usoAppsEscaparTexto(uso.nombreApp)}</h3>
+          <p><strong>Límite diario:</strong> ${usoAppsEscaparTexto(uso.limiteMinutos)} minutos</p>
+          <p><strong>Uso actual:</strong> ${usoAppsEscaparTexto(uso.minutosUsados)} minutos</p>
+          <p><strong>Estado:</strong> ${estado}</p>
+
+          ${
+            excedida
+              ? `<p class="uso-app-alerta-texto">Superaste el límite. Vitality recomienda tomar una pausa.</p>`
+              : `<p>Uso dentro de un rango saludable.</p>`
+          }
+
+          <div class="uso-app-acciones">
+            <button type="button" onclick="eliminarUsoApp('${usoAppsEscaparTexto(uso._id)}')">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function crearContenedorAlertaUsoApps() {
+  let alerta = document.getElementById("alertaUsoAppsGlobal");
+
+  if (!alerta) {
+    alerta = document.createElement("div");
+    alerta.id = "alertaUsoAppsGlobal";
+    alerta.className = "alerta-uso-apps-global";
+    document.body.prepend(alerta);
+  }
+
+  return alerta;
+}
+
+function cerrarAlertaUsoApps() {
+  const alerta = document.getElementById("alertaUsoAppsGlobal");
+
+  if (alerta) {
+    alerta.remove();
+  }
+}
+
+function mostrarAlertaUsoExcesivoGlobal(usoApp) {
+  const alerta = crearContenedorAlertaUsoApps();
+
+  alerta.innerHTML = `
+    <div>
+      <strong>⚠️ Uso excesivo detectado</strong>
+      <p>
+        Llevas ${usoAppsEscaparTexto(usoApp.minutosUsados)} minutos en
+        ${usoAppsEscaparTexto(usoApp.nombreApp)}. Superaste tu límite de
+        ${usoAppsEscaparTexto(usoApp.limiteMinutos)} minutos.
+      </p>
+      <small>Vitality recomienda hacer una pausa y volver a tu horario.</small>
+    </div>
+
+    <button type="button" onclick="cerrarAlertaUsoApps()">×</button>
+  `;
+}
+
+async function revisarUsoExcesivoGlobal() {
+  const usuario = obtenerUsuarioUsoApps();
+
+  if (!usuario || !usuario.id) return;
+
+  const usos = await obtenerUsoAppsBackend();
+  const usoExcesivo = usos.find((uso) => usoAppExcedida(uso));
+
+  if (usoExcesivo) {
+    mostrarAlertaUsoExcesivoGlobal(usoExcesivo);
+  }
+}
+
+function iniciarControlUsoApps() {
+  const usoAppForm = document.getElementById("usoAppForm");
+
+  if (usoAppForm) {
+    usoAppForm.addEventListener("submit", guardarUsoAppBackend);
+  }
+
+  mostrarUsoApps();
+  revisarUsoExcesivoGlobal();
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarControlUsoApps);
+} else {
+  iniciarControlUsoApps();
+}

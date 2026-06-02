@@ -58,6 +58,9 @@ function cerrarSesion() {
   localStorage.removeItem("editandoActividadFijaId");
   localStorage.removeItem("editandoActividadEspecialId");
 
+  localStorage.removeItem("usoAppsVitality");
+  localStorage.removeItem("editandoUsoAppId");
+
   sessionStorage.removeItem("notificacionesVitalityCerradas");
 
   alert("Sesión cerrada correctamente.");
@@ -88,7 +91,8 @@ function paginaRequiereSesionNav(pagina) {
     "horario.html",
     "organizar_horario.html",
     "alertas.html",
-    "chat.html"
+    "chat.html",
+    "uso_apps.html"
   ];
 
   return paginasProtegidas.includes(pagina);
