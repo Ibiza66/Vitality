@@ -1470,3 +1470,143 @@ body.dark-mode .objetivo-acciones .btn-eliminar-objetivo:hover {
     width: 100%;
   }
 }
+/* =========================
+   MEJORA VISUAL CHAT IA
+========================= */
+#chatBox {
+  max-height: 430px;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(17, 92, 103, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.message {
+  max-width: 78%;
+  padding: 14px 16px;
+  border-radius: 18px;
+  line-height: 1.45;
+  font-size: 0.98rem;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.message p {
+  margin: 0;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background: #e8f7dc;
+  color: #173600;
+  border-bottom-left-radius: 5px;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: #115c67;
+  color: #ffffff;
+  border-bottom-right-radius: 5px;
+}
+
+#chatQuickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+#chatQuickActions button {
+  flex: 1;
+  min-width: 170px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 14px;
+  background: #115c67;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+#chatQuickActions button:hover {
+  background: #173600;
+  transform: translateY(-2px);
+}
+
+#chatForm {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+#userInput {
+  flex: 1;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 92, 103, 0.25);
+  font-family: inherit;
+}
+
+#chatForm button {
+  width: auto;
+  min-width: 110px;
+  padding: 13px 16px;
+  border-radius: 12px;
+}
+
+/* Modo oscuro chat */
+body.dark-mode #chatBox {
+  background: rgba(20, 40, 42, 0.95);
+  border-color: rgba(166, 226, 124, 0.35);
+}
+
+body.dark-mode .message.bot {
+  background: rgba(166, 226, 124, 0.18);
+  color: #f1f1f1;
+}
+
+body.dark-mode .message.user {
+  background: #4a9516;
+  color: #ffffff;
+}
+
+body.dark-mode #userInput {
+  background: rgba(20, 40, 42, 0.9);
+  color: #ffffff;
+  border-color: rgba(166, 226, 124, 0.4);
+}
+
+/* Responsive chat */
+@media (max-width: 700px) {
+  #chatBox {
+    max-height: 380px;
+    padding: 14px;
+  }
+
+  .message {
+    max-width: 92%;
+    font-size: 0.95rem;
+  }
+
+  #chatForm {
+    flex-direction: column;
+  }
+
+  #chatForm button {
+    width: 100%;
+  }
+
+  #chatQuickActions {
+    flex-direction: column;
+  }
+
+  #chatQuickActions button {
+    width: 100%;
+  }
+}

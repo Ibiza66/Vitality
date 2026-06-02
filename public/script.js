@@ -1570,7 +1570,47 @@ function iniciarChatInteligente() {
   actualizarBotonesChat();
 }
 
-function sendMessage(event) {
+async function obtenerRespuestaIAChat(texto) {
+  const checkin = obtenerCheckin();
+
+  let actividadesHoy = null;
+  let objetivos = [];
+
+  try {
+    if (typeof obtenerResumenHorarioHoy === "function") {
+      actividadesHoy = obtenerResumenHorarioHoy();
+    }
+
+    if (typeof obtenerObjetivosBackend === "function") {
+      objetivos = await obtenerObjetivosBackend();
+    }
+  } catch (error) {
+    console.error("Error preparando contexto para IA:", error);
+  }
+
+  const respuesta = await fetch("/api/ia/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      mensaje: texto,
+      checkin,
+      actividadesHoy,
+      objetivos
+    })
+  });
+
+  const data = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(data.mensaje || "No se pudo obtener respuesta de IA.");
+  }
+
+  return data.respuesta;
+}
+
+async function sendMessage(event) {
   event.preventDefault();
 
   const input = document.getElementById("userInput");
@@ -1584,13 +1624,28 @@ function sendMessage(event) {
   addMessage(text, "user");
   input.value = "";
 
-  setTimeout(() => {
+  const mensajeCargando = document.createElement("div");
+  mensajeCargando.classList.add("message", "bot");
+  mensajeCargando.innerHTML = "<p>Vitality está pensando...</p>";
+  chatBox.appendChild(mensajeCargando);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const response = await obtenerRespuestaIAChat(text);
+
+    mensajeCargando.remove();
+    addMessage(response, "bot");
+    actualizarBotonesChat();
+  } catch (error) {
+    console.error("Error usando IA, se usará respuesta local:", error);
+
+    mensajeCargando.remove();
+
     const response = generateSupportResponse(text);
     addMessage(response, "bot");
     actualizarBotonesChat();
-  }, 500);
+  }
 }
-
 function usarOpcionRapida(opcion) {
   const input = document.getElementById("userInput");
   if (!input) return;
@@ -3435,4 +3490,6 @@ async function protegerCheckinDiario() {
 window.addEventListener("DOMContentLoaded", () => {
   protegerCheckinDiario();
 });
+
+
 
