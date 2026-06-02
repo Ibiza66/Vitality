@@ -3089,3 +3089,236 @@ if (document.readyState === "loading") {
 } else {
   iniciarRachaCheckins();
 }
+/* =========================
+   OBJETIVOS PERSONALES EN PERFIL
+========================= */
+function objetivosEscaparTexto(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function obtenerFechaHoyObjetivo() {
+  const hoy = new Date();
+  const anio = hoy.getFullYear();
+  const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoy.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function obtenerUsuarioObjetivos() {
+  try {
+    const usuarioGuardado = localStorage.getItem("usuarioVitality");
+    return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  } catch (error) {
+    console.error("Error al obtener usuario para objetivos:", error);
+    return null;
+  }
+}
+
+async function obtenerObjetivosBackend() {
+  const usuario = obtenerUsuarioObjetivos();
+
+  if (!usuario || !usuario.id) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`/api/objetivos/${usuario.id}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener objetivos:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con objetivos:", error);
+    return [];
+  }
+}
+
+async function guardarObjetivoBackend(event) {
+  event.preventDefault();
+
+  const usuario = obtenerUsuarioObjetivos();
+
+  if (!usuario || !usuario.id) {
+    alert("Debes iniciar sesión para guardar objetivos.");
+    return;
+  }
+
+  const tituloInput = document.getElementById("objetivoTitulo");
+  const descripcionInput = document.getElementById("objetivoDescripcion");
+  const fechaInput = document.getElementById("objetivoFecha");
+
+  if (!tituloInput || !descripcionInput || !fechaInput) {
+    return;
+  }
+
+  const titulo = tituloInput.value.trim();
+  const descripcion = descripcionInput.value.trim();
+  const fecha = fechaInput.value;
+
+  if (!titulo || !fecha) {
+    alert("Completa el título y la fecha del objetivo.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch("/api/objetivos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId: usuario.id,
+        titulo,
+        descripcion,
+        fecha
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo guardar el objetivo.");
+      return;
+    }
+
+    alert("Objetivo guardado correctamente.");
+
+    event.target.reset();
+
+    const fechaInputActualizada = document.getElementById("objetivoFecha");
+    if (fechaInputActualizada) {
+      fechaInputActualizada.value = obtenerFechaHoyObjetivo();
+    }
+
+    await mostrarObjetivosPersonales();
+  } catch (error) {
+    console.error("Error al guardar objetivo:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function alternarObjetivoPersonal(objetivoId) {
+  try {
+    const respuesta = await fetch(`/api/objetivos/${objetivoId}/completar`, {
+      method: "PATCH"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo actualizar el objetivo.");
+      return;
+    }
+
+    await mostrarObjetivosPersonales();
+  } catch (error) {
+    console.error("Error al actualizar objetivo:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function eliminarObjetivoPersonal(objetivoId) {
+  const confirmar = confirm("¿Seguro que quieres eliminar este objetivo?");
+
+  if (!confirmar) return;
+
+  try {
+    const respuesta = await fetch(`/api/objetivos/${objetivoId}`, {
+      method: "DELETE"
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      alert(data.mensaje || "No se pudo eliminar el objetivo.");
+      return;
+    }
+
+    await mostrarObjetivosPersonales();
+  } catch (error) {
+    console.error("Error al eliminar objetivo:", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+async function mostrarObjetivosPersonales() {
+  const contenedor = document.getElementById("objetivosContainer");
+
+  if (!contenedor) return;
+
+  const objetivos = await obtenerObjetivosBackend();
+
+  if (!objetivos || objetivos.length === 0) {
+    contenedor.innerHTML = `
+      <div class="objetivo-item">
+        <p>No hay objetivos personales registrados todavía.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = objetivos
+    .map((objetivo) => {
+      const claseCompletado = objetivo.completado ? "objetivo-completado" : "";
+      const textoBoton = objetivo.completado ? "Desmarcar" : "Completar";
+      const estado = objetivo.completado ? "Cumplido" : "Pendiente";
+
+      return `
+        <div class="objetivo-item ${claseCompletado}">
+          <h3>${objetivosEscaparTexto(objetivo.titulo)}</h3>
+          <p><strong>Fecha:</strong> ${objetivosEscaparTexto(objetivo.fecha)}</p>
+          <p>${objetivosEscaparTexto(objetivo.descripcion || "Sin descripción")}</p>
+          <p><strong>Estado:</strong> ${estado}</p>
+
+          <div class="objetivo-acciones">
+            <button
+              type="button"
+              onclick="alternarObjetivoPersonal('${objetivosEscaparTexto(objetivo._id)}')"
+            >
+              ${textoBoton}
+            </button>
+
+            <button
+              type="button"
+              class="btn-eliminar-objetivo"
+              onclick="eliminarObjetivoPersonal('${objetivosEscaparTexto(objetivo._id)}')"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function iniciarObjetivosPersonales() {
+  const objetivoForm = document.getElementById("objetivoForm");
+  const objetivoFecha = document.getElementById("objetivoFecha");
+
+  if (objetivoFecha && !objetivoFecha.value) {
+    objetivoFecha.value = obtenerFechaHoyObjetivo();
+  }
+
+  if (objetivoForm) {
+    objetivoForm.addEventListener("submit", guardarObjetivoBackend);
+  }
+
+  mostrarObjetivosPersonales();
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarObjetivosPersonales);
+} else {
+  iniciarObjetivosPersonales();
+}

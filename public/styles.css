@@ -1303,4 +1303,170 @@ body.dark-mode .evento-destacado {
   .racha-checkin-ancha {
     grid-column: span 1;
   }
+}/* =========================
+   OBJETIVOS PERSONALES
+========================= */
+.objetivos-card {
+  margin-top: 25px;
+}
+
+.objetivo-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.objetivo-form label {
+  font-weight: bold;
+  color: var(--secondary);
+  margin-top: 4px;
+}
+
+.objetivo-form input,
+.objetivo-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  background: var(--input-bg);
+  color: var(--input-text);
+  margin: 0;
+}
+
+.objetivo-form textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+.objetivo-form button {
+  margin-top: 8px;
+}
+
+.objetivos-lista {
+  display: grid;
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.objetivo-item {
+  background: var(--bg-card);
+  border-left: 5px solid var(--secondary);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 12px var(--shadow);
+  text-align: left;
+}
+
+.objetivo-item h3 {
+  margin: 0 0 8px;
+  color: var(--secondary);
+  font-size: 1.15rem;
+}
+
+.objetivo-item p {
+  margin: 5px 0;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.objetivo-completado {
+  border-left-color: var(--primary);
+  opacity: 0.9;
+  background: var(--done-bg);
+}
+
+.objetivo-completado h3 {
+  text-decoration: line-through;
+  color: var(--done-text);
+}
+
+.objetivo-completado p {
+  color: var(--done-text);
+}
+
+.objetivo-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.objetivo-acciones button {
+  width: auto;
+  min-width: 120px;
+  margin: 0;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--secondary);
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.objetivo-acciones button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.objetivo-acciones .btn-eliminar-objetivo {
+  background: #b83232;
+}
+
+.objetivo-acciones .btn-eliminar-objetivo:hover {
+  background: #8f2525;
+}
+
+/* Modo oscuro para objetivos */
+body.dark-mode .objetivo-form input,
+body.dark-mode .objetivo-form textarea {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--border);
+}
+
+body.dark-mode .objetivo-item {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+body.dark-mode .objetivo-item h3 {
+  color: var(--text-secondary);
+}
+
+body.dark-mode .objetivo-form label {
+  color: var(--text-secondary);
+}
+
+body.dark-mode .objetivo-acciones button {
+  background: var(--primary);
+  color: var(--btn-text);
+}
+
+body.dark-mode .objetivo-acciones button:hover {
+  background: var(--accent);
+  color: #173600;
+}
+
+body.dark-mode .objetivo-acciones .btn-eliminar-objetivo {
+  background: #d94a4a;
+}
+
+body.dark-mode .objetivo-acciones .btn-eliminar-objetivo:hover {
+  background: #b83232;
+  color: #ffffff;
+}
+
+/* Responsive objetivos */
+@media (max-width: 700px) {
+  .objetivo-acciones {
+    flex-direction: column;
+  }
+
+  .objetivo-acciones button {
+    width: 100%;
+  }
 }

@@ -166,6 +166,38 @@
         </div>
       </div>
 
+      <div class="perfil-card objetivos-card">
+        <h2>Objetivos personales</h2>
+        <p>Agrega metas simples de bienestar para organizar mejor tu día.</p>
+
+        <form id="objetivoForm" class="objetivo-form">
+          <label for="objetivoTitulo">Objetivo</label>
+          <input
+            type="text"
+            id="objetivoTitulo"
+            placeholder="Ej: Tomar agua, caminar 10 minutos, dormir temprano"
+            required
+          >
+
+          <label for="objetivoDescripcion">Descripción</label>
+          <textarea
+            id="objetivoDescripcion"
+            placeholder="Ej: Beber un vaso de agua durante la mañana"
+          ></textarea>
+
+          <label for="objetivoFecha">Fecha</label>
+          <input type="date" id="objetivoFecha" required>
+
+          <button type="submit">Guardar objetivo</button>
+        </form>
+
+        <div id="objetivosContainer" class="objetivos-lista">
+          <div class="objetivo-item">
+            <p>Cargando objetivos personales...</p>
+          </div>
+        </div>
+      </div>
+
       <div class="perfil-card tendencia-emocional-card">
         <h2>Tendencia emocional</h2>
         <p>Visualización de tus últimos check-ins según tu estado emocional.</p>
@@ -238,6 +270,7 @@
     </div>
   </footer>
 
+  <script src="nav.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

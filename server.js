@@ -8,6 +8,7 @@ const usuariosRoutes = require("./routes/usuarios");
 const perfilesRoutes = require("./routes/perfiles");
 const checkinsRoutes = require("./routes/checkins");
 const actividadesRoutes = require("./routes/actividades");
+const objetivosRoutes = require("./routes/objetivos");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/perfiles", perfilesRoutes);
 app.use("/api/checkins", checkinsRoutes);
 app.use("/api/actividades", actividadesRoutes);
+app.use("/api/objetivos", objetivosRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
