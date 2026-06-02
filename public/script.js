@@ -1,4 +1,4 @@
-/* =========================
+﻿/* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = "";
@@ -240,8 +240,8 @@ async function iniciarSesion(event) {
     limpiarDatosLocalesUsuario();
     guardarUsuario(data.usuario);
 
-    alert("Inicio de sesión exitoso.");
-    window.location.href = "horario.html";
+   alert("Inicio de sesión exitoso.");
+await redirigirDespuesDeLoginSegunCheckin();
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
     alert("Ocurrió un error al conectar con el servidor.");
@@ -458,7 +458,7 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
       data.checkin.nivelEstres,
       data.checkin.sueno,
       data.checkin.energia,
-      new Date(data.checkin.fecha).toLocaleDateString()
+      new Date(data.checkin.createdAt || data.checkin.fecha || data.checkin.updatedAt).toLocaleDateString()
     );
 
     return {
@@ -501,7 +501,7 @@ async function obtenerUltimoCheckinBackend() {
       nivelEstres: data.nivelEstres,
       sueno: data.sueno,
       energia: data.energia,
-      fecha: new Date(data.fecha).toLocaleDateString()
+      fecha: new Date(data.createdAt || data.fecha || data.updatedAt).toLocaleDateString()
     };
 
     guardarJSON("checkinVitality", checkinLocal);
@@ -547,7 +547,7 @@ async function guardarDatosCheckin(event) {
     alert(resultado.mensaje);
   }
 
-  window.location.href = "alertas.html";
+  window.location.href = "horario.html";
 }
 
 async function sincronizarCheckinBackendConInterfaz() {
@@ -3322,3 +3322,117 @@ if (document.readyState === "loading") {
 } else {
   iniciarObjetivosPersonales();
 }
+/* =========================
+   CHECK-IN DIARIO OBLIGATORIO
+========================= */
+function obtenerFechaISOHoyCheckinDiario() {
+  const hoy = new Date();
+  const anio = hoy.getFullYear();
+  const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoy.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function convertirFechaAISOCheckinDiario(fecha) {
+  if (!fecha) return null;
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function obtenerPaginaActualCheckinDiario() {
+  const ruta = window.location.pathname;
+  const pagina = ruta.substring(ruta.lastIndexOf("/") + 1);
+
+  return pagina || "index.html";
+}
+
+function paginaLibreCheckinDiario(pagina) {
+  const paginasLibres = [
+    "",
+    "index.html",
+    "registro.html",
+    "checkin.html"
+  ];
+
+  return paginasLibres.includes(pagina);
+}
+
+async function usuarioTieneCheckinDeHoy() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return false;
+  }
+
+  try {
+    const respuesta = await fetch(`/api/checkins/ultimo/${usuario.id}`);
+
+    if (respuesta.status === 404) {
+      return false;
+    }
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return false;
+    }
+
+    const fechaCheckin = convertirFechaAISOCheckinDiario(
+      data.createdAt || data.fecha || data.updatedAt
+    );
+
+    const fechaHoy = obtenerFechaISOHoyCheckinDiario();
+
+    return fechaCheckin === fechaHoy;
+  } catch (error) {
+    console.error("Error al verificar check-in diario:", error);
+    return false;
+  }
+}
+
+async function redirigirDespuesDeLoginSegunCheckin() {
+  const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
+
+  if (tieneCheckinHoy) {
+    window.location.href = "horario.html";
+  } else {
+    window.location.href = "checkin.html";
+  }
+}
+
+async function protegerCheckinDiario() {
+  const pagina = obtenerPaginaActualCheckinDiario();
+
+  if (paginaLibreCheckinDiario(pagina)) {
+    return;
+  }
+
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    return;
+  }
+
+  const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
+
+  if (!tieneCheckinHoy) {
+    alert("Antes de continuar, completa tu check-in diario.");
+    window.location.href = "checkin.html";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  protegerCheckinDiario();
+});
+
