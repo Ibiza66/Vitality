@@ -1,4 +1,193 @@
 ﻿/* =========================
+   NOTIFICACIONES NATIVAS ANDROID
+========================= */
+async function pedirPermisoNotificacionesVitality() {
+  try {
+    if (!window.Capacitor || !window.Capacitor.Plugins) {
+      return false;
+    }
+
+    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+    if (!LocalNotifications) {
+      return false;
+    }
+
+    let permiso = await LocalNotifications.checkPermissions();
+
+    if (permiso.display !== "granted") {
+      permiso = await LocalNotifications.requestPermissions();
+    }
+
+    return permiso.display === "granted";
+  } catch (error) {
+    console.log("No se pudo pedir permiso de notificaciones:", error);
+    return false;
+  }
+}
+
+async function enviarNotificacionCelularVitality(titulo, mensaje) {
+  try {
+    const permitido = await pedirPermisoNotificacionesVitality();
+
+    if (!permitido) {
+      return;
+    }
+
+    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: Date.now() % 100000,
+          title: titulo,
+          body: mensaje,
+          schedule: {
+            at: new Date(Date.now() + 1000)
+          }
+        }
+      ]
+    });
+  } catch (error) {
+    console.log("No se pudo enviar notificación del celular:", error);
+  }
+}
+function mostrarToastVitality(mensaje) {
+  const texto = String(mensaje || "").trim();
+
+  if (!texto) {
+    return;
+  }
+
+  let contenedor = document.getElementById("toastVitalityContainer");
+
+  if (!contenedor) {
+    contenedor = document.createElement("div");
+    contenedor.id = "toastVitalityContainer";
+    contenedor.className = "toast-vitality-container";
+    document.body.appendChild(contenedor);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = "toast-vitality";
+  toast.textContent = texto;
+
+  contenedor.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("toast-vitality-salida");
+  }, 2600);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3100);
+}
+/* =========================
+   CALENDARIO NATIVO ANDROID / IOS
+========================= */
+function obtenerPluginCalendarioVitality() {
+  if (!window.Capacitor || !window.Capacitor.Plugins) {
+    return null;
+  }
+
+  return (
+    window.Capacitor.Plugins.CapacitorCalendar ||
+    window.Capacitor.Plugins.Calendar ||
+    window.Capacitor.Plugins.EbarooniCapacitorCalendar ||
+    null
+  );
+}
+
+async function pedirPermisoCalendarioVitality() {
+  try {
+    const Calendar = obtenerPluginCalendarioVitality();
+
+    if (!Calendar) {
+      mostrarToastVitality("Calendario no disponible en esta plataforma.");
+      return false;
+    }
+
+    if (typeof Calendar.requestWriteOnlyCalendarAccess === "function") {
+      const permiso = await Calendar.requestWriteOnlyCalendarAccess();
+      return permiso.result === "granted";
+    }
+
+    if (typeof Calendar.requestFullCalendarAccess === "function") {
+      const permiso = await Calendar.requestFullCalendarAccess();
+      return permiso.result === "granted";
+    }
+
+    if (typeof Calendar.requestAllPermissions === "function") {
+      const permiso = await Calendar.requestAllPermissions();
+      return true;
+    }
+
+    return true;
+  } catch (error) {
+    console.log("No se pudo pedir permiso de calendario:", error);
+    mostrarToastVitality("No se pudo acceder al calendario.");
+    return false;
+  }
+}
+
+function crearFechaCalendarioVitality(fecha, hora) {
+  const fechaBase = fecha || new Date().toISOString().slice(0, 10);
+  const horaBase = hora || "09:00";
+
+  return new Date(`${fechaBase}T${horaBase}:00`);
+}
+
+async function agregarEventoAlCalendarioVitality(datos) {
+  try {
+    const Calendar = obtenerPluginCalendarioVitality();
+
+    if (!Calendar) {
+      mostrarToastVitality("Calendario no disponible en esta plataforma.");
+      return;
+    }
+
+    const permitido = await pedirPermisoCalendarioVitality();
+
+    if (!permitido) {
+      mostrarToastVitality("Permiso de calendario rechazado.");
+      return;
+    }
+
+    const inicio = crearFechaCalendarioVitality(datos.fecha, datos.horaInicio);
+    const termino = crearFechaCalendarioVitality(datos.fecha, datos.horaFin);
+
+    if (termino <= inicio) {
+      termino.setMinutes(inicio.getMinutes() + 60);
+    }
+
+    const evento = {
+      title: datos.titulo || "Actividad Vitality",
+      startDate: inicio.getTime(),
+      endDate: termino.getTime(),
+      isAllDay: false,
+      description: "Actividad creada desde Vitality.",
+      alerts: [-10]
+    };
+
+    if (typeof Calendar.createEventWithPrompt === "function") {
+      await Calendar.createEventWithPrompt(evento);
+      mostrarToastVitality("Abriendo calendario del celular.");
+      return;
+    }
+
+    if (typeof Calendar.createEvent === "function") {
+      await Calendar.createEvent(evento);
+      mostrarToastVitality("Actividad agregada al calendario.");
+      return;
+    }
+
+    mostrarToastVitality("Tu calendario no permite crear eventos desde Vitality.");
+  } catch (error) {
+    console.log("Error al agregar evento al calendario:", error);
+    mostrarToastVitality("No se pudo agregar al calendario.");
+  }
+}
+/* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = (() => {
@@ -57,7 +246,7 @@ function validarRangoHoras(horaInicio, horaFin) {
   if (!horaInicio || !horaFin) return false;
 
   if (horaFin <= horaInicio) {
-    alert("La hora de término debe ser posterior a la hora de inicio.");
+    mostrarToastVitality("La hora de término debe ser posterior a la hora de inicio.");
     return false;
   }
 
@@ -181,7 +370,7 @@ async function registrarUsuario(event) {
   const password = passwordInput.value.trim();
 
   if (!nombre || !correo || !password) {
-    alert("Por favor completa todos los campos.");
+    mostrarToastVitality("Por favor completa todos los campos.");
     return;
   }
 
@@ -201,18 +390,18 @@ async function registrarUsuario(event) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo registrar el usuario.");
+      mostrarToastVitality(data.mensaje || "No se pudo registrar el usuario.");
       return;
     }
 
     limpiarDatosLocalesUsuario();
     guardarUsuario(data.usuario);
 
-    alert("Cuenta creada con éxito.");
+    mostrarToastVitality("Cuenta creada con éxito.");
     window.location.href = "perfil.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
-    alert("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -228,7 +417,7 @@ async function iniciarSesion(event) {
   const password = passwordInput.value.trim();
 
   if (!correo || !password) {
-    alert("Por favor ingresa tu correo y contraseña.");
+    mostrarToastVitality("Por favor ingresa tu correo y contraseña.");
     return;
   }
 
@@ -247,18 +436,17 @@ async function iniciarSesion(event) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "Correo o contraseña incorrectos.");
+      mostrarToastVitality(data.mensaje || "Correo o contraseña incorrectos.");
       return;
     }
 
     limpiarDatosLocalesUsuario();
     guardarUsuario(data.usuario);
 
-   alert("Inicio de sesión exitoso.");
-await redirigirDespuesDeLoginSegunCheckin();
+   await redirigirDespuesDeLoginSegunCheckin();
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
-    alert("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -367,7 +555,7 @@ async function guardarDatosPerfil(event) {
   const actividades = actividadesInput.value.trim();
 
   if (!categoria || !actividades) {
-    alert("Por favor completa todos los campos del perfil.");
+    mostrarToastVitality("Por favor completa todos los campos del perfil.");
     return;
   }
 
@@ -377,9 +565,9 @@ async function guardarDatosPerfil(event) {
   mostrarPanelPerfilAvanzado();
 
   if (resultado.ok) {
-    alert("Perfil guardado con éxito en MongoDB.");
+    mostrarToastVitality("Perfil guardado con éxito en MongoDB.");
   } else {
-    alert(resultado.mensaje);
+    mostrarToastVitality(resultado.mensaje);
   }
 }
 
@@ -544,7 +732,7 @@ async function guardarDatosCheckin(event) {
   const energia = energiaInput.value.trim();
 
   if (!estadoAnimo || !nivelEstres || !sueno || !energia) {
-    alert("Por favor completa todo el check-in.");
+    mostrarToastVitality("Por favor completa todo el check-in.");
     return;
   }
 
@@ -556,9 +744,9 @@ async function guardarDatosCheckin(event) {
   );
 
   if (resultado.ok) {
-    alert("Check-in guardado con éxito en MongoDB.");
+    mostrarToastVitality("Check-in guardado con éxito en MongoDB.");
   } else {
-    alert(resultado.mensaje);
+    mostrarToastVitality(resultado.mensaje);
   }
 
   window.location.href = "horario.html";
@@ -1096,7 +1284,7 @@ async function guardarActividadFija(event) {
   const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
 
   if (!dia || !hora || !horaFin || !actividad) {
-    alert("Por favor completa todos los campos de la actividad fija.");
+    mostrarToastVitality("Por favor completa todos los campos de la actividad fija.");
     return;
   }
 
@@ -1111,7 +1299,7 @@ async function guardarActividadFija(event) {
   );
 
   if (!resultado.ok) {
-    alert(resultado.mensaje);
+    mostrarToastVitality(resultado.mensaje);
     return;
   }
 
@@ -1119,7 +1307,7 @@ async function guardarActividadFija(event) {
   limpiarEdicionActividadFija();
   await sincronizarActividadesBackendConInterfaz();
 
-  alert(editandoId ? "Actividad fija actualizada en MongoDB." : "Actividad fija guardada en MongoDB.");
+  mostrarToastVitality(editandoId ? "Actividad fija actualizada en MongoDB." : "Actividad fija guardada en MongoDB.");
 }
 
 async function guardarActividadEspecial(event) {
@@ -1142,7 +1330,7 @@ async function guardarActividadEspecial(event) {
   const editandoId = editandoIdInput ? editandoIdInput.value.trim() : "";
 
   if (!tipo || !fecha || !hora || !horaFin || !actividad) {
-    alert("Por favor completa todos los campos de la actividad especial.");
+    mostrarToastVitality("Por favor completa todos los campos de la actividad especial.");
     return;
   }
 
@@ -1158,7 +1346,7 @@ async function guardarActividadEspecial(event) {
   );
 
   if (!resultado.ok) {
-    alert(resultado.mensaje);
+    mostrarToastVitality(resultado.mensaje);
     return;
   }
 
@@ -1166,7 +1354,7 @@ async function guardarActividadEspecial(event) {
   limpiarEdicionActividadEspecial();
   await sincronizarActividadesBackendConInterfaz();
 
-  alert(editandoId ? "Actividad especial actualizada en MongoDB." : "Actividad especial guardada en MongoDB.");
+  mostrarToastVitality(editandoId ? "Actividad especial actualizada en MongoDB." : "Actividad especial guardada en MongoDB.");
 }
 
 async function alternarActividadFija(id) {
@@ -1178,14 +1366,14 @@ async function alternarActividadFija(id) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo actualizar la actividad.");
+      mostrarToastVitality(data.mensaje || "No se pudo actualizar la actividad.");
       return;
     }
 
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al completar actividad fija:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1198,14 +1386,14 @@ async function alternarActividadEspecial(id) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo actualizar la actividad.");
+      mostrarToastVitality(data.mensaje || "No se pudo actualizar la actividad.");
       return;
     }
 
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al completar actividad especial:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1221,14 +1409,14 @@ async function eliminarActividadFija(id) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo eliminar la actividad.");
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar la actividad.");
       return;
     }
 
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al eliminar actividad fija:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1244,14 +1432,14 @@ async function eliminarActividadEspecial(id) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo eliminar la actividad.");
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar la actividad.");
       return;
     }
 
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al eliminar actividad especial:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -2466,7 +2654,7 @@ function protegerPaginaActual() {
   const usuario = obtenerUsuario();
 
   if (paginaRequiereSesion(pagina) && !usuario) {
-    alert("Debes iniciar sesión para acceder a esta página.");
+    mostrarToastVitality("Debes iniciar sesión para acceder a esta página.");
     window.location.href = "index.html";
   }
 }
@@ -2482,7 +2670,7 @@ function cerrarSesion() {
 
   sessionStorage.removeItem("notificacionesVitalityCerradas");
 
-  alert("Sesión cerrada correctamente.");
+  mostrarToastVitality("Sesión cerrada correctamente.");
   window.location.href = "index.html";
 }
 
@@ -2929,11 +3117,11 @@ async function eliminarCheckinHistorial(checkinId) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo eliminar el check-in.");
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar el check-in.");
       return;
     }
 
-    alert("Check-in eliminado correctamente.");
+    mostrarToastVitality("Check-in eliminado correctamente.");
 
     await obtenerUltimoCheckinBackend();
 
@@ -2954,7 +3142,7 @@ async function eliminarCheckinHistorial(checkinId) {
     mostrarAlertas();
   } catch (error) {
     console.error("Error al eliminar check-in:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3229,7 +3417,7 @@ async function guardarObjetivoBackend(event) {
   const usuario = obtenerUsuarioObjetivos();
 
   if (!usuario || !usuario.id) {
-    alert("Debes iniciar sesión para guardar objetivos.");
+    mostrarToastVitality("Debes iniciar sesión para guardar objetivos.");
     return;
   }
 
@@ -3246,7 +3434,7 @@ async function guardarObjetivoBackend(event) {
   const fecha = fechaInput.value;
 
   if (!titulo || !fecha) {
-    alert("Completa el título y la fecha del objetivo.");
+    mostrarToastVitality("Completa el título y la fecha del objetivo.");
     return;
   }
 
@@ -3267,11 +3455,11 @@ async function guardarObjetivoBackend(event) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo guardar el objetivo.");
+      mostrarToastVitality(data.mensaje || "No se pudo guardar el objetivo.");
       return;
     }
 
-    alert("Objetivo guardado correctamente.");
+    mostrarToastVitality("Objetivo guardado correctamente.");
 
     event.target.reset();
 
@@ -3283,7 +3471,7 @@ async function guardarObjetivoBackend(event) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al guardar objetivo:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3296,14 +3484,14 @@ async function alternarObjetivoPersonal(objetivoId) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo actualizar el objetivo.");
+      mostrarToastVitality(data.mensaje || "No se pudo actualizar el objetivo.");
       return;
     }
 
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al actualizar objetivo:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3320,14 +3508,14 @@ async function eliminarObjetivoPersonal(objetivoId) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo eliminar el objetivo.");
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar el objetivo.");
       return;
     }
 
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al eliminar objetivo:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3507,7 +3695,7 @@ async function protegerCheckinDiario() {
   const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
 
   if (!tieneCheckinHoy) {
-    alert("Antes de continuar, completa tu check-in diario.");
+    mostrarToastVitality("Antes de continuar, completa tu check-in diario.");
     window.location.href = "checkin.html";
   }
 }
@@ -3574,7 +3762,7 @@ async function guardarUsoAppBackend(event) {
   const usuario = obtenerUsuarioUsoApps();
 
   if (!usuario || !usuario.id) {
-    alert("Debes iniciar sesión para monitorear apps.");
+    mostrarToastVitality("Debes iniciar sesión para monitorear apps.");
     return;
   }
 
@@ -3591,12 +3779,12 @@ async function guardarUsoAppBackend(event) {
   const minutosUsados = Number(minutosInput.value);
 
   if (!nombreApp || Number.isNaN(limiteMinutos) || Number.isNaN(minutosUsados)) {
-    alert("Completa correctamente los datos de uso de la app.");
+    mostrarToastVitality("Completa correctamente los datos de uso de la app.");
     return;
   }
 
   if (limiteMinutos <= 0 || minutosUsados < 0) {
-    alert("El límite debe ser mayor a 0 y los minutos usados no pueden ser negativos.");
+    mostrarToastVitality("El límite debe ser mayor a 0 y los minutos usados no pueden ser negativos.");
     return;
   }
 
@@ -3618,7 +3806,7 @@ async function guardarUsoAppBackend(event) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo guardar el monitoreo.");
+      mostrarToastVitality(data.mensaje || "No se pudo guardar el monitoreo.");
       return;
     }
 
@@ -3633,11 +3821,11 @@ async function guardarUsoAppBackend(event) {
         minutosUsados
       });
     } else {
-      alert("Monitoreo guardado correctamente.");
+      mostrarToastVitality("Monitoreo guardado correctamente.");
     }
   } catch (error) {
     console.error("Error al guardar uso de app:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3654,14 +3842,14 @@ async function eliminarUsoApp(usoAppId) {
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
-      alert(data.mensaje || "No se pudo eliminar la app monitoreada.");
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar la app monitoreada.");
       return;
     }
 
     await mostrarUsoApps();
   } catch (error) {
     console.error("Error al eliminar uso de app:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3783,4 +3971,99 @@ if (document.readyState === "loading") {
 
 
 
+
+
+
+/* =========================
+   PUENTE: ALERTAS VISUALES -> NOTIFICACIÓN DEL CELULAR
+========================= */
+function iniciarPuenteNotificacionesNativasVitality() {
+  if (window.__puenteNotificacionesVitalityActivo) {
+    return;
+  }
+
+  window.__puenteNotificacionesVitalityActivo = true;
+
+  const notificacionesPendientes = [];
+  let temporizadorNotificacion = null;
+
+  function limpiarTextoNotificacion(texto) {
+    return String(texto || "")
+      .replace(/×/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function programarEnvioNotificacion() {
+    clearTimeout(temporizadorNotificacion);
+
+    temporizadorNotificacion = setTimeout(() => {
+      if (notificacionesPendientes.length === 0) {
+        return;
+      }
+
+      const yaEnviada = sessionStorage.getItem("notificacionNativaVitalityEnviada");
+
+      if (yaEnviada === "true") {
+        notificacionesPendientes.length = 0;
+        return;
+      }
+
+      const resumen = notificacionesPendientes
+        .slice(0, 3)
+        .map((texto) => "• " + texto)
+        .join("\n");
+
+      sessionStorage.setItem("notificacionNativaVitalityEnviada", "true");
+
+      enviarNotificacionCelularVitality(
+        "Alertas de Vitality",
+        resumen
+      );
+
+      notificacionesPendientes.length = 0;
+    }, 900);
+  }
+
+  const observador = new MutationObserver((mutaciones) => {
+    mutaciones.forEach((mutacion) => {
+      mutacion.addedNodes.forEach((nodo) => {
+        if (!(nodo instanceof HTMLElement)) {
+          return;
+        }
+
+        const estaEnContenedor =
+          nodo.id === "notificacionesVitality" ||
+          nodo.closest("#notificacionesVitality") ||
+          nodo.classList.contains("notificaciones-vitality");
+
+        if (!estaEnContenedor) {
+          return;
+        }
+
+        const texto = limpiarTextoNotificacion(nodo.innerText || nodo.textContent);
+
+        if (
+          texto &&
+          texto.length > 5 &&
+          !notificacionesPendientes.includes(texto)
+        ) {
+          notificacionesPendientes.push(texto);
+          programarEnvioNotificacion();
+        }
+      });
+    });
+  });
+
+  observador.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarPuenteNotificacionesNativasVitality);
+} else {
+  iniciarPuenteNotificacionesNativasVitality();
+}
 

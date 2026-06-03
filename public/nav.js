@@ -1,6 +1,7 @@
 ﻿/* =========================
    FUNCIONES BASE DE NAVEGACIÓN VITALITY
 ========================= */
+
 function toggleMenu() {
   const menu = document.getElementById("menu");
   const profileMenu = document.getElementById("profileMenu");
@@ -49,6 +50,20 @@ function irASeccion(idSeccion) {
   }
 }
 
+/* =========================
+   NOTIFICACIÓN SIMPLE SIN ALERT NATIVO
+========================= */
+function notificarNavVitality(mensaje) {
+  if (typeof mostrarToastVitality === "function") {
+    mostrarToastVitality(mensaje);
+  } else {
+    console.log(mensaje);
+  }
+}
+
+/* =========================
+   CERRAR SESIÓN
+========================= */
 function cerrarSesion() {
   localStorage.removeItem("usuarioVitality");
   localStorage.removeItem("perfilVitality");
@@ -62,11 +77,18 @@ function cerrarSesion() {
   localStorage.removeItem("editandoUsoAppId");
 
   sessionStorage.removeItem("notificacionesVitalityCerradas");
+  sessionStorage.removeItem("notificacionNativaVitalityEnviada");
 
-  alert("Sesión cerrada correctamente.");
-  window.location.href = "index.html";
+  notificarNavVitality("Sesión cerrada correctamente.");
+
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 500);
 }
 
+/* =========================
+   PÁGINA ACTUAL
+========================= */
 function obtenerPaginaActualNav() {
   const ruta = window.location.pathname;
   const pagina = ruta.substring(ruta.lastIndexOf("/") + 1);
@@ -98,6 +120,26 @@ function paginaRequiereSesionNav(pagina) {
   return paginasProtegidas.includes(pagina);
 }
 
+/* =========================
+   SESIÓN PERSISTENTE
+   Si el usuario ya inició sesión, no vuelve al login
+========================= */
+function redirigirSiSesionActivaNav() {
+  const pagina = obtenerPaginaActualNav();
+  const usuarioGuardado = localStorage.getItem("usuarioVitality");
+
+  if (!usuarioGuardado) {
+    return;
+  }
+
+  if (pagina === "" || pagina === "index.html" || pagina === "registro.html") {
+    window.location.href = "horario.html";
+  }
+}
+
+/* =========================
+   PROTEGER PÁGINAS PRIVADAS
+========================= */
 function protegerPaginaActualNav() {
   const pagina = obtenerPaginaActualNav();
 
@@ -112,6 +154,9 @@ function protegerPaginaActualNav() {
   }
 }
 
+/* =========================
+   CERRAR MENÚS AL TOCAR FUERA
+========================= */
 window.addEventListener("click", function (e) {
   const menu = document.getElementById("menu");
   const profileMenu = document.getElementById("profileMenu");
@@ -137,6 +182,9 @@ window.addEventListener("click", function (e) {
   }
 });
 
+/* =========================
+   CARGA INICIAL
+========================= */
 window.addEventListener("DOMContentLoaded", function () {
   const savedTheme = localStorage.getItem("theme");
 
@@ -144,5 +192,6 @@ window.addEventListener("DOMContentLoaded", function () {
     document.body.classList.add("dark-mode");
   }
 
+  redirigirSiSesionActivaNav();
   protegerPaginaActualNav();
 });

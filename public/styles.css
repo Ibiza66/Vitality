@@ -4624,3 +4624,77 @@ body.dark-mode .organizar-app-form .organizar-secondary-btn {
   }
 }
 
+
+/* =========================
+   TOAST MOBILE VITALITY
+========================= */
+.toast-vitality-container {
+  position: fixed;
+  left: 50%;
+  bottom: 98px;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  display: grid;
+  gap: 10px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast-vitality {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(17, 92, 103, 0.96);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+  animation: toastVitalityEntrada 0.25s ease forwards;
+}
+
+.toast-vitality-salida {
+  animation: toastVitalitySalida 0.35s ease forwards;
+}
+
+@keyframes toastVitalityEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toastVitalitySalida {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+body.dark-mode .toast-vitality {
+  background: rgba(74, 149, 22, 0.96);
+  color: #ffffff;
+}
+
+
+/* =========================
+   OCULTAR NOTIFICACIONES VISUALES SUPERIORES
+========================= */
+#notificacionesVitality,
+.notificaciones-vitality {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
