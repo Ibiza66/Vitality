@@ -11,7 +11,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://10.40.56.217:3000";
+    return "http://10.30.0.126:3000";
   }
 
   return "";

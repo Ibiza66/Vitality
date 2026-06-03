@@ -3,133 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitality - Check-in</title>
+  <title>Vitality - Check-in diario</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-mobile-page checkin-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn" onclick="toggleMenu()">☰</button>
 
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
-      </div>
-    </div>
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn" onclick="toggleProfileMenu()">👤</button>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
       <li><a href="perfil.html">Perfil</a></li>
       <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
       <li><a href="alertas.html">Alertas</a></li>
       <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
     </ul>
   </header>
 
-  <main class="main-content">
-    <div class="container">
-      <h1>Check-in diario</h1>
+  <main class="checkin-slider-screen">
+    <section class="checkin-slider-header">
+      <span>Check-in diario</span>
+      <h1>¿Cómo te sientes hoy?</h1>
+      <p>Desliza y selecciona tu estado para que Vitality adapte tus recomendaciones.</p>
+    </section>
 
-      <form id="checkinForm">
-        <label for="estadoAnimo">¿Cómo te sientes hoy?</label>
-        <select id="estadoAnimo" required>
-          <option value="">Selecciona</option>
-          <option>Muy bien</option>
-          <option>Bien</option>
-          <option>Normal</option>
-          <option>Mal</option>
-          <option>Muy mal</option>
-        </select>
+    <form id="checkinForm" class="checkin-slider-form">
 
-        <label for="nivelEstres">Nivel de estrés</label>
-        <select id="nivelEstres" required>
-          <option value="">Selecciona</option>
-          <option>Bajo</option>
-          <option>Medio</option>
-          <option>Alto</option>
-        </select>
+      <!-- Campos ocultos que usa script.js -->
+      <input type="hidden" id="estadoAnimo" value="Normal">
+      <input type="hidden" id="nivelEstres" value="Medio">
+      <input type="hidden" id="sueno" value="Regular">
+      <input type="hidden" id="energia" value="Media">
 
-        <label for="sueno">¿Cómo dormiste?</label>
-        <select id="sueno" required>
-          <option value="">Selecciona</option>
-          <option>Bien</option>
-          <option>Regular</option>
-          <option>Mal</option>
-        </select>
+      <section class="checkin-slider-card">
+        <h2>Emoción principal</h2>
 
-        <label for="energia">Nivel de energía</label>
-        <select id="energia" required>
-          <option value="">Selecciona</option>
-          <option>Alta</option>
-          <option>Media</option>
-          <option>Baja</option>
-        </select>
+        <div class="mood-grid">
+          <button type="button" class="mood-option" data-estado="Muy bien">
+            <span>😊</span>
+            <small>Muy bien</small>
+          </button>
 
-        <button type="submit">Guardar check-in</button>
-      </form>
+          <button type="button" class="mood-option" data-estado="Bien">
+            <span>🙂</span>
+            <small>Bien</small>
+          </button>
 
-      <p><a href="horario.html">Ir al horario</a></p>
-      <p><a href="chat.html">Hablar con Vitality</a></p>
-      <p><a href="perfil.html">Volver al perfil</a></p>
-    </div>
+          <button type="button" class="mood-option active" data-estado="Normal">
+            <span>😐</span>
+            <small>Normal</small>
+          </button>
+
+          <button type="button" class="mood-option" data-estado="Mal">
+            <span>😟</span>
+            <small>Mal</small>
+          </button>
+
+          <button type="button" class="mood-option" data-estado="Muy mal">
+            <span>😢</span>
+            <small>Muy mal</small>
+          </button>
+        </div>
+      </section>
+
+      <section class="checkin-slider-card">
+        <h2>Métricas de bienestar</h2>
+
+        <div class="metric-slider">
+          <div class="metric-top">
+            <label for="estresRange">Nivel de estrés</label>
+            <strong id="estresValor">5</strong>
+          </div>
+          <input type="range" id="estresRange" min="1" max="10" value="5">
+          <div class="metric-labels">
+            <span>Relajada</span>
+            <span>Muy tensa</span>
+          </div>
+        </div>
+
+        <div class="metric-slider">
+          <div class="metric-top">
+            <label for="suenoRange">Nivel de descanso</label>
+            <strong id="suenoValor">5</strong>
+          </div>
+          <input type="range" id="suenoRange" min="1" max="10" value="5">
+          <div class="metric-labels">
+            <span>Agotada</span>
+            <span>Renovada</span>
+          </div>
+        </div>
+
+        <div class="metric-slider">
+          <div class="metric-top">
+            <label for="energiaRange">Nivel de energía</label>
+            <strong id="energiaValor">5</strong>
+          </div>
+          <input type="range" id="energiaRange" min="1" max="10" value="5">
+          <div class="metric-labels">
+            <span>Baja</span>
+            <span>Alta</span>
+          </div>
+        </div>
+      </section>
+
+      <button type="submit" class="checkin-slider-btn">
+        Guardar check-in
+      </button>
+
+      <div class="checkin-slider-actions">
+        <a href="chat.html">Hablar con Vitality</a>
+        <a href="horario.html">Ver horario</a>
+      </div>
+    </form>
   </main>
-
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
-
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
-
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
-
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
+
+  <script>
+    function convertirEstres(valor) {
+      const numero = Number(valor);
+      if (numero <= 3) return "Bajo";
+      if (numero <= 7) return "Medio";
+      return "Alto";
+    }
+
+    function convertirSueno(valor) {
+      const numero = Number(valor);
+      if (numero <= 3) return "Mal";
+      if (numero <= 7) return "Regular";
+      return "Bien";
+    }
+
+    function convertirEnergia(valor) {
+      const numero = Number(valor);
+      if (numero <= 3) return "Baja";
+      if (numero <= 7) return "Media";
+      return "Alta";
+    }
+
+    function actualizarSliderVisual(slider) {
+      const min = Number(slider.min);
+      const max = Number(slider.max);
+      const value = Number(slider.value);
+      const porcentaje = ((value - min) / (max - min)) * 100;
+
+      slider.style.background =
+        `linear-gradient(90deg, #115c67 ${porcentaje}%, #e7eef0 ${porcentaje}%)`;
+    }
+
+    function iniciarCheckinInteractivo() {
+      const moodButtons = document.querySelectorAll(".mood-option");
+      const estadoInput = document.getElementById("estadoAnimo");
+
+      moodButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          moodButtons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+          estadoInput.value = button.dataset.estado;
+        });
+      });
+
+      const estresRange = document.getElementById("estresRange");
+      const suenoRange = document.getElementById("suenoRange");
+      const energiaRange = document.getElementById("energiaRange");
+
+      const estresValor = document.getElementById("estresValor");
+      const suenoValor = document.getElementById("suenoValor");
+      const energiaValor = document.getElementById("energiaValor");
+
+      const nivelEstresInput = document.getElementById("nivelEstres");
+      const suenoInput = document.getElementById("sueno");
+      const energiaInput = document.getElementById("energia");
+
+      function actualizarTodo() {
+        estresValor.textContent = estresRange.value;
+        suenoValor.textContent = suenoRange.value;
+        energiaValor.textContent = energiaRange.value;
+
+        nivelEstresInput.value = convertirEstres(estresRange.value);
+        suenoInput.value = convertirSueno(suenoRange.value);
+        energiaInput.value = convertirEnergia(energiaRange.value);
+
+        actualizarSliderVisual(estresRange);
+        actualizarSliderVisual(suenoRange);
+        actualizarSliderVisual(energiaRange);
+      }
+
+      [estresRange, suenoRange, energiaRange].forEach((slider) => {
+        slider.addEventListener("input", actualizarTodo);
+      });
+
+      actualizarTodo();
+    }
+
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", iniciarCheckinInteractivo);
+    } else {
+      iniciarCheckinInteractivo();
+    }
+  </script>
 </body>
 </html>
-
