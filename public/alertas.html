@@ -6,159 +6,140 @@
   <title>Vitality - Alertas</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-mobile-page alertas-app-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
 
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
-      </div>
-    </div>
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
       <li><a href="perfil.html">Perfil</a></li>
       <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
       <li><a href="alertas.html">Alertas</a></li>
       <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
     </ul>
   </header>
 
-  <main class="main-content">
-    <div class="container horario-container">
-      <h1>Alertas y recomendaciones</h1>
+  <main class="alertas-app-screen">
+
+    <section class="alertas-hero-card">
+      <div class="alertas-icon">🔔</div>
+      <div>
+        <span>Alertas Vitality</span>
+        <h1>Recomendaciones del día</h1>
+        <p>Revisa avisos según tu check-in, tus actividades y tu bienestar digital.</p>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card">
+      <div class="alertas-section-title">
+        <span>Estado actual</span>
+        <h2>Alertas detectadas</h2>
+      </div>
+
+      <div id="alertasContainer" class="alertas-lista-mobile">
+        <div class="alerta">
+          <p><strong>Cargando alertas...</strong></p>
+          <p>Estamos revisando tu check-in más reciente.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card">
+      <div class="alertas-section-title">
+        <span>Acciones</span>
+        <h2>Qué puedes hacer ahora</h2>
+      </div>
+
+      <div class="acciones-alertas-lista">
+        <div class="accion-alerta-item">
+          <strong>1. Revisa tu horario</strong>
+          <p>Verifica si tienes actividades pendientes o eventos importantes para hoy.</p>
+        </div>
+
+        <div class="accion-alerta-item">
+          <strong>2. Ordena tus prioridades</strong>
+          <p>Si tienes muchas tareas, comienza por una actividad importante y deja pausas breves.</p>
+        </div>
+
+        <div class="accion-alerta-item">
+          <strong>3. Usa el chat de apoyo</strong>
+          <p>Si necesitas conversar o recibir una recomendación personalizada, habla con Vitality.</p>
+        </div>
+      </div>
+
+      <div class="alertas-action-row">
+        <a href="horario.html">Ver horario</a>
+        <a href="chat.html">Hablar con Vitality</a>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card">
+      <div class="alertas-section-title">
+        <span>Actividades</span>
+        <h2>Relación con tu día</h2>
+      </div>
 
       <p>
-        Aquí puedes revisar las alertas generadas según tu último check-in,
-        tus actividades del día y las recomendaciones preventivas de Vitality.
+        Si registraste estrés alto y tienes varias actividades pendientes, Vitality puede recomendarte priorizar,
+        descansar y avanzar una tarea a la vez.
       </p>
 
-      <div class="perfil-info">
-        <div class="perfil-card">
-          <h2>Estado detectado</h2>
+      <div class="alertas-action-row">
+        <a href="horario.html#seccionHoy">Ver actividades</a>
+        <a href="organizar_horario.html">Agregar actividad</a>
+      </div>
+    </section>
 
-          <div id="alertasContainer">
-            <div class="alerta">
-              <p><strong>Cargando alertas...</strong></p>
-              <p>Estamos revisando tu check-in más reciente.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="perfil-card">
-          <h2>Acciones recomendadas</h2>
-
-          <p>
-            <strong>1. Revisa tu horario:</strong>
-            verifica si tienes actividades pendientes o eventos importantes para hoy.
-          </p>
-
-          <p>
-            <strong>2. Organiza tus prioridades:</strong>
-            si tienes muchas tareas, comienza por una actividad importante y deja pausas breves.
-          </p>
-
-          <p>
-            <strong>3. Usa el chat de apoyo:</strong>
-            si necesitas conversar o recibir una recomendación más personalizada, puedes hablar con Vitality.
-          </p>
-
-          <div class="botones-horario">
-            <a href="horario.html" class="boton-link">Ver horario</a>
-            <a href="chat.html" class="boton-link">Hablar con Vitality</a>
-          </div>
-        </div>
+    <section class="alertas-mobile-card alertas-warning-card">
+      <div class="alertas-section-title">
+        <span>Importante</span>
+        <h2>Recordatorio</h2>
       </div>
 
-      <div class="perfil-card">
-        <h2>Actividades relacionadas</h2>
+      <p>
+        Vitality entrega apoyo preventivo y recomendaciones de organización personal.
+        No reemplaza ayuda profesional médica o psicológica.
+      </p>
+    </section>
 
-        <p>
-          Si tienes actividades registradas para hoy, Vitality puede ayudarte a relacionarlas con tu estado emocional.
-          Por ejemplo, si marcaste estrés alto y tienes varias actividades pendientes, la aplicación te recomendará priorizar y tomar pausas.
-        </p>
-
-        <div class="botones-horario">
-          <a href="horario.html#seccionHoy" class="boton-link">Ver actividades de hoy</a>
-          <a href="organizar_horario.html" class="boton-link">Agregar actividad</a>
-        </div>
-      </div>
-
-      <div class="perfil-card">
-        <h2>Recordatorio importante</h2>
-
-        <p>
-          Vitality entrega recomendaciones de apoyo preventivo y organización personal.
-          No reemplaza la ayuda profesional médica o psicológica.
-        </p>
-      </div>
-
-      <div class="botones-horario">
-        <a href="checkin.html" class="boton-link">Volver al check-in</a>
-        <a href="perfil.html" class="boton-link">Ver mi perfil</a>
-        <a href="horario.html" class="boton-link">Volver al horario</a>
-      </div>
-    </div>
   </main>
 
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
+  <nav class="bottom-app-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
 
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
 
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
 
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
-
