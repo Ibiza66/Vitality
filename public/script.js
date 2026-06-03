@@ -2425,7 +2425,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   mostrarEventosEspecialesHoy();
   rellenarTablaHorarioSemanal();
   iniciarChatInteligente();
-  generarNotificacionesAutomaticas();
+  const paginaActualNotificaciones = obtenerPaginaActual();
+  const paginasConNotificaciones = [
+    "horario.html",
+    "perfil.html",
+    "alertas.html",
+    "chat.html",
+    "uso_apps.html"
+  ];
+
+  if (paginasConNotificaciones.includes(paginaActualNotificaciones)) {
+    generarNotificacionesAutomaticas();
+  }
 });
 /* =========================
    CONTROL DE SESIÓN Y PROTECCIÓN DE PÁGINAS
@@ -3768,6 +3779,7 @@ if (document.readyState === "loading") {
 } else {
   iniciarControlUsoApps();
 }
+
 
 
 

@@ -1889,3 +1889,229 @@ body.dark-mode .profile-menu button:hover {
     font-size: 1.7rem;
   }
 }
+
+/* =========================
+   LOGIN MOBILE APP - CORRECCIÓN FINAL
+========================= */
+body.login-page {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background:
+    radial-gradient(circle at top left, rgba(166, 226, 124, 0.45), transparent 35%),
+    linear-gradient(160deg, #f3f8ee 0%, #dfeee8 45%, #eef7e6 100%) !important;
+  color: #173600 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  overflow-x: hidden !important;
+}
+
+.login-app-screen {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  width: 100% !important;
+  padding: 28px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+.login-app-card {
+  width: 100% !important;
+  max-width: 390px !important;
+  padding: 30px 22px 24px !important;
+  border-radius: 30px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 18px 45px rgba(23, 54, 0, 0.18) !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
+
+.login-logo-box {
+  width: 112px !important;
+  height: 112px !important;
+  margin: 0 auto 18px !important;
+  border-radius: 30px !important;
+  background: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 12px 28px rgba(17, 92, 103, 0.18) !important;
+  overflow: hidden !important;
+}
+
+.login-logo {
+  width: 88px !important;
+  height: 88px !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.login-text h1 {
+  margin: 0 !important;
+  font-size: 2rem !important;
+  color: #115c67 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.5px !important;
+}
+
+.login-text p {
+  margin: 10px auto 24px !important;
+  max-width: 310px !important;
+  color: #4d5b4a !important;
+  font-size: 0.98rem !important;
+  line-height: 1.45 !important;
+}
+
+.login-app-form {
+  display: grid !important;
+  gap: 16px !important;
+  text-align: left !important;
+  margin: 0 !important;
+}
+
+.input-app-group {
+  display: grid !important;
+  gap: 7px !important;
+}
+
+.input-app-group label {
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  color: #173600 !important;
+  margin: 0 !important;
+}
+
+.input-app-group input {
+  width: 100% !important;
+  padding: 15px 16px !important;
+  border: 1px solid rgba(17, 92, 103, 0.18) !important;
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  color: #173600 !important;
+  font-size: 1rem !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+}
+
+.input-app-group input:focus {
+  border-color: #115c67 !important;
+  box-shadow: 0 0 0 4px rgba(17, 92, 103, 0.12) !important;
+}
+
+.login-primary-btn {
+  width: 100% !important;
+  margin-top: 6px !important;
+  padding: 15px 18px !important;
+  border: none !important;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #115c67, #4a9516) !important;
+  color: #ffffff !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  box-shadow: 0 12px 24px rgba(17, 92, 103, 0.25) !important;
+}
+
+.login-secondary-actions {
+  margin-top: 22px !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+  background: rgba(232, 247, 220, 0.95) !important;
+  text-align: center !important;
+}
+
+.login-secondary-actions p {
+  margin: 0 0 6px !important;
+  color: #4d5b4a !important;
+  font-size: 0.92rem !important;
+}
+
+.login-secondary-actions a {
+  color: #115c67 !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+}
+
+.login-theme-btn {
+  width: auto !important;
+  margin: 16px auto 0 !important;
+  padding: 10px 14px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #115c67 !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+}
+
+/* Modo oscuro login */
+body.dark-mode.login-page {
+  background:
+    radial-gradient(circle at top left, rgba(74, 149, 22, 0.28), transparent 35%),
+    linear-gradient(160deg, #0f2022 0%, #14282a 55%, #173600 100%) !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .login-app-card {
+  background: rgba(20, 40, 42, 0.94) !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode .login-logo-box {
+  background: rgba(255, 255, 255, 0.96) !important;
+}
+
+body.dark-mode .login-text h1,
+body.dark-mode .input-app-group label {
+  color: #9ee493 !important;
+}
+
+body.dark-mode .login-text p,
+body.dark-mode .login-secondary-actions p {
+  color: #d8ead2 !important;
+}
+
+body.dark-mode .input-app-group input {
+  background: rgba(15, 32, 34, 0.95) !important;
+  color: #ffffff !important;
+  border-color: rgba(166, 226, 124, 0.35) !important;
+}
+
+body.dark-mode .login-secondary-actions {
+  background: rgba(166, 226, 124, 0.12) !important;
+}
+
+body.dark-mode .login-secondary-actions a,
+body.dark-mode .login-theme-btn {
+  color: #9ee493 !important;
+}
+
+/* Ajuste celular pequeño */
+@media (max-width: 420px) {
+  .login-app-screen {
+    align-items: flex-start !important;
+    padding: 36px 16px 22px !important;
+  }
+
+  .login-app-card {
+    padding: 26px 18px 22px !important;
+    border-radius: 26px !important;
+  }
+
+  .login-logo-box {
+    width: 98px !important;
+    height: 98px !important;
+  }
+
+  .login-logo {
+    width: 76px !important;
+    height: 76px !important;
+  }
+
+  .login-text h1 {
+    font-size: 1.8rem !important;
+  }
+}
+

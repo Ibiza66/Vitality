@@ -6,98 +6,61 @@
   <title>Vitality - Inicio de sesión</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="login-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
-
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
+  <main class="login-app-screen">
+    <section class="login-app-card">
+      <div class="login-logo-box">
+        <img src="logo.jpg" alt="Logo Vitality" class="login-logo">
       </div>
-    </div>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+      <div class="login-text">
+        <h1>Vitality</h1>
+        <p>Organiza tu día, registra tu bienestar y recibe apoyo personalizado.</p>
+      </div>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
+      <form id="loginForm" class="login-app-form">
+        <div class="input-app-group">
+          <label for="correoLogin">Correo electrónico</label>
+          <input
+            type="email"
+            id="correoLogin"
+            placeholder="tu@email.com"
+            required
+          >
+        </div>
 
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="perfil.html">Perfil</a></li>
-      <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
-      <li><a href="alertas.html">Alertas</a></li>
-      <li><a href="chat.html">Chat de apoyo</a></li>
-    </ul>
-  </header>
+        <div class="input-app-group">
+          <label for="passwordLogin">Contraseña</label>
+          <input
+            type="password"
+            id="passwordLogin"
+            placeholder="Ingresa tu contraseña"
+            required
+          >
+        </div>
 
-  <main class="main-content">
-    <div class="container">
-      <h1>Inicio de sesión</h1>
-      <h2>Bienvenida a Vitality</h2>
-
-      <form id="loginForm">
-        <input type="email" id="correoLogin" placeholder="Correo electrónico" required>
-        <input type="password" id="passwordLogin" placeholder="Contraseña" required>
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit" class="login-primary-btn">
+          Iniciar sesión
+        </button>
       </form>
 
-      <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
-      <p><a href="chat.html">Hablar con Vitality</a></p>
-    </div>
+      <div class="login-secondary-actions">
+        <p>¿No tienes cuenta?</p>
+        <a href="registro.html">Crear cuenta</a>
+      </div>
+
+      <button
+        type="button"
+        class="login-theme-btn"
+        onclick="toggleTheme()"
+      >
+        🌙 / ☀️ Cambiar tema
+      </button>
+    </section>
   </main>
-
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
-
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
-
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
-
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
-
