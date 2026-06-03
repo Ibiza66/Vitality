@@ -6,269 +6,282 @@
   <title>Vitality - Perfil</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-mobile-page perfil-app-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
 
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
-      </div>
-    </div>
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
       <li><a href="perfil.html">Perfil</a></li>
       <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
       <li><a href="alertas.html">Alertas</a></li>
       <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
     </ul>
   </header>
 
-  <main class="main-content">
-    <div class="container perfil-container">
-      <h1>Mi perfil</h1>
-      <p>Revisa tu información personal, tu último check-in, tus actividades del día y una recomendación de Vitality.</p>
+  <main class="perfil-app-screen">
 
-      <div class="perfil-info">
-        <div class="perfil-card">
-          <h2>Información personal</h2>
+    <section class="perfil-hero-card">
+      <div class="perfil-avatar-app">👤</div>
 
-          <p><strong>Nombre:</strong> <span id="perfilNombre">Aún no hay usuario registrado</span></p>
-          <p><strong>Categoría:</strong> <span id="perfilCategoria">Aún no has seleccionado una categoría</span></p>
-          <p><strong>Actividades favoritas:</strong> <span id="perfilActividades">Aún no has agregado actividades favoritas</span></p>
-          <p><strong>Estado actual:</strong> <span id="perfilEstadoActual">Completa tu check-in para ver tu estado actual</span></p>
-        </div>
+      <div>
+        <span>Mi perfil</span>
+        <h1 id="perfilNombre">Aún no hay usuario registrado</h1>
+        <p id="perfilEstadoActual">Completa tu check-in para ver tu estado actual</p>
+      </div>
+    </section>
 
-        <div class="perfil-card">
-          <h2>Editar perfil</h2>
-
-          <form id="perfilForm">
-            <label for="categoria">Categoría</label>
-            <select id="categoria" required>
-              <option value="">Selecciona tu categoría</option>
-              <option value="Niño">Niño</option>
-              <option value="Adolescente">Adolescente</option>
-              <option value="Adulto">Adulto</option>
-            </select>
-
-            <label for="actividades">¿Qué actividades te gustan?</label>
-            <textarea
-              id="actividades"
-              placeholder="Ej: caminar, escuchar música, ver películas"
-              required
-            ></textarea>
-
-            <button type="submit">Guardar perfil</button>
-          </form>
-        </div>
+    <section class="perfil-stats-grid">
+      <div class="perfil-stat-card">
+        <span>Estrés</span>
+        <strong id="perfilResumenEstres">Sin datos</strong>
       </div>
 
-      <div class="perfil-info">
-        <div class="perfil-card">
-          <h2>Resumen del día</h2>
-
-          <p><strong>Estado emocional:</strong> <span id="perfilResumenEstado">Sin check-in registrado</span></p>
-          <p><strong>Estrés:</strong> <span id="perfilResumenEstres">Sin check-in registrado</span></p>
-          <p><strong>Sueño:</strong> <span id="perfilResumenSueno">Sin check-in registrado</span></p>
-          <p><strong>Energía:</strong> <span id="perfilResumenEnergia">Sin check-in registrado</span></p>
-          <p><strong>Actividades de hoy:</strong> <span id="perfilTotalActividades">0</span></p>
-          <p><strong>Pendientes:</strong> <span id="perfilActividadesPendientes">0</span></p>
-          <p><strong>Completadas:</strong> <span id="perfilActividadesCompletadas">0</span></p>
-        </div>
-
-        <div class="perfil-card">
-          <h2>Próxima actividad</h2>
-
-          <p><strong>Actividad:</strong> <span id="perfilProximaActividad">No hay actividades pendientes para hoy</span></p>
-          <p><strong>Horario:</strong> <span id="perfilProximaHora">Sin horario</span></p>
-          <p><strong>Tipo:</strong> <span id="perfilProximaTipo">Sin tipo</span></p>
-
-          <div class="botones-horario">
-            <a href="horario.html" class="boton-link">Ver horario</a>
-            <a href="organizar_horario.html" class="boton-link">Agregar actividad</a>
-          </div>
-        </div>
+      <div class="perfil-stat-card">
+        <span>Energía</span>
+        <strong id="perfilResumenEnergia">Sin datos</strong>
       </div>
 
-      <div class="perfil-card">
-        <h2>Recomendación Vitality</h2>
-        <p id="perfilRecomendacion">
-          Completa tu check-in y agrega actividades para recibir una recomendación personalizada.
-        </p>
+      <div class="perfil-stat-card">
+        <span>Pendientes</span>
+        <strong id="perfilActividadesPendientes">0</strong>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card">
+      <div class="perfil-section-title">
+        <span>Información</span>
+        <h2>Datos personales</h2>
       </div>
 
-      <div class="perfil-card">
-        <h2>Nivel de bienestar estimado</h2>
-        <p>
-          <strong>Resultado:</strong>
-          <span id="perfilNivelBienestar">Sin datos suficientes</span>
-        </p>
+      <div class="perfil-data-list">
+        <p><strong>Categoría:</strong> <span id="perfilCategoria">Aún no has seleccionado una categoría</span></p>
+        <p><strong>Actividades favoritas:</strong> <span id="perfilActividades">Aún no has agregado actividades favoritas</span></p>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card">
+      <div class="perfil-section-title">
+        <span>Editar</span>
+        <h2>Actualizar perfil</h2>
+      </div>
+
+      <form id="perfilForm" class="perfil-app-form">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" required>
+          <option value="">Selecciona tu categoría</option>
+          <option value="Niño">Niño</option>
+          <option value="Adolescente">Adolescente</option>
+          <option value="Adulto">Adulto</option>
+        </select>
+
+        <label for="actividades">¿Qué actividades te gustan?</label>
+        <textarea
+          id="actividades"
+          placeholder="Ej: caminar, escuchar música, ver películas"
+          required
+        ></textarea>
+
+        <button type="submit">Guardar perfil</button>
+      </form>
+    </section>
+
+    <section class="perfil-mobile-card">
+      <div class="perfil-section-title">
+        <span>Hoy</span>
+        <h2>Resumen del día</h2>
+      </div>
+
+      <div class="perfil-data-list">
+        <p><strong>Estado emocional:</strong> <span id="perfilResumenEstado">Sin check-in registrado</span></p>
+        <p><strong>Sueño:</strong> <span id="perfilResumenSueno">Sin check-in registrado</span></p>
+        <p><strong>Actividades:</strong> <span id="perfilTotalActividades">0</span></p>
+        <p><strong>Completadas:</strong> <span id="perfilActividadesCompletadas">0</span></p>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card">
+      <div class="perfil-section-title">
+        <span>Próximo</span>
+        <h2>Próxima actividad</h2>
+      </div>
+
+      <div class="perfil-data-list">
+        <p><strong>Actividad:</strong> <span id="perfilProximaActividad">No hay actividades pendientes para hoy</span></p>
+        <p><strong>Horario:</strong> <span id="perfilProximaHora">Sin horario</span></p>
+        <p><strong>Tipo:</strong> <span id="perfilProximaTipo">Sin tipo</span></p>
+      </div>
+
+      <div class="perfil-action-row">
+        <a href="horario.html">Ver horario</a>
+        <a href="organizar_horario.html">Agregar</a>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card perfil-recomendacion-card">
+      <div class="perfil-section-title">
+        <span>Vitality</span>
+        <h2>Recomendación</h2>
+      </div>
+
+      <p id="perfilRecomendacion">
+        Completa tu check-in y agrega actividades para recibir una recomendación personalizada.
+      </p>
+    </section>
+
+    <section class="perfil-mobile-card">
+      <div class="perfil-section-title">
+        <span>Bienestar</span>
+        <h2>Nivel estimado</h2>
+      </div>
+
+      <div class="perfil-wellbeing-box">
+        <strong id="perfilNivelBienestar">Sin datos suficientes</strong>
         <p id="perfilDescripcionBienestar">
           Este indicador se calcula de forma simple según tu último check-in. No corresponde a un diagnóstico médico ni psicológico.
         </p>
       </div>
+    </section>
 
-      <div class="perfil-card">
-        <h2>Resumen emocional</h2>
-
-        <p><strong>Estado emocional:</strong> <span id="resumenEstado">Sin check-in registrado</span></p>
-        <p><strong>Nivel de estrés:</strong> <span id="resumenEstres">Sin check-in registrado</span></p>
-        <p><strong>Cómo dormiste:</strong> <span id="resumenSueno">Sin check-in registrado</span></p>
-        <p><strong>Nivel de energía:</strong> <span id="resumenEnergia">Sin check-in registrado</span></p>
+    <section class="perfil-mobile-card historial-emocional-card">
+      <div class="perfil-section-title">
+        <span>Historial</span>
+        <h2>Últimos check-ins</h2>
       </div>
 
-      <div class="perfil-card historial-emocional-card">
-        <h2>Historial emocional</h2>
-        <p>Últimos check-ins registrados en Vitality.</p>
-
-        <div id="historialCheckinsContainer" class="historial-checkins">
-          <div class="historial-item">
-            <p>Cargando historial emocional...</p>
-          </div>
+      <div id="historialCheckinsContainer" class="historial-checkins">
+        <div class="historial-item">
+          <p>Cargando historial emocional...</p>
         </div>
       </div>
+    </section>
 
-      <div class="perfil-card estadisticas-emocionales-card">
-        <h2>Estadísticas emocionales</h2>
-        <p>Resumen basado en tus últimos check-ins registrados.</p>
-
-        <div id="estadisticasEmocionalesContainer" class="estadisticas-emocionales-grid">
-          <div class="estadistica-emocional-item">
-            <p>Cargando estadísticas emocionales...</p>
-          </div>
-        </div>
+    <section class="perfil-mobile-card estadisticas-emocionales-card">
+      <div class="perfil-section-title">
+        <span>Estadísticas</span>
+        <h2>Estado emocional</h2>
       </div>
 
-      <div class="perfil-card racha-checkin-card">
+      <div id="estadisticasEmocionalesContainer" class="estadisticas-emocionales-grid">
+        <div class="estadistica-emocional-item">
+          <p>Cargando estadísticas emocionales...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card racha-checkin-card">
+      <div class="perfil-section-title">
+        <span>Constancia</span>
         <h2>Racha de check-ins</h2>
-        <p>Seguimiento de tu constancia registrando tu estado emocional.</p>
-
-        <div id="rachaCheckinContainer" class="racha-checkin-grid">
-          <div class="racha-checkin-item">
-            <p>Cargando racha de check-ins...</p>
-          </div>
-        </div>
       </div>
 
-      <div class="perfil-card objetivos-card">
+      <div id="rachaCheckinContainer" class="racha-checkin-grid">
+        <div class="racha-checkin-item">
+          <p>Cargando racha de check-ins...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card objetivos-card">
+      <div class="perfil-section-title">
+        <span>Metas</span>
         <h2>Objetivos personales</h2>
-        <p>Agrega metas simples de bienestar para organizar mejor tu día.</p>
-
-        <form id="objetivoForm" class="objetivo-form">
-          <label for="objetivoTitulo">Objetivo</label>
-          <input
-            type="text"
-            id="objetivoTitulo"
-            placeholder="Ej: Tomar agua, caminar 10 minutos, dormir temprano"
-            required
-          >
-
-          <label for="objetivoDescripcion">Descripción</label>
-          <textarea
-            id="objetivoDescripcion"
-            placeholder="Ej: Beber un vaso de agua durante la mañana"
-          ></textarea>
-
-          <label for="objetivoFecha">Fecha</label>
-          <input type="date" id="objetivoFecha" required>
-
-          <button type="submit">Guardar objetivo</button>
-        </form>
-
-        <div id="objetivosContainer" class="objetivos-lista">
-          <div class="objetivo-item">
-            <p>Cargando objetivos personales...</p>
-          </div>
-        </div>
       </div>
 
-      <div class="perfil-card tendencia-emocional-card">
+      <p class="perfil-muted-text">Agrega metas simples de bienestar para organizar mejor tu día.</p>
+
+      <form id="objetivoForm" class="objetivo-form">
+        <label for="objetivoTitulo">Objetivo</label>
+        <input
+          type="text"
+          id="objetivoTitulo"
+          placeholder="Ej: Tomar agua, caminar 10 minutos"
+          required
+        >
+
+        <label for="objetivoDescripcion">Descripción</label>
+        <textarea
+          id="objetivoDescripcion"
+          placeholder="Ej: Beber un vaso de agua durante la mañana"
+        ></textarea>
+
+        <label for="objetivoFecha">Fecha</label>
+        <input type="date" id="objetivoFecha" required>
+
+        <button type="submit">Guardar objetivo</button>
+      </form>
+
+      <div id="objetivosContainer" class="objetivos-lista">
+        <div class="objetivo-item">
+          <p>Cargando objetivos personales...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="perfil-mobile-card tendencia-emocional-card">
+      <div class="perfil-section-title">
+        <span>Tendencia</span>
         <h2>Tendencia emocional</h2>
-        <p>Visualización de tus últimos check-ins según tu estado emocional.</p>
+      </div>
 
-        <div id="tendenciaEmocionalContainer" class="tendencia-emocional">
-          <div class="tendencia-vacia">
-            <p>Cargando tendencia emocional...</p>
-          </div>
+      <div id="tendenciaEmocionalContainer" class="tendencia-emocional">
+        <div class="tendencia-vacia">
+          <p>Cargando tendencia emocional...</p>
         </div>
       </div>
+    </section>
 
-      <div class="perfil-grafico">
-        <h2>¿Cómo me he sentido según mi último check-in?</h2>
+    <section class="perfil-mobile-card perfil-grafico">
+      <div class="perfil-section-title">
+        <span>Último check-in</span>
+        <h2>Cómo me he sentido</h2>
+      </div>
 
-        <div class="grafico-barras" id="graficoCheckin">
-          <div class="barra-item">
-            <span>Hoy</span>
-            <div class="barra barra-3" id="barraEstado"></div>
-            <small id="textoEstado">Sin check-in registrado</small>
-          </div>
+      <div class="grafico-barras" id="graficoCheckin">
+        <div class="barra-item">
+          <span>Hoy</span>
+          <div class="barra barra-3" id="barraEstado"></div>
+          <small id="textoEstado">Sin check-in registrado</small>
         </div>
       </div>
+    </section>
 
-      <div class="botones-horario">
-        <a href="checkin.html" class="boton-link">Ir al check-in</a>
-        <a href="horario.html" class="boton-link">Ver horario</a>
-        <a href="alertas.html" class="boton-link">Ver alertas</a>
-        <a href="chat.html" class="boton-link">Hablar con Vitality</a>
-      </div>
-    </div>
   </main>
 
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
+  <nav class="bottom-app-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
 
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
 
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
 
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
+    <a href="perfil.html" class="active">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>

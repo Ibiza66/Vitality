@@ -3263,4 +3263,325 @@ body.dark-mode .horario-quick-actions .quick-card strong {
 body.dark-mode .horario-quick-actions .quick-card small {
   color: #d8ead2 !important;
 }
+/* =========================
+   PERFIL MOBILE APP
+========================= */
+.perfil-app-page {
+  padding-bottom: 120px;
+}
 
+.perfil-app-screen {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 22px 16px 135px;
+  box-sizing: border-box;
+}
+
+.perfil-hero-card {
+  padding: 24px 20px;
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(17, 92, 103, 0.95), rgba(74, 149, 22, 0.92)),
+    #115c67;
+  color: #ffffff;
+  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.24);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.perfil-avatar-app {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.18);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.perfil-hero-card span {
+  display: inline-block;
+  padding: 6px 11px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.perfil-hero-card h1 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+}
+
+.perfil-hero-card p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
+  font-size: 0.92rem;
+}
+
+.perfil-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.perfil-stat-card {
+  min-height: 86px;
+  padding: 14px 8px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 28px rgba(23, 54, 0, 0.12);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.perfil-stat-card span {
+  color: #4a9516;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.perfil-stat-card strong {
+  color: #115c67;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+.perfil-mobile-card {
+  margin-top: 18px;
+  padding: 20px 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 16px 36px rgba(23, 54, 0, 0.13);
+}
+
+.perfil-section-title {
+  margin-bottom: 14px;
+}
+
+.perfil-section-title span {
+  display: block;
+  margin-bottom: 4px;
+  color: #4a9516;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.perfil-section-title h2 {
+  margin: 0;
+  color: #173600;
+  font-size: 1.28rem;
+  letter-spacing: -0.3px;
+}
+
+.perfil-data-list {
+  display: grid;
+  gap: 10px;
+}
+
+.perfil-data-list p,
+.perfil-mobile-card p {
+  margin: 0;
+  color: #4d5b4a;
+  line-height: 1.45;
+}
+
+.perfil-data-list strong {
+  color: #173600;
+}
+
+.perfil-app-form,
+.objetivo-form {
+  display: grid;
+  gap: 12px;
+}
+
+.perfil-app-form label,
+.objetivo-form label {
+  color: #173600;
+  font-weight: 850;
+  font-size: 0.9rem;
+}
+
+.perfil-app-form select,
+.perfil-app-form textarea,
+.objetivo-form input,
+.objetivo-form textarea {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid rgba(17, 92, 103, 0.18);
+  border-radius: 16px;
+  background: #ffffff;
+  color: #173600;
+  font-size: 0.98rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.perfil-app-form textarea,
+.objetivo-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.perfil-app-form button,
+.objetivo-form button {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #115c67, #4a9516);
+  color: #ffffff;
+  font-weight: 850;
+  font-size: 0.98rem;
+  cursor: pointer;
+}
+
+.perfil-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.perfil-action-row a {
+  padding: 13px 10px;
+  border-radius: 16px;
+  background: #e8f7dc;
+  color: #115c67;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 850;
+}
+
+.perfil-recomendacion-card {
+  border-left: 5px solid #115c67;
+}
+
+.perfil-wellbeing-box {
+  padding: 16px;
+  border-radius: 20px;
+  background: #f7fbf4;
+}
+
+.perfil-wellbeing-box strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #115c67;
+  font-size: 1.1rem;
+}
+
+.perfil-muted-text {
+  margin-bottom: 14px !important;
+  color: #5b6757 !important;
+}
+
+.historial-checkins,
+.estadisticas-emocionales-grid,
+.racha-checkin-grid,
+.objetivos-lista,
+.tendencia-emocional {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.historial-item,
+.estadistica-emocional-item,
+.racha-checkin-item,
+.objetivo-item,
+.tendencia-vacia {
+  padding: 15px;
+  border-radius: 20px;
+  background: #f7fbf4;
+  border-left: 5px solid #115c67;
+}
+
+.perfil-grafico {
+  overflow: hidden;
+}
+
+/* Modo oscuro perfil */
+body.dark-mode .perfil-mobile-card,
+body.dark-mode .perfil-stat-card {
+  background: rgba(20, 40, 42, 0.94);
+}
+
+body.dark-mode .perfil-section-title h2,
+body.dark-mode .perfil-data-list strong,
+body.dark-mode .perfil-app-form label,
+body.dark-mode .objetivo-form label {
+  color: #9ee493;
+}
+
+body.dark-mode .perfil-section-title span,
+body.dark-mode .perfil-stat-card span,
+body.dark-mode .perfil-stat-card strong {
+  color: #a6e27c;
+}
+
+body.dark-mode .perfil-data-list p,
+body.dark-mode .perfil-mobile-card p,
+body.dark-mode .perfil-muted-text {
+  color: #d8ead2 !important;
+}
+
+body.dark-mode .perfil-app-form select,
+body.dark-mode .perfil-app-form textarea,
+body.dark-mode .objetivo-form input,
+body.dark-mode .objetivo-form textarea {
+  background: rgba(15, 32, 34, 0.95);
+  color: #ffffff;
+  border-color: rgba(166, 226, 124, 0.35);
+}
+
+body.dark-mode .perfil-wellbeing-box,
+body.dark-mode .historial-item,
+body.dark-mode .estadistica-emocional-item,
+body.dark-mode .racha-checkin-item,
+body.dark-mode .objetivo-item,
+body.dark-mode .tendencia-vacia {
+  background: rgba(15, 32, 34, 0.95);
+}
+
+@media (max-width: 390px) {
+  .perfil-hero-card {
+    padding: 22px 18px;
+  }
+
+  .perfil-avatar-app {
+    width: 58px;
+    height: 58px;
+  }
+
+  .perfil-hero-card h1 {
+    font-size: 1.28rem;
+  }
+
+  .perfil-stats-grid {
+    gap: 10px;
+  }
+
+  .perfil-stat-card {
+    min-height: 82px;
+    border-radius: 20px;
+  }
+
+  .perfil-action-row {
+    grid-template-columns: 1fr;
+  }
+}
