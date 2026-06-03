@@ -362,15 +362,35 @@ async function registrarUsuario(event) {
   const nombreInput = document.getElementById("nombre");
   const correoInput = document.getElementById("correo");
   const passwordInput = document.getElementById("password");
+  const edadInput = document.getElementById("edad");
+  const ocupacionInput = document.getElementById("ocupacion");
+  const actividadesFavoritasInput = document.getElementById("actividadesFavoritas");
 
-  if (!nombreInput || !correoInput || !passwordInput) return;
+  if (
+    !nombreInput ||
+    !correoInput ||
+    !passwordInput ||
+    !edadInput ||
+    !ocupacionInput ||
+    !actividadesFavoritasInput
+  ) {
+    return;
+  }
 
   const nombre = nombreInput.value.trim();
   const correo = correoInput.value.trim().toLowerCase();
   const password = passwordInput.value.trim();
+  const edad = Number(edadInput.value);
+  const ocupacion = ocupacionInput.value.trim();
+  const actividadesFavoritas = actividadesFavoritasInput.value.trim();
 
-  if (!nombre || !correo || !password) {
+  if (!nombre || !correo || !password || !edad || !ocupacion || !actividadesFavoritas) {
     mostrarToastVitality("Por favor completa todos los campos.");
+    return;
+  }
+
+  if (Number.isNaN(edad) || edad < 1 || edad > 120) {
+    mostrarToastVitality("Ingresa una edad válida.");
     return;
   }
 
@@ -383,7 +403,10 @@ async function registrarUsuario(event) {
       body: JSON.stringify({
         nombre,
         correo,
-        password
+        password,
+        edad,
+        ocupacion,
+        actividadesFavoritas
       })
     });
 
@@ -398,10 +421,15 @@ async function registrarUsuario(event) {
     guardarUsuario(data.usuario);
 
     mostrarToastVitality("Cuenta creada con éxito.");
-    window.location.href = "perfil.html";
+    window.location.href = "checkin.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
-    mostrarToastVitality("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality(
+      "Error al conectar con el servidor. Detalle: " +
+        error.message +
+        " | API_URL: " +
+        API_URL
+    );
   }
 }
 
@@ -4065,5 +4093,63 @@ if (document.readyState === "loading") {
   window.addEventListener("DOMContentLoaded", iniciarPuenteNotificacionesNativasVitality);
 } else {
   iniciarPuenteNotificacionesNativasVitality();
+}
+/* =========================
+   INICIALES DEL USUARIO
+========================= */
+function obtenerInicialesUsuarioVitality(nombre) {
+  const partes = String(nombre || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (partes.length === 0) {
+    return "U";
+  }
+
+  if (partes.length === 1) {
+    return partes[0].charAt(0).toUpperCase();
+  }
+
+  return (
+    partes[0].charAt(0) + partes[partes.length - 1].charAt(0)
+  ).toUpperCase();
+}
+
+function aplicarInicialesUsuarioVitality() {
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.nombre) {
+    return;
+  }
+
+  const iniciales = obtenerInicialesUsuarioVitality(usuario.nombre);
+
+  const botonesPerfil = document.querySelectorAll(".profile-btn");
+
+  botonesPerfil.forEach((boton) => {
+    boton.textContent = iniciales;
+    boton.classList.add("profile-initials-btn");
+  });
+
+  const avatarPerfil = document.querySelector(".perfil-avatar-app");
+
+  if (avatarPerfil) {
+    avatarPerfil.textContent = iniciales;
+    avatarPerfil.classList.add("perfil-avatar-iniciales");
+  }
+}
+
+function iniciarInicialesUsuarioVitality() {
+  aplicarInicialesUsuarioVitality();
+
+  setTimeout(aplicarInicialesUsuarioVitality, 300);
+  setTimeout(aplicarInicialesUsuarioVitality, 1000);
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", iniciarInicialesUsuarioVitality);
+} else {
+  iniciarInicialesUsuarioVitality();
 }
 

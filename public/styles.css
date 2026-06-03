@@ -4698,3 +4698,27 @@ body.dark-mode .toast-vitality {
   pointer-events: none !important;
 }
 
+
+/* =========================
+   INICIALES USUARIO VITALITY
+========================= */
+.profile-initials-btn {
+  font-size: 0.82rem !important;
+  font-weight: 900 !important;
+  color: #115c67 !important;
+  background: #e8f7dc !important;
+  letter-spacing: 0.5px !important;
+}
+
+.perfil-avatar-iniciales {
+  font-size: 1.35rem !important;
+  font-weight: 950 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.8px !important;
+}
+
+body.dark-mode .profile-initials-btn {
+  background: rgba(166, 226, 124, 0.16) !important;
+  color: #9ee493 !important;
+}
+
