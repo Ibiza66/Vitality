@@ -6,106 +6,93 @@
   <title>Vitality - Chat de apoyo</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-mobile-page chat-app-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
 
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
-      </div>
-    </div>
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
       <li><a href="perfil.html">Perfil</a></li>
       <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
       <li><a href="alertas.html">Alertas</a></li>
       <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
     </ul>
   </header>
 
-  <main class="main-content">
-    <div class="container chat-container">
-      <h1>Chat de apoyo</h1>
-      <p class="chat-subtitle">Habla con Vitality y recibe apoyo según cómo te has sentido hoy.</p>
+  <main class="chat-app-screen">
 
-      <div class="chat-box" id="chatBox">
-        <div class="message bot">
-          <p>Hola, soy Vitality 💚</p>
-        </div>
+    <section class="chat-app-hero">
+      <div class="chat-avatar">💚</div>
+      <div>
+        <span>Chat Vitality</span>
+        <h1>Apoyo personalizado</h1>
+        <p>Cuéntame cómo te sientes o pide ayuda para organizar tu día.</p>
       </div>
+    </section>
 
-      <div class="chat-quick-actions" id="chatQuickActions">
-        <button type="button" onclick="usarOpcionRapida('conversar')">Conversar</button>
-        <button type="button" onclick="usarOpcionRapida('organización')">Organizar mi día</button>
-        <button type="button" onclick="usarOpcionRapida('recomendación')">Dame una recomendación</button>
+    <section class="chat-quick-actions" id="chatQuickActions">
+      <button type="button" onclick="usarOpcionRapida('conversar')">
+        💬 Conversar
+      </button>
+
+      <button type="button" onclick="usarOpcionRapida('organización')">
+        📅 Organizar mi día
+      </button>
+
+      <button type="button" onclick="usarOpcionRapida('recomendación')">
+        ✨ Recomendación
+      </button>
+    </section>
+
+    <section class="chat-box chat-app-box" id="chatBox">
+      <div class="message bot">
+        <p>Hola, soy Vitality 💚<br>¿Cómo te puedo ayudar hoy?</p>
       </div>
+    </section>
 
-      <form class="chat-input-area" onsubmit="sendMessage(event)">
-        <input type="text" id="userInput" placeholder="Escribe tu mensaje..." required>
-        <button type="submit">Enviar</button>
-      </form>
-    </div>
   </main>
 
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
+  <form class="chat-input-area chat-app-input" onsubmit="sendMessage(event)">
+    <input type="text" id="userInput" placeholder="Escribe tu mensaje..." required>
+    <button type="submit">Enviar</button>
+  </form>
 
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
+  <nav class="bottom-app-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
 
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
 
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
+    <a href="chat.html" class="active">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
 
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
-
