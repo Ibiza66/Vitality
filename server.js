@@ -44,9 +44,10 @@ mongoose
   .then(() => {
     console.log("Conectado a MongoDB");
 
-    app.listen(PORT, () => {
-      console.log("Servidor Vitality funcionando en http://localhost:" + PORT);
-    });
+    app.listen(PORT, "0.0.0.0", () => {
+  console.log("Servidor Vitality funcionando en http://localhost:" + PORT);
+  console.log("Servidor accesible desde la red en el puerto " + PORT);
+});
   })
   .catch((error) => {
     console.error("Error al conectar con MongoDB:", error.message);
