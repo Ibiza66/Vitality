@@ -1,7 +1,21 @@
 ﻿/* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
-const API_URL = "";
+const API_URL = (() => {
+  const esAppMovil =
+    window.Capacitor ||
+    window.location.protocol === "capacitor:" ||
+    (
+      window.location.hostname === "localhost" &&
+      window.location.port !== "3000"
+    );
+
+  if (esAppMovil) {
+    return "http://10.0.2.2:3000";
+  }
+
+  return "";
+})();
 
 /* =========================
    FUNCIONES GENERALES
@@ -198,7 +212,7 @@ async function registrarUsuario(event) {
     window.location.href = "perfil.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
-    alert("Ocurrió un error al conectar con el servidor.");
+    alert("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -244,7 +258,7 @@ async function iniciarSesion(event) {
 await redirigirDespuesDeLoginSegunCheckin();
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
-    alert("Ocurrió un error al conectar con el servidor.");
+    alert("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1171,7 +1185,7 @@ async function alternarActividadFija(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al completar actividad fija:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1191,7 +1205,7 @@ async function alternarActividadEspecial(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al completar actividad especial:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1214,7 +1228,7 @@ async function eliminarActividadFija(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al eliminar actividad fija:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1237,7 +1251,7 @@ async function eliminarActividadEspecial(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al eliminar actividad especial:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -1588,7 +1602,7 @@ async function obtenerRespuestaIAChat(texto) {
     console.error("Error preparando contexto para IA:", error);
   }
 
-  const respuesta = await fetch("/api/ia/chat", {
+  const respuesta = await fetch(`${API_URL}/api/ia/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -2502,7 +2516,7 @@ async function obtenerHistorialCheckinsBackend() {
   }
 
   try {
-    const respuesta = await fetch(`/api/checkins/historial/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuario.id}`);
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
@@ -2601,7 +2615,7 @@ async function obtenerHistorialCheckinsParaEstadisticas() {
   }
 
   try {
-    const respuesta = await fetch(`/api/checkins/historial/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuario.id}`);
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
@@ -2818,7 +2832,7 @@ async function obtenerHistorialCheckinsParaTendencia() {
   }
 
   try {
-    const respuesta = await fetch(`/api/checkins/historial/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuario.id}`);
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
@@ -2897,7 +2911,7 @@ async function eliminarCheckinHistorial(checkinId) {
   if (!confirmar) return;
 
   try {
-    const respuesta = await fetch(`/api/checkins/${checkinId}`, {
+    const respuesta = await fetch(`${API_URL}/api/checkins/${checkinId}`, {
       method: "DELETE"
     });
 
@@ -2929,7 +2943,7 @@ async function eliminarCheckinHistorial(checkinId) {
     mostrarAlertas();
   } catch (error) {
     console.error("Error al eliminar check-in:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3183,7 +3197,7 @@ async function obtenerObjetivosBackend() {
   }
 
   try {
-    const respuesta = await fetch(`/api/objetivos/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/objetivos/${usuario.id}`);
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
@@ -3226,7 +3240,7 @@ async function guardarObjetivoBackend(event) {
   }
 
   try {
-    const respuesta = await fetch("/api/objetivos", {
+    const respuesta = await fetch(`${API_URL}/api/objetivos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -3258,13 +3272,13 @@ async function guardarObjetivoBackend(event) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al guardar objetivo:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
 async function alternarObjetivoPersonal(objetivoId) {
   try {
-    const respuesta = await fetch(`/api/objetivos/${objetivoId}/completar`, {
+    const respuesta = await fetch(`${API_URL}/api/objetivos/${objetivoId}/completar`, {
       method: "PATCH"
     });
 
@@ -3278,7 +3292,7 @@ async function alternarObjetivoPersonal(objetivoId) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al actualizar objetivo:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3288,7 +3302,7 @@ async function eliminarObjetivoPersonal(objetivoId) {
   if (!confirmar) return;
 
   try {
-    const respuesta = await fetch(`/api/objetivos/${objetivoId}`, {
+    const respuesta = await fetch(`${API_URL}/api/objetivos/${objetivoId}`, {
       method: "DELETE"
     });
 
@@ -3302,7 +3316,7 @@ async function eliminarObjetivoPersonal(objetivoId) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al eliminar objetivo:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3431,7 +3445,7 @@ async function usuarioTieneCheckinDeHoy() {
   }
 
   try {
-    const respuesta = await fetch(`/api/checkins/ultimo/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuario.id}`);
 
     if (respuesta.status === 404) {
       return false;
@@ -3528,7 +3542,7 @@ async function obtenerUsoAppsBackend() {
   }
 
   try {
-    const respuesta = await fetch(`/api/uso-apps/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/uso-apps/${usuario.id}`);
     const data = await respuesta.json();
 
     if (!respuesta.ok) {
@@ -3576,7 +3590,7 @@ async function guardarUsoAppBackend(event) {
   }
 
   try {
-    const respuesta = await fetch("/api/uso-apps", {
+    const respuesta = await fetch(`${API_URL}/api/uso-apps`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -3612,7 +3626,7 @@ async function guardarUsoAppBackend(event) {
     }
   } catch (error) {
     console.error("Error al guardar uso de app:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3622,7 +3636,7 @@ async function eliminarUsoApp(usoAppId) {
   if (!confirmar) return;
 
   try {
-    const respuesta = await fetch(`/api/uso-apps/${usoAppId}`, {
+    const respuesta = await fetch(`${API_URL}/api/uso-apps/${usoAppId}`, {
       method: "DELETE"
     });
 
@@ -3636,7 +3650,7 @@ async function eliminarUsoApp(usoAppId) {
     await mostrarUsoApps();
   } catch (error) {
     console.error("Error al eliminar uso de app:", error);
-    alert("No se pudo conectar con el servidor.");
+    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
 
@@ -3754,3 +3768,6 @@ if (document.readyState === "loading") {
 } else {
   iniciarControlUsoApps();
 }
+
+
+
