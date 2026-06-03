@@ -2,44 +2,54 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Control de uso de apps | Vitality</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Uso de apps</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <header>
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+<body class="app-mobile-page uso-apps-page">
 
-    <a href="horario.html" class="logo-link">
-      <h1>Vitality</h1>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
+
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
     </a>
 
-    <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
+
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
+      <li><a href="perfil.html">Perfil</a></li>
+      <li><a href="checkin.html">Check-in</a></li>
+      <li><a href="alertas.html">Alertas</a></li>
+      <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+    </ul>
   </header>
 
-  <nav id="menu" class="menu">
-    <a href="horario.html">Horario</a>
-    <a href="perfil.html">Mi perfil</a>
-    <a href="checkin.html">Check-in diario</a>
-    <a href="alertas.html">Alertas</a>
-    <a href="chat.html">Chat Vitality</a>
-    <a href="uso_apps.html">Uso de apps</a>
-    <button type="button" onclick="toggleTheme()">Cambiar tema</button>
-  </nav>
+  <main class="uso-apps-screen">
 
-  <nav id="profileMenu" class="profile-menu">
-    <a href="perfil.html">Mi perfil</a>
-    <button type="button" onclick="cerrarSesion()">Cerrar sesión</button>
-  </nav>
+    <section class="uso-apps-hero">
+      <div class="uso-apps-icon">📱</div>
+      <div>
+        <span>Bienestar digital</span>
+        <h1>Control de uso de apps</h1>
+        <p>Registra el tiempo usado y recibe una alerta si superas tu límite diario.</p>
+      </div>
+    </section>
 
-  <main class="container">
-    <section class="card uso-apps-card">
-      <h2>Control de uso de apps</h2>
-      <p>
-        Registra una app, su límite diario y el tiempo usado. Si se supera el límite,
-        Vitality mostrará una alerta de bienestar digital.
-      </p>
+    <section class="uso-apps-mobile-card">
+      <div class="uso-apps-section-title">
+        <span>Monitoreo</span>
+        <h2>Configurar app</h2>
+      </div>
 
-      <form id="usoAppForm" class="uso-app-form">
+      <form id="usoAppForm" class="uso-app-form uso-app-form-mobile">
         <label for="usoAppNombre">App monitoreada</label>
         <select id="usoAppNombre" required>
           <option value="">Selecciona una app</option>
@@ -57,39 +67,70 @@
           placeholder="Ej: com.zhiliaoapp.musically"
         >
 
-        <label for="usoAppLimite">Límite diario en minutos</label>
-        <input
-          type="number"
-          id="usoAppLimite"
-          min="1"
-          placeholder="Ej: 60"
-          required
-        >
+        <div class="uso-apps-grid-inputs">
+          <div>
+            <label for="usoAppLimite">Límite diario</label>
+            <input
+              type="number"
+              id="usoAppLimite"
+              min="1"
+              placeholder="60"
+              required
+            >
+          </div>
 
-        <label for="usoAppMinutos">Minutos usados hoy</label>
-        <input
-          type="number"
-          id="usoAppMinutos"
-          min="0"
-          placeholder="Ej: 75"
-          required
-        >
+          <div>
+            <label for="usoAppMinutos">Uso hoy</label>
+            <input
+              type="number"
+              id="usoAppMinutos"
+              min="0"
+              placeholder="75"
+              required
+            >
+          </div>
+        </div>
 
-        <button type="submit">Guardar monitoreo</button>
+        <button type="submit">
+          Guardar monitoreo
+        </button>
       </form>
     </section>
 
-    <section class="card uso-apps-card">
-      <h2>Apps monitoreadas</h2>
-      <div id="listaUsoApps" class="uso-apps-lista">
+    <section class="uso-apps-mobile-card">
+      <div class="uso-apps-section-title">
+        <span>Seguimiento</span>
+        <h2>Apps monitoreadas</h2>
+      </div>
+
+      <div id="listaUsoApps" class="uso-apps-lista uso-apps-lista-mobile">
         <p>Cargando apps monitoreadas...</p>
       </div>
     </section>
+
   </main>
 
-  <footer>
-    <p>Vitality - Bienestar digital y emocional</p>
-  </footer>
+  <nav class="bottom-app-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>

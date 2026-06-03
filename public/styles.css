@@ -3909,3 +3909,248 @@ body.dark-mode .chat-app-input input {
   color: #ffffff !important;
 }
 
+
+/* =========================
+   USO DE APPS MOBILE APP
+========================= */
+.uso-apps-page {
+  padding-bottom: 120px !important;
+}
+
+.uso-apps-screen {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 22px 16px 135px;
+  box-sizing: border-box;
+}
+
+.uso-apps-hero {
+  padding: 24px 20px;
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, #0f5f66, #3f941a),
+    #115c67;
+  color: #ffffff;
+  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.26);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.uso-apps-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.18);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.uso-apps-hero span {
+  display: inline-block;
+  padding: 6px 11px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.uso-apps-hero h1 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+}
+
+.uso-apps-hero p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
+  font-size: 0.92rem;
+}
+
+.uso-apps-mobile-card {
+  margin-top: 18px;
+  padding: 20px 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 16px 36px rgba(23, 54, 0, 0.13);
+}
+
+.uso-apps-section-title {
+  margin-bottom: 16px;
+}
+
+.uso-apps-section-title span {
+  display: block;
+  margin-bottom: 4px;
+  color: #4a9516;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.uso-apps-section-title h2 {
+  margin: 0;
+  color: #173600;
+  font-size: 1.28rem;
+  letter-spacing: -0.3px;
+}
+
+.uso-app-form-mobile {
+  display: grid !important;
+  gap: 13px !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+.uso-app-form-mobile label {
+  color: #173600 !important;
+  font-weight: 850 !important;
+  font-size: 0.9rem !important;
+  margin: 0 !important;
+}
+
+.uso-app-form-mobile select,
+.uso-app-form-mobile input {
+  width: 100% !important;
+  padding: 14px 15px !important;
+  border: 1px solid rgba(17, 92, 103, 0.18) !important;
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  color: #173600 !important;
+  font-size: 0.98rem !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+}
+
+.uso-app-form-mobile select:focus,
+.uso-app-form-mobile input:focus {
+  border-color: #115c67 !important;
+  box-shadow: 0 0 0 4px rgba(17, 92, 103, 0.12) !important;
+}
+
+.uso-apps-grid-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.uso-apps-grid-inputs div {
+  display: grid;
+  gap: 8px;
+}
+
+.uso-app-form-mobile button {
+  width: 100% !important;
+  margin-top: 8px !important;
+  padding: 15px 18px !important;
+  border: none !important;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #0f5f66, #3f941a) !important;
+  color: #ffffff !important;
+  font-size: 1rem !important;
+  font-weight: 850 !important;
+  cursor: pointer !important;
+  box-shadow: 0 12px 24px rgba(17, 92, 103, 0.24) !important;
+}
+
+.uso-apps-lista-mobile {
+  display: grid;
+  gap: 14px;
+}
+
+.uso-apps-lista-mobile p {
+  margin: 0;
+  color: #4d5b4a;
+  line-height: 1.45;
+}
+
+.uso-apps-lista-mobile .uso-app-item,
+.uso-apps-lista-mobile .uso-app-card,
+.uso-apps-lista-mobile > div {
+  padding: 16px !important;
+  border-radius: 22px !important;
+  background: #f7fbf4 !important;
+  border-left: 5px solid #115c67 !important;
+  box-shadow: none !important;
+  text-align: left !important;
+}
+
+.uso-apps-lista-mobile button {
+  width: 100% !important;
+  min-height: 42px !important;
+  margin-top: 10px !important;
+  border: none !important;
+  border-radius: 14px !important;
+  background: #b83232 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  cursor: pointer !important;
+}
+
+/* Cuando hay exceso */
+.uso-apps-lista-mobile .exceso,
+.uso-apps-lista-mobile .uso-excesivo,
+.uso-apps-lista-mobile .alerta {
+  border-left-color: #b83232 !important;
+  background: #fff0f0 !important;
+}
+
+/* Modo oscuro uso apps */
+body.dark-mode .uso-apps-mobile-card {
+  background: rgba(20, 40, 42, 0.94) !important;
+}
+
+body.dark-mode .uso-apps-section-title h2,
+body.dark-mode .uso-app-form-mobile label {
+  color: #9ee493 !important;
+}
+
+body.dark-mode .uso-apps-section-title span {
+  color: #a6e27c !important;
+}
+
+body.dark-mode .uso-app-form-mobile select,
+body.dark-mode .uso-app-form-mobile input {
+  background: rgba(15, 32, 34, 0.95) !important;
+  color: #ffffff !important;
+  border-color: rgba(166, 226, 124, 0.35) !important;
+}
+
+body.dark-mode .uso-apps-lista-mobile p {
+  color: #d8ead2 !important;
+}
+
+body.dark-mode .uso-apps-lista-mobile .uso-app-item,
+body.dark-mode .uso-apps-lista-mobile .uso-app-card,
+body.dark-mode .uso-apps-lista-mobile > div {
+  background: rgba(15, 32, 34, 0.95) !important;
+}
+
+@media (max-width: 390px) {
+  .uso-apps-hero {
+    padding: 22px 18px;
+  }
+
+  .uso-apps-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .uso-apps-hero h1 {
+    font-size: 1.28rem;
+  }
+
+  .uso-apps-grid-inputs {
+    grid-template-columns: 1fr;
+  }
+}
+
