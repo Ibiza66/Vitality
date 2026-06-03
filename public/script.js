@@ -1,4 +1,4 @@
-﻿/* =========================
+/* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = (() => {
@@ -212,7 +212,7 @@ async function registrarUsuario(event) {
     window.location.href = "perfil.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
-    alert("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("Ocurrió un error al conectar con el servidor.");
   }
 }
 
@@ -258,7 +258,7 @@ async function iniciarSesion(event) {
 await redirigirDespuesDeLoginSegunCheckin();
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
-    alert("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("Ocurrió un error al conectar con el servidor.");
   }
 }
 
@@ -1185,7 +1185,7 @@ async function alternarActividadFija(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al completar actividad fija:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -1205,7 +1205,7 @@ async function alternarActividadEspecial(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al completar actividad especial:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -1228,7 +1228,7 @@ async function eliminarActividadFija(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al eliminar actividad fija:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -1251,7 +1251,7 @@ async function eliminarActividadEspecial(id) {
     await sincronizarActividadesBackendConInterfaz();
   } catch (error) {
     console.error("Error al eliminar actividad especial:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -2943,7 +2943,7 @@ async function eliminarCheckinHistorial(checkinId) {
     mostrarAlertas();
   } catch (error) {
     console.error("Error al eliminar check-in:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -3272,7 +3272,7 @@ async function guardarObjetivoBackend(event) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al guardar objetivo:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -3292,7 +3292,7 @@ async function alternarObjetivoPersonal(objetivoId) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al actualizar objetivo:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -3316,7 +3316,7 @@ async function eliminarObjetivoPersonal(objetivoId) {
     await mostrarObjetivosPersonales();
   } catch (error) {
     console.error("Error al eliminar objetivo:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -3626,7 +3626,7 @@ async function guardarUsoAppBackend(event) {
     }
   } catch (error) {
     console.error("Error al guardar uso de app:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -3650,7 +3650,7 @@ async function eliminarUsoApp(usoAppId) {
     await mostrarUsoApps();
   } catch (error) {
     console.error("Error al eliminar uso de app:", error);
-    alert("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    alert("No se pudo conectar con el servidor.");
   }
 }
 
@@ -3768,6 +3768,4 @@ if (document.readyState === "loading") {
 } else {
   iniciarControlUsoApps();
 }
-
-
 
