@@ -6,63 +6,102 @@
   <title>Vitality - Horario</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-mobile-page horario-app-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
 
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
-      </div>
-    </div>
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
       <li><a href="perfil.html">Perfil</a></li>
       <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
       <li><a href="alertas.html">Alertas</a></li>
       <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
     </ul>
   </header>
 
-  <main class="main-content">
-    <div class="container horario-container">
-      <h1>Mi horario</h1>
+  <main class="horario-app-screen">
 
-      <div class="botones-horario">
-        <button type="button" onclick="irASeccion('seccionHorarioSemanal')">
-          Ver horario semanal
-        </button>
-        <button type="button" onclick="mostrarSoloActividadesDeHoy()">
-          Ver actividades de hoy
-        </button>
+    <section class="horario-hero-card">
+      <div>
+        <span class="horario-badge">Mi día</span>
+        <h1>Organiza tu horario</h1>
+        <p>Revisa tus actividades, eventos importantes y recomendaciones para avanzar con calma.</p>
+      </div>
+    </section>
+
+    <section class="horario-quick-actions">
+      <button type="button" class="quick-card" onclick="mostrarSoloActividadesDeHoy()">
+        <span class="quick-icon">📌</span>
+        <strong>Hoy</strong>
+        <small>Ver actividades</small>
+      </button>
+
+      <button type="button" class="quick-card" onclick="irASeccion('seccionHorarioSemanal')">
+        <span class="quick-icon">📅</span>
+        <strong>Semana</strong>
+        <small>Ver horario</small>
+      </button>
+
+      <button type="button" class="quick-card" onclick="window.location.href='organizar_horario.html'">
+        <span class="quick-icon quick-icon-plus">＋</span>
+        <strong>Agregar</strong>
+        <small>Actividad</small>
+      </button>
+    </section>
+
+    <section class="horario-mobile-card">
+      <div class="horario-section-title">
+        <div>
+          <span>Hoy</span>
+          <h2 id="seccionHoy">Actividades de hoy</h2>
+        </div>
+
       </div>
 
-      <h2 id="seccionEventosHoy">Eventos importantes de hoy</h2>
-      <div class="actividades-hoy" id="listaEventosHoy">
+      <div class="actividades-hoy horario-lista-mobile" id="listaActividadesHoy">
+        <div class="actividad-card">
+          <p>No hay actividades para hoy.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="horario-mobile-card">
+      <div class="horario-section-title">
+        <div>
+          <span>Importante</span>
+          <h2 id="seccionEventosHoy">Eventos de hoy</h2>
+        </div>
+      </div>
+
+      <div class="actividades-hoy horario-lista-mobile" id="listaEventosHoy">
         <div class="actividad-card">
           <p>No hay eventos especiales para hoy.</p>
         </div>
       </div>
+    </section>
 
-      <h2 id="seccionHorarioSemanal">Horario semanal</h2>
+    <section class="horario-mobile-card">
+      <div class="horario-section-title">
+        <div>
+          <span>Resumen</span>
+          <h2 id="seccionHorarioSemanal">Horario semanal</h2>
+        </div>
+      </div>
 
-      <div class="tabla-semanal">
+      <div class="tabla-semanal horario-table-mobile">
         <table id="tablaHorarioSemanal">
           <thead>
             <tr>
@@ -84,86 +123,66 @@
           </tbody>
         </table>
       </div>
+    </section>
 
-      <h2>Gestión de horario</h2>
-
-      <div class="botones-horario">
-        <a href="organizar_horario.html" class="boton-link">
-          Agregar actividades
-        </a>
+    <section class="horario-mobile-card">
+      <div class="horario-section-title">
+        <div>
+          <span>Rutina</span>
+          <h2 id="seccionActividades">Actividades fijas</h2>
+        </div>
       </div>
 
-      <h2 id="seccionActividades">Actividades fijas guardadas</h2>
-      <div class="actividades-hoy" id="listaActividadesFijas">
+      <div class="actividades-hoy horario-lista-mobile" id="listaActividadesFijas">
         <div class="actividad-card">
           <p>No hay actividades fijas guardadas todavía.</p>
         </div>
       </div>
+    </section>
 
-      <h2>Actividades especiales guardadas</h2>
-      <div class="actividades-hoy" id="listaActividadesEspeciales">
+    <section class="horario-mobile-card">
+      <div class="horario-section-title">
+        <div>
+          <span>Extras</span>
+          <h2>Actividades especiales</h2>
+        </div>
+      </div>
+
+      <div class="actividades-hoy horario-lista-mobile" id="listaActividadesEspeciales">
         <div class="actividad-card">
           <p>No hay actividades especiales guardadas todavía.</p>
         </div>
       </div>
+    </section>
 
-      <h2 id="seccionHoy">Actividades de hoy</h2>
-      <div class="actividades-hoy" id="listaActividadesHoy">
-        <div class="actividad-card">
-          <p>No hay actividades para hoy.</p>
-        </div>
-      </div>
-
-      <p><a href="alertas.html">Ver alertas y recomendaciones</a></p>
-      <p><a href="chat.html">Hablar con Vitality</a></p>
-      <p><a href="checkin.html">Volver al check-in</a></p>
-    </div>
   </main>
 
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
+  <nav class="bottom-app-nav">
+    <a href="horario.html" class="active">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
 
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
 
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
 
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">
-          🌙 / ☀️ Cambiar tema
-        </button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
+
+
 
