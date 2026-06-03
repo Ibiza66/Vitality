@@ -4360,3 +4360,267 @@ body.dark-mode .alertas-action-row a {
   }
 }
 
+
+/* =========================
+   ORGANIZAR HORARIO MOBILE APP
+========================= */
+.organizar-app-page {
+  padding-bottom: 120px !important;
+}
+
+.organizar-app-screen {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 22px 16px 135px;
+  box-sizing: border-box;
+}
+
+.organizar-hero-card {
+  padding: 24px 20px;
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, #0f5f66, #3f941a),
+    #115c67;
+  color: #ffffff;
+  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.26);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.organizar-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.18);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.organizar-hero-card span {
+  display: inline-block;
+  padding: 6px 11px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.organizar-hero-card h1 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+}
+
+.organizar-hero-card p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
+  font-size: 0.92rem;
+}
+
+.organizar-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.organizar-tab {
+  min-height: 48px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #115c67;
+  font-weight: 850;
+  font-size: 0.92rem;
+  box-shadow: 0 10px 24px rgba(23, 54, 0, 0.12);
+  cursor: pointer;
+}
+
+.organizar-tab.active {
+  background: linear-gradient(135deg, #0f5f66, #3f941a);
+  color: #ffffff;
+}
+
+.organizar-mobile-card {
+  display: none;
+  margin-top: 18px;
+  padding: 20px 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 16px 36px rgba(23, 54, 0, 0.13);
+}
+
+.organizar-mobile-card.active,
+.organizar-tip-card {
+  display: block;
+}
+
+.organizar-section-title {
+  margin-bottom: 16px;
+}
+
+.organizar-section-title span {
+  display: block;
+  margin-bottom: 4px;
+  color: #4a9516;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.organizar-section-title h2 {
+  margin: 0;
+  color: #173600;
+  font-size: 1.28rem;
+  letter-spacing: -0.3px;
+}
+
+.organizar-app-form {
+  display: grid;
+  gap: 13px;
+}
+
+.organizar-app-form label {
+  color: #173600;
+  font-weight: 850;
+  font-size: 0.9rem;
+}
+
+.organizar-app-form input,
+.organizar-app-form select {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid rgba(17, 92, 103, 0.18);
+  border-radius: 16px;
+  background: #ffffff;
+  color: #173600;
+  font-size: 0.98rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.organizar-app-form input:focus,
+.organizar-app-form select:focus {
+  border-color: #115c67;
+  box-shadow: 0 0 0 4px rgba(17, 92, 103, 0.12);
+}
+
+.organizar-time-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.organizar-time-grid div {
+  display: grid;
+  gap: 8px;
+}
+
+.organizar-app-form button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 15px 18px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0f5f66, #3f941a);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(17, 92, 103, 0.24);
+}
+
+.organizar-app-form .organizar-secondary-btn {
+  background: #e8f7dc;
+  color: #115c67;
+  box-shadow: none;
+}
+
+.organizar-tip-card p {
+  margin: 0;
+  color: #4d5b4a;
+  line-height: 1.45;
+}
+
+.organizar-back-link {
+  display: block;
+  margin-top: 16px;
+  padding: 13px 10px;
+  border-radius: 16px;
+  background: #e8f7dc;
+  color: #115c67;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 850;
+}
+
+/* Modo oscuro organizar horario */
+body.dark-mode .organizar-mobile-card,
+body.dark-mode .organizar-tab {
+  background: rgba(20, 40, 42, 0.94);
+}
+
+body.dark-mode .organizar-tab {
+  color: #9ee493;
+}
+
+body.dark-mode .organizar-tab.active {
+  background: linear-gradient(135deg, #0f5f66, #3f941a);
+  color: #ffffff;
+}
+
+body.dark-mode .organizar-section-title h2,
+body.dark-mode .organizar-app-form label {
+  color: #9ee493;
+}
+
+body.dark-mode .organizar-section-title span {
+  color: #a6e27c;
+}
+
+body.dark-mode .organizar-app-form input,
+body.dark-mode .organizar-app-form select {
+  background: rgba(15, 32, 34, 0.95);
+  color: #ffffff;
+  border-color: rgba(166, 226, 124, 0.35);
+}
+
+body.dark-mode .organizar-tip-card p {
+  color: #d8ead2;
+}
+
+body.dark-mode .organizar-back-link,
+body.dark-mode .organizar-app-form .organizar-secondary-btn {
+  background: rgba(166, 226, 124, 0.14);
+  color: #9ee493;
+}
+
+@media (max-width: 390px) {
+  .organizar-hero-card {
+    padding: 22px 18px;
+  }
+
+  .organizar-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .organizar-hero-card h1 {
+    font-size: 1.28rem;
+  }
+
+  .organizar-time-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

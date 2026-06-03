@@ -6,189 +6,225 @@
   <title>Vitality - Organizar horario</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-mobile-page organizar-app-page">
 
-  <header class="main-header">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
 
-    <div class="header-center">
-      <div class="logo">
-        <a href="horario.html">
-          <img src="logo.jpg" alt="Logo Vitality">
-        </a>
-      </div>
-    </div>
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
 
-    <div class="header-right">
-      <button class="profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
 
-      <ul class="profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-    <ul class="menu" id="menu">
-      <li><a href="index.html">Inicio</a></li>
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
       <li><a href="perfil.html">Perfil</a></li>
       <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="horario.html">Horario</a></li>
       <li><a href="alertas.html">Alertas</a></li>
       <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
     </ul>
   </header>
 
-  <main class="main-content">
-    <div class="container horario-container">
-      <h1>Organizar horario</h1>
-      <p>Aquí puedes agregar o editar actividades fijas de la semana y también actividades especiales para días concretos.</p>
+  <main class="organizar-app-screen">
 
-      <div class="seccion-horario">
-        <div class="perfil-card">
-          <h3 id="tituloActividadFija">Agregar actividad fija</h3>
+    <section class="organizar-hero-card">
+      <div class="organizar-icon">🗓️</div>
+      <div>
+        <span>Organización</span>
+        <h1>Agregar actividades</h1>
+        <p>Registra rutinas semanales o eventos especiales para mantener tu día ordenado.</p>
+      </div>
+    </section>
 
-          <form id="actividadFijaForm">
-            <input type="hidden" id="editandoActividadFijaId">
+    <section class="organizar-tabs">
+      <button type="button" class="organizar-tab active" onclick="mostrarFormularioOrganizar('fija')">
+        Actividad fija
+      </button>
 
-            <label for="diaFijo">Día</label>
-            <select id="diaFijo" required>
-              <option value="">Selecciona un día</option>
-              <option value="Lunes">Lunes</option>
-              <option value="Martes">Martes</option>
-              <option value="Miércoles">Miércoles</option>
-              <option value="Jueves">Jueves</option>
-              <option value="Viernes">Viernes</option>
-              <option value="Sábado">Sábado</option>
-              <option value="Domingo">Domingo</option>
-            </select>
+      <button type="button" class="organizar-tab" onclick="mostrarFormularioOrganizar('especial')">
+        Actividad especial
+      </button>
+    </section>
 
-            <label for="horaFija">Hora de inicio</label>
+    <section class="organizar-mobile-card organizar-form-section active" id="formularioFijoMobile">
+      <div class="organizar-section-title">
+        <span>Rutina semanal</span>
+        <h2 id="tituloActividadFija">Agregar actividad fija</h2>
+      </div>
+
+      <form id="actividadFijaForm" class="organizar-app-form">
+        <input type="hidden" id="editandoActividadFijaId">
+
+        <label for="diaFijo">Día</label>
+        <select id="diaFijo" required>
+          <option value="">Selecciona un día</option>
+          <option value="Lunes">Lunes</option>
+          <option value="Martes">Martes</option>
+          <option value="Miércoles">Miércoles</option>
+          <option value="Jueves">Jueves</option>
+          <option value="Viernes">Viernes</option>
+          <option value="Sábado">Sábado</option>
+          <option value="Domingo">Domingo</option>
+        </select>
+
+        <div class="organizar-time-grid">
+          <div>
+            <label for="horaFija">Inicio</label>
             <input type="time" id="horaFija" required>
+          </div>
 
-            <label for="horaFinFija">Hora de término</label>
+          <div>
+            <label for="horaFinFija">Término</label>
             <input type="time" id="horaFinFija" required>
-
-            <label for="actividadFija">Actividad</label>
-            <input
-              type="text"
-              id="actividadFija"
-              placeholder="Ej: Clases, trabajo, estudiar"
-              required
-            >
-
-            <button type="submit" id="btnGuardarActividadFija">
-              Guardar actividad fija
-            </button>
-
-            <button
-              type="button"
-              id="btnCancelarEdicionFija"
-              onclick="cancelarEdicionActividadFija()"
-              style="display: none;"
-            >
-              Cancelar edición
-            </button>
-          </form>
+          </div>
         </div>
 
-        <div class="perfil-card">
-          <h3 id="tituloActividadEspecial">Agregar actividad especial</h3>
+        <label for="actividadFija">Actividad</label>
+        <input
+          type="text"
+          id="actividadFija"
+          placeholder="Ej: Clases, trabajo, estudiar"
+          required
+        >
 
-          <form id="actividadEspecialForm">
-            <input type="hidden" id="editandoActividadEspecialId">
+        <button type="submit" id="btnGuardarActividadFija">
+          Guardar actividad fija
+        </button>
 
-            <label for="tipoEspecial">Tipo</label>
-            <select id="tipoEspecial" required>
-              <option value="">Selecciona un tipo</option>
-              <option value="Evento único">Evento único</option>
-              <option value="Semana de solemnes">Semana de solemnes</option>
-              <option value="Semana de vacaciones">Semana de vacaciones</option>
-              <option value="Semana especial">Semana especial</option>
-            </select>
+        <button
+          type="button"
+          id="btnCancelarEdicionFija"
+          onclick="cancelarEdicionActividadFija()"
+          class="organizar-secondary-btn"
+          style="display: none;"
+        >
+          Cancelar edición
+        </button>
+      </form>
+    </section>
 
-            <label for="fechaEspecial">Fecha</label>
-            <input type="date" id="fechaEspecial" required>
+    <section class="organizar-mobile-card organizar-form-section" id="formularioEspecialMobile">
+      <div class="organizar-section-title">
+        <span>Evento puntual</span>
+        <h2 id="tituloActividadEspecial">Agregar actividad especial</h2>
+      </div>
 
-            <label for="horaEspecial">Hora de inicio</label>
+      <form id="actividadEspecialForm" class="organizar-app-form">
+        <input type="hidden" id="editandoActividadEspecialId">
+
+        <label for="tipoEspecial">Tipo</label>
+        <select id="tipoEspecial" required>
+          <option value="">Selecciona un tipo</option>
+          <option value="Evento único">Evento único</option>
+          <option value="Semana de solemnes">Semana de solemnes</option>
+          <option value="Semana de vacaciones">Semana de vacaciones</option>
+          <option value="Semana especial">Semana especial</option>
+        </select>
+
+        <label for="fechaEspecial">Fecha</label>
+        <input type="date" id="fechaEspecial" required>
+
+        <div class="organizar-time-grid">
+          <div>
+            <label for="horaEspecial">Inicio</label>
             <input type="time" id="horaEspecial" required>
+          </div>
 
-            <label for="horaFinEspecial">Hora de término</label>
+          <div>
+            <label for="horaFinEspecial">Término</label>
             <input type="time" id="horaFinEspecial" required>
-
-            <label for="actividadEspecial">Actividad</label>
-            <input
-              type="text"
-              id="actividadEspecial"
-              placeholder="Ej: Solemne de Economía"
-              required
-            >
-
-            <button type="submit" id="btnGuardarActividadEspecial">
-              Guardar actividad especial
-            </button>
-
-            <button
-              type="button"
-              id="btnCancelarEdicionEspecial"
-              onclick="cancelarEdicionActividadEspecial()"
-              style="display: none;"
-            >
-              Cancelar edición
-            </button>
-          </form>
+          </div>
         </div>
+
+        <label for="actividadEspecial">Actividad</label>
+        <input
+          type="text"
+          id="actividadEspecial"
+          placeholder="Ej: Solemne de Economía"
+          required
+        >
+
+        <button type="submit" id="btnGuardarActividadEspecial">
+          Guardar actividad especial
+        </button>
+
+        <button
+          type="button"
+          id="btnCancelarEdicionEspecial"
+          onclick="cancelarEdicionActividadEspecial()"
+          class="organizar-secondary-btn"
+          style="display: none;"
+        >
+          Cancelar edición
+        </button>
+      </form>
+    </section>
+
+    <section class="organizar-mobile-card organizar-tip-card">
+      <div class="organizar-section-title">
+        <span>Consejo</span>
+        <h2>Organiza con calma</h2>
       </div>
 
-      <div class="botones-horario">
-        <a href="horario.html" class="boton-link">Volver al horario</a>
-      </div>
-    </div>
+      <p>
+        Agrega primero tus actividades fijas y luego los eventos especiales. Así Vitality puede ayudarte a ordenar mejor tu día.
+      </p>
+
+      <a href="horario.html" class="organizar-back-link">Volver al horario</a>
+    </section>
+
   </main>
 
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <h3>Vitality</h3>
-        <p>Aplicación enfocada en el bienestar emocional, la organización diaria y el apoyo preventivo para usuarios de distintas edades.</p>
-      </div>
+  <nav class="bottom-app-nav">
+    <a href="horario.html" class="active">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
 
-      <div class="footer-links">
-        <h4>Navegación</h4>
-        <a href="index.html">Inicio</a>
-        <a href="perfil.html">Perfil</a>
-        <a href="checkin.html">Check-in</a>
-        <a href="horario.html">Horario</a>
-        <a href="alertas.html">Alertas</a>
-        <a href="chat.html">Chat de apoyo</a>
-      </div>
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
 
-      <div class="footer-team">
-        <h4>Quiénes somos</h4>
-        <p>Proyecto desarrollado por estudiantes de Ingeniería Civil Informática:</p>
-        <ul>
-          <li>Constanza Alegría</li>
-          <li>Andrés Hormazábal</li>
-          <li>Martín Huiriqueo</li>
-          <li>Diego Estay</li>
-        </ul>
-      </div>
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
 
-      <div class="footer-tools">
-        <h4>Preferencias</h4>
-        <button class="theme-footer-btn" onclick="toggleTheme()">🌙 / ☀️ Cambiar tema</button>
-        <p class="footer-note">Personaliza la visualización en modo claro u oscuro.</p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2026 Vitality - Proyecto de Ingeniería de Software</p>
-    </div>
-  </footer>
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
+
+  <script>
+    function mostrarFormularioOrganizar(tipo) {
+      const fijo = document.getElementById("formularioFijoMobile");
+      const especial = document.getElementById("formularioEspecialMobile");
+      const tabs = document.querySelectorAll(".organizar-tab");
+
+      tabs.forEach((tab) => tab.classList.remove("active"));
+
+      if (tipo === "fija") {
+        fijo.classList.add("active");
+        especial.classList.remove("active");
+        tabs[0].classList.add("active");
+      } else {
+        especial.classList.add("active");
+        fijo.classList.remove("active");
+        tabs[1].classList.add("active");
+      }
+    }
+  </script>
 </body>
 </html>
-
