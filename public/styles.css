@@ -4722,3 +4722,35 @@ body.dark-mode .profile-initials-btn {
   color: #9ee493 !important;
 }
 
+
+/* =========================
+   PERMISO USO REAL DE APPS
+========================= */
+.uso-apps-permiso-btn {
+  width: 100% !important;
+  margin-bottom: 12px !important;
+  padding: 14px 16px !important;
+  border: none !important;
+  border-radius: 18px !important;
+  background: #e8f7dc !important;
+  color: #115c67 !important;
+  font-weight: 900 !important;
+  font-size: 0.95rem !important;
+}
+
+.uso-apps-permiso-texto {
+  margin: 0 0 16px !important;
+  color: #4d5b4a !important;
+  font-size: 0.9rem !important;
+  line-height: 1.35 !important;
+}
+
+body.dark-mode .uso-apps-permiso-btn {
+  background: rgba(166, 226, 124, 0.14) !important;
+  color: #9ee493 !important;
+}
+
+body.dark-mode .uso-apps-permiso-texto {
+  color: #d8ead2 !important;
+}
+

@@ -39,8 +39,27 @@
       <div>
         <span>Bienestar digital</span>
         <h1>Control de uso de apps</h1>
-        <p>Registra el tiempo usado y recibe una alerta si superas tu límite diario.</p>
+        <p>Define un límite diario y Vitality revisará el uso real leído desde Android.</p>
       </div>
+    </section>
+
+    <section class="uso-apps-mobile-card">
+      <div class="uso-apps-section-title">
+        <span>Permiso Android</span>
+        <h2>Lectura de uso real</h2>
+      </div>
+
+      <button
+        type="button"
+        class="uso-apps-permiso-btn"
+        onclick="abrirPermisoUsoAppsVitality()"
+      >
+        Activar permiso de uso de apps
+      </button>
+
+      <p id="estadoPermisoUsoApps" class="uso-apps-permiso-texto">
+        Revisa si Vitality tiene permiso para leer el uso real del celular.
+      </p>
     </section>
 
     <section class="uso-apps-mobile-card">
@@ -67,29 +86,19 @@
           placeholder="Ej: com.zhiliaoapp.musically"
         >
 
-        <div class="uso-apps-grid-inputs">
-          <div>
-            <label for="usoAppLimite">Límite diario</label>
-            <input
-              type="number"
-              id="usoAppLimite"
-              min="1"
-              placeholder="60"
-              required
-            >
-          </div>
+        <p class="uso-apps-permiso-texto">
+          Si eliges TikTok, Instagram, YouTube o WhatsApp, Vitality usará su package automáticamente.
+          Si eliges “Otra”, escribe el package manualmente.
+        </p>
 
-          <div>
-            <label for="usoAppMinutos">Uso hoy</label>
-            <input
-              type="number"
-              id="usoAppMinutos"
-              min="0"
-              placeholder="75"
-              required
-            >
-          </div>
-        </div>
+        <label for="usoAppLimite">Límite diario en minutos</label>
+        <input
+          type="number"
+          id="usoAppLimite"
+          min="1"
+          placeholder="Ej: 60"
+          required
+        >
 
         <button type="submit">
           Guardar monitoreo
