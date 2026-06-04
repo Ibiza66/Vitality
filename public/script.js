@@ -37,17 +37,19 @@ async function enviarNotificacionCelularVitality(titulo, mensaje) {
     const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
 
     await LocalNotifications.schedule({
-      notifications: [
-        {
-          id: Date.now() % 100000,
-          title: titulo,
-          body: mensaje,
-          schedule: {
-            at: new Date(Date.now() + 1000)
-          }
-        }
-      ]
-    });
+  notifications: [
+    {
+      id: Date.now() % 100000,
+      title: titulo,
+      body: mensaje,
+      smallIcon: "ic_stat_vitality",
+      iconColor: "#115C67",
+      schedule: {
+        at: new Date(Date.now() + 1000)
+      }
+    }
+  ]
+});
   } catch (error) {
     console.log("No se pudo enviar notificación del celular:", error);
   }
@@ -3797,24 +3799,38 @@ async function guardarUsoAppBackend(event) {
   const nombreInput = document.getElementById("usoAppNombre");
   const packageInput = document.getElementById("usoAppPackage");
   const limiteInput = document.getElementById("usoAppLimite");
-  const minutosInput = document.getElementById("usoAppMinutos");
 
-  if (!nombreInput || !limiteInput || !minutosInput) return;
+  if (!nombreInput || !limiteInput) return;
 
   const nombreApp = nombreInput.value.trim();
-  const packageName = packageInput ? packageInput.value.trim() : "";
+  const packageManual = packageInput ? packageInput.value.trim() : "";
+  const packageName = obtenerPackageAppVitality(nombreApp, packageManual);
   const limiteMinutos = Number(limiteInput.value);
-  const minutosUsados = Number(minutosInput.value);
 
-  if (!nombreApp || Number.isNaN(limiteMinutos) || Number.isNaN(minutosUsados)) {
-    mostrarToastVitality("Completa correctamente los datos de uso de la app.");
+  if (!nombreApp || Number.isNaN(limiteMinutos)) {
+    mostrarToastVitality("Completa correctamente la app y el límite diario.");
     return;
   }
 
-  if (limiteMinutos <= 0 || minutosUsados < 0) {
-    mostrarToastVitality("El límite debe ser mayor a 0 y los minutos usados no pueden ser negativos.");
+  if (limiteMinutos <= 0) {
+    mostrarToastVitality("El límite debe ser mayor a 0.");
     return;
   }
+
+  if (!packageName) {
+    mostrarToastVitality("No se encontró el package de la app. Escríbelo manualmente.");
+    return;
+  }
+
+  const permiso = await permisoUsoAppsConcedidoVitality();
+
+  if (!permiso) {
+    mostrarToastVitality("Primero activa el permiso de uso de apps.");
+    await abrirPermisoUsoAppsVitality();
+    return;
+  }
+
+  const minutosUsados = await obtenerMinutosUsoRealHoyVitality(packageName);
 
   try {
     const respuesta = await fetch(`${API_URL}/api/uso-apps`, {
@@ -3843,20 +3859,25 @@ async function guardarUsoAppBackend(event) {
     await mostrarUsoApps();
 
     if (minutosUsados > limiteMinutos) {
-      mostrarAlertaUsoExcesivoGlobal({
-        nombreApp,
-        limiteMinutos,
-        minutosUsados
-      });
+      enviarNotificacionCelularVitality(
+        "Uso excesivo detectado",
+        `Llevas ${minutosUsados} minutos en ${nombreApp}. Superaste tu límite de ${limiteMinutos} minutos.`
+      );
+
+      mostrarToastVitality("Uso excesivo detectado. Se envió una notificación.");
     } else {
-      mostrarToastVitality("Monitoreo guardado correctamente.");
+      mostrarToastVitality(`Monitoreo guardado. Uso real hoy: ${minutosUsados} min.`);
     }
   } catch (error) {
     console.error("Error al guardar uso de app:", error);
-    mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
+    mostrarToastVitality(
+      "No se pudo conectar con el servidor. Detalle: " +
+        error.message +
+        " | API_URL: " +
+        API_URL
+    );
   }
 }
-
 async function eliminarUsoApp(usoAppId) {
   const confirmar = confirm("¿Seguro que quieres eliminar esta app del monitoreo?");
 
@@ -3886,7 +3907,8 @@ async function mostrarUsoApps() {
 
   if (!contenedor) return;
 
-  const usos = await obtenerUsoAppsBackend();
+  let usos = await obtenerUsoAppsBackend();
+  usos = await enriquecerUsoAppsConUsoRealVitality(usos);
 
   if (!usos || usos.length === 0) {
     contenedor.innerHTML = `
@@ -3902,13 +3924,24 @@ async function mostrarUsoApps() {
       const excedida = usoAppExcedida(uso);
       const clase = excedida ? "uso-app-excedida" : "";
       const estado = excedida ? "Exceso detectado" : "Dentro del límite";
+      const origen = uso.usoRealAndroid
+        ? "Uso real leído desde Android"
+        : "Uso guardado manualmente";
+
+      if (excedida) {
+        enviarNotificacionCelularVitality(
+          "Uso excesivo detectado",
+          `${uso.nombreApp}: ${uso.minutosUsados} min de ${uso.limiteMinutos} min permitidos.`
+        );
+      }
 
       return `
         <div class="uso-app-item ${clase}">
           <h3>${usoAppsEscaparTexto(uso.nombreApp)}</h3>
           <p><strong>Límite diario:</strong> ${usoAppsEscaparTexto(uso.limiteMinutos)} minutos</p>
-          <p><strong>Uso actual:</strong> ${usoAppsEscaparTexto(uso.minutosUsados)} minutos</p>
+          <p><strong>Uso real hoy:</strong> ${usoAppsEscaparTexto(uso.minutosUsados)} minutos</p>
           <p><strong>Estado:</strong> ${estado}</p>
+          <p><small>${usoAppsEscaparTexto(origen)}</small></p>
 
           ${
             excedida
@@ -3926,7 +3959,6 @@ async function mostrarUsoApps() {
     })
     .join("");
 }
-
 function crearContenedorAlertaUsoApps() {
   let alerta = document.getElementById("alertaUsoAppsGlobal");
 
@@ -3986,6 +4018,7 @@ function iniciarControlUsoApps() {
     usoAppForm.addEventListener("submit", guardarUsoAppBackend);
   }
 
+  actualizarEstadoPermisoUsoAppsVitality();
   mostrarUsoApps();
   revisarUsoExcesivoGlobal();
 }
@@ -4152,4 +4185,169 @@ if (document.readyState === "loading") {
 } else {
   iniciarInicialesUsuarioVitality();
 }
+/* =========================
+   USO REAL DE APPS ANDROID
+========================= */
+const PACKAGES_APPS_VITALITY = {
+  TikTok: "com.zhiliaoapp.musically",
+  Instagram: "com.instagram.android",
+  YouTube: "com.google.android.youtube",
+  WhatsApp: "com.whatsapp"
+};
 
+function obtenerPluginUsoAppsVitality() {
+  if (!window.Capacitor || !window.Capacitor.Plugins) {
+    return null;
+  }
+
+  return (
+    window.Capacitor.Plugins.CapacitorUsageStatsManager ||
+    window.CapacitorUsageStatsManager ||
+    null
+  );
+}
+
+async function permisoUsoAppsConcedidoVitality() {
+  try {
+    const UsageStats = obtenerPluginUsoAppsVitality();
+
+    if (!UsageStats) {
+      return false;
+    }
+
+    const resultado = await UsageStats.isUsageStatsPermissionGranted();
+    return resultado && resultado.granted === true;
+  } catch (error) {
+    console.error("Error revisando permiso de uso de apps:", error);
+    return false;
+  }
+}
+
+async function abrirPermisoUsoAppsVitality() {
+  try {
+    const UsageStats = obtenerPluginUsoAppsVitality();
+
+    if (!UsageStats) {
+      mostrarToastVitality("Uso real de apps disponible solo en APK Android.");
+      return;
+    }
+
+    await UsageStats.openUsageStatsSettings();
+
+    mostrarToastVitality(
+      "Activa Vitality en Acceso a uso y vuelve a la app."
+    );
+  } catch (error) {
+    console.error("Error abriendo permiso de uso de apps:", error);
+    mostrarToastVitality("No se pudo abrir la configuración de uso de apps.");
+  }
+}
+
+function obtenerInicioDiaActualVitality() {
+  const fecha = new Date();
+  fecha.setHours(0, 0, 0, 0);
+  return fecha.getTime();
+}
+
+async function obtenerEstadisticasUsoHoyVitality() {
+  const UsageStats = obtenerPluginUsoAppsVitality();
+
+  if (!UsageStats) {
+    return null;
+  }
+
+  const permiso = await permisoUsoAppsConcedidoVitality();
+
+  if (!permiso) {
+    return null;
+  }
+
+  const beginTime = obtenerInicioDiaActualVitality();
+  const endTime = Date.now();
+
+  return UsageStats.queryAndAggregateUsageStats({
+    beginTime,
+    endTime
+  });
+}
+
+function obtenerPackageAppVitality(nombreApp, packageManual) {
+  if (packageManual && packageManual.trim() !== "") {
+    return packageManual.trim();
+  }
+
+  return PACKAGES_APPS_VITALITY[nombreApp] || "";
+}
+
+async function obtenerMinutosUsoRealHoyVitality(packageName) {
+  if (!packageName) {
+    return 0;
+  }
+
+  const estadisticas = await obtenerEstadisticasUsoHoyVitality();
+
+  if (!estadisticas) {
+    return 0;
+  }
+
+  const uso = estadisticas[packageName];
+
+  if (!uso || !uso.totalTimeInForeground) {
+    return 0;
+  }
+
+  return Math.round(Number(uso.totalTimeInForeground) / 60000);
+}
+
+async function actualizarEstadoPermisoUsoAppsVitality() {
+  const texto = document.getElementById("estadoPermisoUsoApps");
+
+  if (!texto) {
+    return;
+  }
+
+  const UsageStats = obtenerPluginUsoAppsVitality();
+
+  if (!UsageStats) {
+    texto.textContent = "Uso real disponible solo en la APK Android.";
+    return;
+  }
+
+  const permiso = await permisoUsoAppsConcedidoVitality();
+
+  if (permiso) {
+    texto.textContent = "Permiso activo. Vitality puede leer el uso real de apps.";
+  } else {
+    texto.textContent = "Permiso pendiente. Toca el botón para activar Acceso a uso.";
+  }
+}
+
+async function enriquecerUsoAppsConUsoRealVitality(usos) {
+  const permiso = await permisoUsoAppsConcedidoVitality();
+
+  if (!permiso) {
+    return usos;
+  }
+
+  const estadisticas = await obtenerEstadisticasUsoHoyVitality();
+
+  if (!estadisticas) {
+    return usos;
+  }
+
+  return usos.map((uso) => {
+    const packageName = uso.packageName || obtenerPackageAppVitality(uso.nombreApp, "");
+
+    const usoReal = estadisticas[packageName];
+    const minutosReales = usoReal && usoReal.totalTimeInForeground
+      ? Math.round(Number(usoReal.totalTimeInForeground) / 60000)
+      : 0;
+
+    return {
+      ...uso,
+      packageName,
+      minutosUsados: minutosReales,
+      usoRealAndroid: true
+    };
+  });
+}
