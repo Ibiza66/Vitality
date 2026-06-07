@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Uso de apps</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="app-mobile-page uso-apps-page">
+
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
+
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
+
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
+
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
+      <li><a href="perfil.html">Perfil</a></li>
+      <li><a href="checkin.html">Check-in</a></li>
+      <li><a href="alertas.html">Alertas</a></li>
+      <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+    </ul>
+  </header>
+
+  <main class="uso-apps-screen">
+
+    <section class="uso-apps-hero">
+      <div class="uso-apps-icon">📱</div>
+      <div>
+        <span>Bienestar digital</span>
+        <h1>Control de uso de apps</h1>
+        <p>Define un límite diario y Vitality revisará el uso real leído desde Android.</p>
+      </div>
+    </section>
+
+    <section class="uso-apps-mobile-card">
+      <div class="uso-apps-section-title">
+        <span>Permiso Android</span>
+        <h2>Lectura de uso real</h2>
+      </div>
+
+      <button
+        type="button"
+        class="uso-apps-permiso-btn"
+        onclick="abrirPermisoUsoAppsVitality()"
+      >
+        Activar permiso de uso de apps
+      </button>
+
+      <p id="estadoPermisoUsoApps" class="uso-apps-permiso-texto">
+        Revisa si Vitality tiene permiso para leer el uso real del celular.
+      </p>
+    </section>
+
+    <section class="uso-apps-mobile-card">
+      <div class="uso-apps-section-title">
+        <span>Monitoreo</span>
+        <h2>Configurar app</h2>
+      </div>
+
+      <form id="usoAppForm" class="uso-app-form uso-app-form-mobile">
+        <label for="usoAppNombre">App monitoreada</label>
+        <select id="usoAppNombre" required>
+          <option value="">Selecciona una app</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Instagram">Instagram</option>
+          <option value="YouTube">YouTube</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Otra">Otra</option>
+        </select>
+
+        <label for="usoAppPackage">Identificador / package</label>
+        <input
+          type="text"
+          id="usoAppPackage"
+          placeholder="Ej: com.zhiliaoapp.musically"
+        >
+
+        <p class="uso-apps-permiso-texto">
+          Si eliges TikTok, Instagram, YouTube o WhatsApp, Vitality usará su package automáticamente.
+          Si eliges “Otra”, escribe el package manualmente.
+        </p>
+
+        <label for="usoAppLimite">Límite diario en minutos</label>
+        <input
+          type="number"
+          id="usoAppLimite"
+          min="1"
+          placeholder="Ej: 60"
+          required
+        >
+
+        <button type="submit">
+          Guardar monitoreo
+        </button>
+      </form>
+    </section>
+
+    <section class="uso-apps-mobile-card">
+      <div class="uso-apps-section-title">
+        <span>Seguimiento</span>
+        <h2>Apps monitoreadas</h2>
+      </div>
+
+      <div id="listaUsoApps" class="uso-apps-lista uso-apps-lista-mobile">
+        <p>Cargando apps monitoreadas...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-app-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

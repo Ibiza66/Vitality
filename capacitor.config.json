@@ -1,0 +1,14 @@
+﻿{
+  "appId": "com.vitality.app",
+  "appName": "Vitality",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true,
+    "allowNavigation": [
+      "10.0.2.2",
+      "localhost",
+      "10.40.56.217"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "vitality",
+  "version": "1.0.0",
+  "description": "Vitality es una aplicación web orientada al bienestar emocional, la organización personal y el apoyo preventivo para usuarios de distintas edades.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ibiza66/Vitality.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ibiza66/Vitality/issues"
+  },
+  "homepage": "https://github.com/Ibiza66/Vitality#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/local-notifications": "^8.2.0",
+    "@capgo/capacitor-android-usagestatsmanager": "^8.0.26",
+    "@ebarooni/capacitor-calendar": "^8.0.2",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.2",
+    "openai": "^6.41.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Alertas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="app-mobile-page alertas-app-page">
+
+  <header class="app-mobile-header">
+    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
+
+    <a href="horario.html" class="app-header-logo">
+      <img src="logo.jpg" alt="Logo Vitality">
+    </a>
+
+    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
+
+    <ul class="menu app-dropdown-menu" id="menu">
+      <li><a href="horario.html">Horario</a></li>
+      <li><a href="perfil.html">Perfil</a></li>
+      <li><a href="checkin.html">Check-in</a></li>
+      <li><a href="alertas.html">Alertas</a></li>
+      <li><a href="chat.html">Chat de apoyo</a></li>
+      <li><a href="uso_apps.html">Uso de apps</a></li>
+    </ul>
+
+    <ul class="profile-menu app-profile-menu" id="profileMenu">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+    </ul>
+  </header>
+
+  <main class="alertas-app-screen">
+
+    <section class="alertas-hero-card">
+      <div class="alertas-icon">🔔</div>
+      <div>
+        <span>Alertas Vitality</span>
+        <h1>Recomendaciones del día</h1>
+        <p>Revisa avisos según tu check-in, tus actividades y tu bienestar digital.</p>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card">
+      <div class="alertas-section-title">
+        <span>Estado actual</span>
+        <h2>Alertas detectadas</h2>
+      </div>
+
+      <div id="alertasContainer" class="alertas-lista-mobile">
+        <div class="alerta">
+          <p><strong>Cargando alertas...</strong></p>
+          <p>Estamos revisando tu check-in más reciente.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card">
+      <div class="alertas-section-title">
+        <span>Acciones</span>
+        <h2>Qué puedes hacer ahora</h2>
+      </div>
+
+      <div class="acciones-alertas-lista">
+        <div class="accion-alerta-item">
+          <strong>1. Revisa tu horario</strong>
+          <p>Verifica si tienes actividades pendientes o eventos importantes para hoy.</p>
+        </div>
+
+        <div class="accion-alerta-item">
+          <strong>2. Ordena tus prioridades</strong>
+          <p>Si tienes muchas tareas, comienza por una actividad importante y deja pausas breves.</p>
+        </div>
+
+        <div class="accion-alerta-item">
+          <strong>3. Usa el chat de apoyo</strong>
+          <p>Si necesitas conversar o recibir una recomendación personalizada, habla con Vitality.</p>
+        </div>
+      </div>
+
+      <div class="alertas-action-row">
+        <a href="horario.html">Ver horario</a>
+        <a href="chat.html">Hablar con Vitality</a>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card">
+      <div class="alertas-section-title">
+        <span>Actividades</span>
+        <h2>Relación con tu día</h2>
+      </div>
+
+      <p>
+        Si registraste estrés alto y tienes varias actividades pendientes, Vitality puede recomendarte priorizar,
+        descansar y avanzar una tarea a la vez.
+      </p>
+
+      <div class="alertas-action-row">
+        <a href="horario.html#seccionHoy">Ver actividades</a>
+        <a href="organizar_horario.html">Agregar actividad</a>
+      </div>
+    </section>
+
+    <section class="alertas-mobile-card alertas-warning-card">
+      <div class="alertas-section-title">
+        <span>Importante</span>
+        <h2>Recordatorio</h2>
+      </div>
+
+      <p>
+        Vitality entrega apoyo preventivo y recomendaciones de organización personal.
+        No reemplaza ayuda profesional médica o psicológica.
+      </p>
+    </section>
+
+  </main>
+
+  <nav class="bottom-app-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
