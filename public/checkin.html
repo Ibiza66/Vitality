@@ -215,5 +215,28 @@
       iniciarCheckinInteractivo();
     }
   </script>
+
+  <!-- hay que sacar estos 2 scrips -->
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+
+  <script type="module">
+    import './js/ui.js';
+    import { registrarCheckinVitality } from './js/services/checkin.js';
+
+    // Vinculamos el formulario al servicio modularizado
+    document.getElementById("checkinForm")?.addEventListener("submit", async (e) => {
+      const checkinGuardado = await registrarCheckinVitality(e);
+      if (checkinGuardado) {
+        // Si el check-in fue exitoso, lo redirigimos automáticamente al chat inteligente 
+        // para que la IA aborde su estado emocional actual
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+  
+ 
+</script>
 </body>
 </html>
+

@@ -282,8 +282,36 @@
       <small>Perfil</small>
     </a>
   </nav>
-
+   <!-- hay que sacar estos 2 scrips -->
   <script src="nav.js"></script>
   <script src="script.js"></script>
+
+
+  <!-- <script type="module">
+    import { guardarPerfilVitality, obtenerPerfilVitality } from './js/services/perfil.js';
+
+    // Al cargar la página, recuperamos el perfil y rellenamos los inputs de forma limpia
+    document.addEventListener("DOMContentLoaded", async () => {
+      const perfil = await obtenerPerfilVitality();
+      if (perfil) {
+        if(document.getElementById("universidadPerfil")) document.getElementById("universidadPerfil").value = perfil.universidad || "";
+        if(document.getElementById("carreraPerfil")) document.getElementById("carreraPerfil").value = perfil.carrera || "";
+        if(document.getElementById("horaSuenoPerfil")) document.getElementById("horaSuenoPerfil").value = perfil.horasSuenoObjetivo || 8;
+      }
+    });
+
+    // Asignamos el evento para guardar los cambios
+    document.getElementById("perfilForm")?.addEventListener("submit", guardarPerfilVitality);
+  </script> -->
+  
+  <script type="module">
+    import './js/ui.js';
+  </script>
+  <script src="script.js"></script>
+
+
 </body>
+
 </html>
+
+

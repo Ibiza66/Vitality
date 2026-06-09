@@ -6,6 +6,8 @@
   <title>Vitality - Registro</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
+
 <body class="login-page">
 
   <main class="login-app-screen">
@@ -101,7 +103,19 @@
     </section>
   </main>
 
+    <!-- hay que sacar estos 2 scrips -->
   <script src="nav.js"></script>
   <script src="script.js"></script>
+
+  <script type="module">
+    import './js/ui.js';
+    import { registrarUsuarioVitality } from './js/services/auth.js';
+
+    const form = document.getElementById("registroForm");
+    if (form) {
+    form.addEventListener("submit", registrarUsuarioVitality);
+    } 
+</script>
+
 </body>
 </html>

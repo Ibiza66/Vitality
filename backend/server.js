@@ -16,7 +16,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/perfiles", perfilesRoutes);
@@ -27,7 +27,7 @@ app.use("/api/ia", iaRoutes);
 app.use("/api/uso-apps", usoAppsRoutes);
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
 app.get("/api/estado", (req, res) => {

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Probando mi IA Local</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        #resultado { margin-top: 20px; padding: 15px; background: #f4f4f4; border-left: 5px solid #007bff; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+    <h2>Probador Oficial de Vitality IA 🧠</h2>
+    <p>Haz clic en el botón para enviarle un mensaje a la IA que instalaste en tu computadora.</p>
+    
+    <button onclick="enviarMensajeALaIA()">Preguntar a la IA</button>
+
+    <h3>Respuesta de tu máquina:</h3>
+    <div id="resultado">Aquí aparecerá lo que responda la IA...</div>
+
+   <script>
+        async function enviarMensajeALaIA() {
+            const cajaResultado = document.getElementById('resultado');
+            cajaResultado.innerText = "Consultando base de datos y pensando...";
+
+            // 💡 IMPORTANTE: Asegúrate de que este ID exista en tu MongoDB Compass
+            const usuarioIdReal = "6a25fe6248a42a2ace2c0ad3"; 
+
+            try {
+                const respuesta = await fetch(`/api/ia/chat/${usuarioIdReal}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mensaje: "Hola Vitality, decido que hoy me daré un tiempo libre. Agrega salir a caminar en mi horario de hoy por favor."
+                    })
+                });
+
+                const datos = await respuesta.json();
+                
+                if (datos.error) {
+                    cajaResultado.innerText = "Error: " + datos.error;
+                } else {
+                    // 🌟 CORRECCIÓN AQUÍ: Usamos 'mensajeParaElChat' que es el nombre real del backend
+                    let textoFinal = datos.mensajeParaElChat;
+
+                    // 🚀 EXTRA: Si la IA guardó la actividad con éxito en MongoDB, la pantalla te avisará
+                    if (datos.seCreoActividad) {
+                        textoFinal += "\n\n========================================\n[SISTEMA VITALITY]: ¡Éxito! La actividad fue registrada automáticamente en tu calendario de MongoDB Compass.";
+                    }
+
+                    cajaResultado.innerText = textoFinal;
+                }
+
+            } catch (error) {
+                cajaResultado.innerText = "Error de conexión: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

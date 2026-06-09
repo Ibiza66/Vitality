@@ -1,195 +1,4 @@
 ﻿/* =========================
-   NOTIFICACIONES NATIVAS ANDROID
-========================= */
-async function pedirPermisoNotificacionesVitality() {
-  try {
-    if (!window.Capacitor || !window.Capacitor.Plugins) {
-      return false;
-    }
-
-    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
-
-    if (!LocalNotifications) {
-      return false;
-    }
-
-    let permiso = await LocalNotifications.checkPermissions();
-
-    if (permiso.display !== "granted") {
-      permiso = await LocalNotifications.requestPermissions();
-    }
-
-    return permiso.display === "granted";
-  } catch (error) {
-    console.log("No se pudo pedir permiso de notificaciones:", error);
-    return false;
-  }
-}
-
-async function enviarNotificacionCelularVitality(titulo, mensaje) {
-  try {
-    const permitido = await pedirPermisoNotificacionesVitality();
-
-    if (!permitido) {
-      return;
-    }
-
-    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
-
-    await LocalNotifications.schedule({
-  notifications: [
-    {
-      id: Date.now() % 100000,
-      title: titulo,
-      body: mensaje,
-      smallIcon: "ic_stat_vitality",
-      iconColor: "#115C67",
-      schedule: {
-        at: new Date(Date.now() + 1000)
-      }
-    }
-  ]
-});
-  } catch (error) {
-    console.log("No se pudo enviar notificación del celular:", error);
-  }
-}
-function mostrarToastVitality(mensaje) {
-  const texto = String(mensaje || "").trim();
-
-  if (!texto) {
-    return;
-  }
-
-  let contenedor = document.getElementById("toastVitalityContainer");
-
-  if (!contenedor) {
-    contenedor = document.createElement("div");
-    contenedor.id = "toastVitalityContainer";
-    contenedor.className = "toast-vitality-container";
-    document.body.appendChild(contenedor);
-  }
-
-  const toast = document.createElement("div");
-  toast.className = "toast-vitality";
-  toast.textContent = texto;
-
-  contenedor.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add("toast-vitality-salida");
-  }, 2600);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 3100);
-}
-/* =========================
-   CALENDARIO NATIVO ANDROID / IOS
-========================= */
-function obtenerPluginCalendarioVitality() {
-  if (!window.Capacitor || !window.Capacitor.Plugins) {
-    return null;
-  }
-
-  return (
-    window.Capacitor.Plugins.CapacitorCalendar ||
-    window.Capacitor.Plugins.Calendar ||
-    window.Capacitor.Plugins.EbarooniCapacitorCalendar ||
-    null
-  );
-}
-
-async function pedirPermisoCalendarioVitality() {
-  try {
-    const Calendar = obtenerPluginCalendarioVitality();
-
-    if (!Calendar) {
-      mostrarToastVitality("Calendario no disponible en esta plataforma.");
-      return false;
-    }
-
-    if (typeof Calendar.requestWriteOnlyCalendarAccess === "function") {
-      const permiso = await Calendar.requestWriteOnlyCalendarAccess();
-      return permiso.result === "granted";
-    }
-
-    if (typeof Calendar.requestFullCalendarAccess === "function") {
-      const permiso = await Calendar.requestFullCalendarAccess();
-      return permiso.result === "granted";
-    }
-
-    if (typeof Calendar.requestAllPermissions === "function") {
-      const permiso = await Calendar.requestAllPermissions();
-      return true;
-    }
-
-    return true;
-  } catch (error) {
-    console.log("No se pudo pedir permiso de calendario:", error);
-    mostrarToastVitality("No se pudo acceder al calendario.");
-    return false;
-  }
-}
-
-function crearFechaCalendarioVitality(fecha, hora) {
-  const fechaBase = fecha || new Date().toISOString().slice(0, 10);
-  const horaBase = hora || "09:00";
-
-  return new Date(`${fechaBase}T${horaBase}:00`);
-}
-
-async function agregarEventoAlCalendarioVitality(datos) {
-  try {
-    const Calendar = obtenerPluginCalendarioVitality();
-
-    if (!Calendar) {
-      mostrarToastVitality("Calendario no disponible en esta plataforma.");
-      return;
-    }
-
-    const permitido = await pedirPermisoCalendarioVitality();
-
-    if (!permitido) {
-      mostrarToastVitality("Permiso de calendario rechazado.");
-      return;
-    }
-
-    const inicio = crearFechaCalendarioVitality(datos.fecha, datos.horaInicio);
-    const termino = crearFechaCalendarioVitality(datos.fecha, datos.horaFin);
-
-    if (termino <= inicio) {
-      termino.setMinutes(inicio.getMinutes() + 60);
-    }
-
-    const evento = {
-      title: datos.titulo || "Actividad Vitality",
-      startDate: inicio.getTime(),
-      endDate: termino.getTime(),
-      isAllDay: false,
-      description: "Actividad creada desde Vitality.",
-      alerts: [-10]
-    };
-
-    if (typeof Calendar.createEventWithPrompt === "function") {
-      await Calendar.createEventWithPrompt(evento);
-      mostrarToastVitality("Abriendo calendario del celular.");
-      return;
-    }
-
-    if (typeof Calendar.createEvent === "function") {
-      await Calendar.createEvent(evento);
-      mostrarToastVitality("Actividad agregada al calendario.");
-      return;
-    }
-
-    mostrarToastVitality("Tu calendario no permite crear eventos desde Vitality.");
-  } catch (error) {
-    console.log("Error al agregar evento al calendario:", error);
-    mostrarToastVitality("No se pudo agregar al calendario.");
-  }
-}
-/* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = (() => {
@@ -1299,13 +1108,20 @@ function cancelarEdicionActividadEspecial() {
 async function guardarActividadFija(event) {
   event.preventDefault();
 
+  const btnGuardar = document.getElementById("btnGuardarActividadFija");
+  if (btnGuardar && btnGuardar.disabled) return; // ya hay un guardado en curso
+  if (btnGuardar) { btnGuardar.disabled = true; btnGuardar.textContent = "Guardando..."; }
+
   const diaInput = document.getElementById("diaFijo");
   const horaInput = document.getElementById("horaFija");
   const horaFinInput = document.getElementById("horaFinFija");
   const actividadInput = document.getElementById("actividadFija");
   const editandoIdInput = document.getElementById("editandoActividadFijaId");
 
-  if (!diaInput || !horaInput || !horaFinInput || !actividadInput) return;
+  if (!diaInput || !horaInput || !horaFinInput || !actividadInput) {
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
+    return;
+  }
 
   const dia = diaInput.value.trim();
   const hora = horaInput.value.trim();
@@ -1315,10 +1131,14 @@ async function guardarActividadFija(event) {
 
   if (!dia || !hora || !horaFin || !actividad) {
     mostrarToastVitality("Por favor completa todos los campos de la actividad fija.");
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
     return;
   }
 
-  if (!validarRangoHoras(hora, horaFin)) return;
+  if (!validarRangoHoras(hora, horaFin)) {
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
+    return;
+  }
 
   const resultado = await guardarActividadFijaBackend(
     dia,
@@ -1330,18 +1150,24 @@ async function guardarActividadFija(event) {
 
   if (!resultado.ok) {
     mostrarToastVitality(resultado.mensaje);
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
     return;
   }
 
   event.target.reset();
   limpiarEdicionActividadFija();
   await sincronizarActividadesBackendConInterfaz();
+  if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
 
   mostrarToastVitality(editandoId ? "Actividad fija actualizada en MongoDB." : "Actividad fija guardada en MongoDB.");
 }
 
 async function guardarActividadEspecial(event) {
   event.preventDefault();
+
+  const btnGuardar = document.getElementById("btnGuardarActividadEspecial");
+  if (btnGuardar && btnGuardar.disabled) return; // ya hay un guardado en curso
+  if (btnGuardar) { btnGuardar.disabled = true; btnGuardar.textContent = "Guardando..."; }
 
   const tipoInput = document.getElementById("tipoEspecial");
   const fechaInput = document.getElementById("fechaEspecial");
@@ -1350,7 +1176,10 @@ async function guardarActividadEspecial(event) {
   const actividadInput = document.getElementById("actividadEspecial");
   const editandoIdInput = document.getElementById("editandoActividadEspecialId");
 
-  if (!tipoInput || !fechaInput || !horaInput || !horaFinInput || !actividadInput) return;
+  if (!tipoInput || !fechaInput || !horaInput || !horaFinInput || !actividadInput) {
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
+    return;
+  }
 
   const tipo = tipoInput.value.trim();
   const fecha = fechaInput.value.trim();
@@ -1361,10 +1190,14 @@ async function guardarActividadEspecial(event) {
 
   if (!tipo || !fecha || !hora || !horaFin || !actividad) {
     mostrarToastVitality("Por favor completa todos los campos de la actividad especial.");
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
     return;
   }
 
-  if (!validarRangoHoras(hora, horaFin)) return;
+  if (!validarRangoHoras(hora, horaFin)) {
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
+    return;
+  }
 
   const resultado = await guardarActividadEspecialBackend(
     tipo,
@@ -1377,12 +1210,14 @@ async function guardarActividadEspecial(event) {
 
   if (!resultado.ok) {
     mostrarToastVitality(resultado.mensaje);
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
     return;
   }
 
   event.target.reset();
   limpiarEdicionActividadEspecial();
   await sincronizarActividadesBackendConInterfaz();
+  if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
 
   mostrarToastVitality(editandoId ? "Actividad especial actualizada en MongoDB." : "Actividad especial guardada en MongoDB.");
 }
