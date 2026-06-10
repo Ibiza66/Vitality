@@ -4753,4 +4753,78 @@ body.dark-mode .uso-apps-permiso-btn {
 body.dark-mode .uso-apps-permiso-texto {
   color: #d8ead2 !important;
 }
+/* =========================
+   ACCIONES DE RECOMENDACIÓN IA EN CHAT
+========================= */
+.chat-recomendacion-acciones {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(17, 92, 103, 0.2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chat-recomendacion-texto {
+  width: 100%;
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #115c67;
+}
+
+.chat-recomendacion-acciones button {
+  width: auto;
+  min-width: 120px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-aceptar-recomendacion {
+  background: #4a9516;
+  color: #ffffff;
+}
+
+.btn-rechazar-recomendacion {
+  background: #b83232;
+  color: #ffffff;
+}
+
+.chat-recomendacion-acciones button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.chat-recomendacion-aplicada {
+  margin: 0;
+  color: #2f7d18;
+  font-weight: bold;
+}
+
+.chat-recomendacion-rechazada {
+  margin: 0;
+  color: #b83232;
+  font-weight: bold;
+}
+
+body.dark-mode .chat-recomendacion-texto {
+  color: #9ee493;
+}
+
+body.dark-mode .chat-recomendacion-aplicada {
+  color: #9ee493;
+}
+
+body.dark-mode .chat-recomendacion-rechazada {
+  color: #ff9999;
+}
+
+@media (max-width: 700px) {
+  .chat-recomendacion-acciones button {
+    width: 100%;
+  }
+}
 

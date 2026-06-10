@@ -202,7 +202,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://10.41.0.140:3000";
+    return "http://10.31.0.69:3000";
   }
 
   return "";
@@ -636,7 +636,13 @@ async function mostrarDatosPerfil() {
 /* =========================
    CHECK-IN DIARIO
 ========================= */
-function guardarCheckinLocal(estadoAnimo, nivelEstres, sueno, energia, fecha = new Date().toLocaleDateString()) {
+function guardarCheckinLocal(
+  estadoAnimo,
+  nivelEstres,
+  sueno,
+  energia,
+  fecha = new Date().toLocaleDateString()
+) {
   guardarJSON("checkinVitality", {
     estadoAnimo,
     nivelEstres,
@@ -650,14 +656,27 @@ function obtenerCheckin() {
   return leerJSON("checkinVitality", null);
 }
 
-async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
+function obtenerUsuarioIdVitality() {
   const usuario = obtenerUsuario();
 
-  if (!usuario || !usuario.id) {
-    guardarCheckinLocal(estadoAnimo, nivelEstres, sueno, energia);
+  if (!usuario) {
+    return null;
+  }
+
+  return usuario.id || usuario._id || usuario.usuarioId || null;
+}
+
+async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
+  const usuario = obtenerUsuario();
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  console.log("Usuario actual para check-in:", usuario);
+  console.log("ID detectado para check-in:", usuarioId);
+
+  if (!usuarioId) {
     return {
       ok: false,
-      mensaje: "No hay usuario conectado al backend. Check-in guardado solo localmente."
+      mensaje: "No se encontró el ID del usuario. Cierra sesión e inicia sesión nuevamente."
     };
   }
 
@@ -668,7 +687,7 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        usuarioId: usuario.id,
+        usuarioId,
         estadoAnimo,
         nivelEstres,
         sueno,
@@ -677,6 +696,8 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
     });
 
     const data = await respuesta.json();
+
+    console.log("Respuesta check-in backend:", data);
 
     if (!respuesta.ok) {
       return {
@@ -690,7 +711,11 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
       data.checkin.nivelEstres,
       data.checkin.sueno,
       data.checkin.energia,
-      new Date(data.checkin.createdAt || data.checkin.fecha || data.checkin.updatedAt).toLocaleDateString()
+      new Date(
+        data.checkin.createdAt ||
+          data.checkin.fecha ||
+          data.checkin.updatedAt
+      ).toLocaleDateString()
     );
 
     return {
@@ -699,24 +724,27 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
     };
   } catch (error) {
     console.error("Error al guardar check-in en backend:", error);
-    guardarCheckinLocal(estadoAnimo, nivelEstres, sueno, energia);
 
     return {
       ok: false,
-      mensaje: "No se pudo conectar con el servidor. Check-in guardado solo localmente."
+      mensaje:
+        "No se pudo conectar con el servidor para guardar el check-in. Detalle: " +
+        error.message +
+        " | API_URL: " +
+        API_URL
     };
   }
 }
 
 async function obtenerUltimoCheckinBackend() {
-  const usuario = obtenerUsuario();
+  const usuarioId = obtenerUsuarioIdVitality();
 
-  if (!usuario || !usuario.id) {
+  if (!usuarioId) {
     return obtenerCheckin();
   }
 
   try {
-    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuarioId}`);
 
     if (respuesta.status === 404) {
       return obtenerCheckin();
@@ -733,7 +761,11 @@ async function obtenerUltimoCheckinBackend() {
       nivelEstres: data.nivelEstres,
       sueno: data.sueno,
       energia: data.energia,
-      fecha: new Date(data.createdAt || data.fecha || data.updatedAt).toLocaleDateString()
+      fecha: new Date(
+        data.createdAt ||
+          data.fecha ||
+          data.updatedAt
+      ).toLocaleDateString()
     };
 
     guardarJSON("checkinVitality", checkinLocal);
@@ -753,6 +785,7 @@ async function guardarDatosCheckin(event) {
   const energiaInput = document.getElementById("energia");
 
   if (!estadoAnimoInput || !nivelEstresInput || !suenoInput || !energiaInput) {
+    mostrarToastVitality("No se encontraron todos los campos del check-in.");
     return;
   }
 
@@ -773,12 +806,12 @@ async function guardarDatosCheckin(event) {
     energia
   );
 
-  if (resultado.ok) {
-    mostrarToastVitality("Check-in guardado con éxito en MongoDB.");
-  } else {
+  if (!resultado.ok) {
     mostrarToastVitality(resultado.mensaje);
+    return;
   }
 
+  mostrarToastVitality("Check-in guardado correctamente.");
   window.location.href = "horario.html";
 }
 
@@ -794,7 +827,6 @@ async function sincronizarCheckinBackendConInterfaz() {
     iniciarChatInteligente();
   }
 }
-
 /* =========================
    ALERTAS SEGÚN CHECK-IN
 ========================= */
@@ -1826,6 +1858,7 @@ async function obtenerRespuestaIAChat(texto) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
+      usuarioId: obtenerUsuarioIdVitality(),
       mensaje: texto,
       checkin,
       actividadesHoy,
@@ -1839,9 +1872,12 @@ async function obtenerRespuestaIAChat(texto) {
     throw new Error(data.mensaje || "No se pudo obtener respuesta de IA.");
   }
 
-  return data.respuesta;
+  return {
+    respuesta: data.respuesta,
+    recomendacionId: data.recomendacionId || null,
+    recomendacion: data.recomendacion || null
+  };
 }
-
 async function sendMessage(event) {
   event.preventDefault();
 
@@ -1863,10 +1899,17 @@ async function sendMessage(event) {
   chatBox.scrollTop = chatBox.scrollHeight;
 
   try {
-    const response = await obtenerRespuestaIAChat(text);
+    const resultadoIA = await obtenerRespuestaIAChat(text);
 
     mensajeCargando.remove();
-    addMessage(response, "bot");
+
+    addMessage(
+      resultadoIA.respuesta,
+      "bot",
+      resultadoIA.recomendacionId,
+      resultadoIA.recomendacion
+    );
+
     actualizarBotonesChat();
   } catch (error) {
     console.error("Error usando IA, se usará respuesta local:", error);
@@ -1877,8 +1920,7 @@ async function sendMessage(event) {
     addMessage(response, "bot");
     actualizarBotonesChat();
   }
-}
-function usarOpcionRapida(opcion) {
+}function usarOpcionRapida(opcion) {
   const input = document.getElementById("userInput");
   if (!input) return;
 
@@ -1937,7 +1979,17 @@ function reiniciarChat() {
   actualizarBotonesChat();
 }
 
-function addMessage(text, sender) {
+function formatearTextoChat(texto) {
+  const textoLimpio = String(texto || "")
+    .trim()
+    .replace(/\s+([1-9]\))/g, "\n$1")
+    .replace(/\s+-\s+/g, "\n- ")
+    .replace(/\n{3,}/g, "\n\n");
+
+  return escaparHTML(textoLimpio).replace(/\n/g, "<br>");
+}
+
+function addMessage(text, sender, recomendacionId = null, recomendacion = null) {
   const chatBox = document.getElementById("chatBox");
   if (!chatBox) return;
 
@@ -1945,14 +1997,136 @@ function addMessage(text, sender) {
   message.classList.add("message", sender);
 
   const paragraph = document.createElement("p");
-  paragraph.textContent = text;
+  paragraph.innerHTML = formatearTextoChat(text);
 
   message.appendChild(paragraph);
-  chatBox.appendChild(message);
 
+  if (sender === "bot" && recomendacionId) {
+    const acciones = crearAccionesRecomendacionChat(
+      recomendacionId,
+      recomendacion
+    );
+
+    message.appendChild(acciones);
+  }
+
+  chatBox.appendChild(message);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
+function crearAccionesRecomendacionChat(recomendacionId, recomendacion) {
+  const contenedor = document.createElement("div");
+  contenedor.className = "chat-recomendacion-acciones";
 
+  const texto = document.createElement("p");
+  texto.className = "chat-recomendacion-texto";
+  texto.textContent = "¿Quieres aplicar esta recomendación?";
+
+  const botonAceptar = document.createElement("button");
+  botonAceptar.type = "button";
+  botonAceptar.textContent = "Aceptar recomendación";
+  botonAceptar.className = "btn-aceptar-recomendacion";
+  botonAceptar.addEventListener("click", () => {
+    aceptarRecomendacionIAChat(recomendacionId, contenedor);
+  });
+
+  const botonRechazar = document.createElement("button");
+  botonRechazar.type = "button";
+  botonRechazar.textContent = "Rechazar";
+  botonRechazar.className = "btn-rechazar-recomendacion";
+  botonRechazar.addEventListener("click", () => {
+    rechazarRecomendacionIAChat(recomendacionId, contenedor);
+  });
+
+  contenedor.appendChild(texto);
+  contenedor.appendChild(botonAceptar);
+  contenedor.appendChild(botonRechazar);
+
+  return contenedor;
+}
+
+function bloquearBotonesRecomendacion(contenedor) {
+  const botones = contenedor.querySelectorAll("button");
+
+  botones.forEach((boton) => {
+    boton.disabled = true;
+  });
+}
+
+async function aceptarRecomendacionIAChat(recomendacionId, contenedor) {
+  try {
+    bloquearBotonesRecomendacion(contenedor);
+
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/aceptar`,
+      {
+        method: "PATCH"
+      }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo aceptar la recomendación.");
+      return;
+    }
+
+    const estado = data.recomendacion?.estado || "aceptada";
+
+    contenedor.innerHTML = `
+      <p class="chat-recomendacion-aplicada">
+        Recomendación ${estado === "aplicada" ? "aplicada" : "aceptada"} correctamente.
+      </p>
+    `;
+
+    if (data.resultadoAplicado) {
+      mostrarToastVitality("Recomendación aplicada. Revisa tu horario u objetivos.");
+
+      if (typeof sincronizarActividadesBackendConInterfaz === "function") {
+        await sincronizarActividadesBackendConInterfaz();
+      }
+
+      if (typeof mostrarObjetivosPersonales === "function") {
+        await mostrarObjetivosPersonales();
+      }
+    } else {
+      mostrarToastVitality("Recomendación aceptada correctamente.");
+    }
+  } catch (error) {
+    console.error("Error al aceptar recomendación IA:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+async function rechazarRecomendacionIAChat(recomendacionId, contenedor) {
+  try {
+    bloquearBotonesRecomendacion(contenedor);
+
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/rechazar`,
+      {
+        method: "PATCH"
+      }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo rechazar la recomendación.");
+      return;
+    }
+
+    contenedor.innerHTML = `
+      <p class="chat-recomendacion-rechazada">
+        Recomendación rechazada.
+      </p>
+    `;
+
+    mostrarToastVitality("Recomendación rechazada.");
+  } catch (error) {
+    console.error("Error al rechazar recomendación IA:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
 function detectarIntencionPrincipal(msg) {
   if (
     msg.includes("organizar") ||
@@ -2738,11 +2912,11 @@ function historialFormatearFecha(fecha) {
 }
 
 async function obtenerHistorialCheckinsBackend() {
-  const usuario = obtenerUsuario();
+  const usuarioId = obtenerUsuarioIdVitality();
 
-  if (!usuario || !usuario.id) {
-    return [];
-  }
+if (!usuarioId) {
+  return false;
+}
 
   try {
     const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuario.id}`);
@@ -3667,14 +3841,28 @@ function paginaLibreCheckinDiario(pagina) {
 }
 
 async function usuarioTieneCheckinDeHoy() {
-  const usuario = obtenerUsuario();
+  const fechaHoy = obtenerFechaISOHoyCheckinDiario();
 
-  if (!usuario || !usuario.id) {
+  const checkinLocal = obtenerCheckin();
+
+  if (checkinLocal) {
+    const fechaLocal =
+      checkinLocal.fechaISO ||
+      convertirFechaAISOCheckinDiario(checkinLocal.fecha);
+
+    if (fechaLocal === fechaHoy) {
+      return true;
+    }
+  }
+
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
     return false;
   }
 
   try {
-    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuarioId}`);
 
     if (respuesta.status === 404) {
       return false;
@@ -3690,15 +3878,28 @@ async function usuarioTieneCheckinDeHoy() {
       data.createdAt || data.fecha || data.updatedAt
     );
 
-    const fechaHoy = obtenerFechaISOHoyCheckinDiario();
+    if (fechaCheckin === fechaHoy) {
+      guardarCheckinLocal(
+        data.estadoAnimo,
+        data.nivelEstres,
+        data.sueno,
+        data.energia,
+        new Date(
+          data.createdAt ||
+            data.fecha ||
+            data.updatedAt
+        ).toLocaleDateString()
+      );
 
-    return fechaCheckin === fechaHoy;
+      return true;
+    }
+
+    return false;
   } catch (error) {
     console.error("Error al verificar check-in diario:", error);
     return false;
   }
 }
-
 async function redirigirDespuesDeLoginSegunCheckin() {
   const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
 

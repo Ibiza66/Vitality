@@ -11,6 +11,7 @@ const actividadesRoutes = require("./routes/actividades");
 const objetivosRoutes = require("./routes/objetivos");
 const iaRoutes = require("./routes/ia");
 const usoAppsRoutes = require("./routes/usoApps");
+const recomendacionesIARoutes = require("./routes/recomendacionesIA");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/actividades", actividadesRoutes);
 app.use("/api/objetivos", objetivosRoutes);
 app.use("/api/ia", iaRoutes);
 app.use("/api/uso-apps", usoAppsRoutes);
+app.use("/api/recomendaciones-ia", recomendacionesIARoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
