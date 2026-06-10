@@ -3941,6 +3941,29 @@ window.addEventListener("DOMContentLoaded", () => {
 /* =========================
    CONTROL DE USO DE APPS
 ========================= */
+function seleccionarAppUsoVitality(nombreApp, boton) {
+  const input = document.getElementById("usoAppNombre");
+  const texto = document.getElementById("usoAppSeleccionadaTexto");
+
+  if (input) {
+    input.value = nombreApp;
+  }
+
+  if (texto) {
+    texto.textContent = `App seleccionada: ${nombreApp}`;
+  }
+
+  const botones = document.querySelectorAll(".uso-app-opcion");
+
+  botones.forEach((item) => {
+    item.classList.remove("uso-app-opcion-activa");
+  });
+
+  if (boton) {
+    boton.classList.add("uso-app-opcion-activa");
+  }
+}
+
 function obtenerUsuarioUsoApps() {
   try {
     const usuarioGuardado = localStorage.getItem("usuarioVitality");
@@ -3950,6 +3973,8 @@ function obtenerUsuarioUsoApps() {
     return null;
   }
 }
+
+
 
 function usoAppsEscaparTexto(valor) {
   return String(valor ?? "")
@@ -3998,28 +4023,28 @@ async function guardarUsoAppBackend(event) {
   }
 
   const nombreInput = document.getElementById("usoAppNombre");
-  const packageInput = document.getElementById("usoAppPackage");
   const limiteInput = document.getElementById("usoAppLimite");
 
-  if (!nombreInput || !limiteInput) return;
-
-  const nombreApp = nombreInput.value.trim();
-  const packageManual = packageInput ? packageInput.value.trim() : "";
-  const packageName = obtenerPackageAppVitality(nombreApp, packageManual);
-  const limiteMinutos = Number(limiteInput.value);
-
-  if (!nombreApp || Number.isNaN(limiteMinutos)) {
-    mostrarToastVitality("Completa correctamente la app y el límite diario.");
+  if (!nombreInput || !limiteInput) {
     return;
   }
 
-  if (limiteMinutos <= 0) {
-    mostrarToastVitality("El límite debe ser mayor a 0.");
+  const nombreApp = nombreInput.value.trim();
+  const limiteMinutos = Number(limiteInput.value);
+  const packageName = obtenerPackageAppVitality(nombreApp, "");
+
+  if (!nombreApp) {
+    mostrarToastVitality("Selecciona una app para monitorear.");
+    return;
+  }
+
+  if (Number.isNaN(limiteMinutos) || limiteMinutos <= 0) {
+    mostrarToastVitality("Ingresa un límite diario válido.");
     return;
   }
 
   if (!packageName) {
-    mostrarToastVitality("No se encontró el package de la app. Escríbelo manualmente.");
+    mostrarToastVitality("Esta app todavía no está disponible para monitoreo.");
     return;
   }
 
@@ -4057,6 +4082,14 @@ async function guardarUsoAppBackend(event) {
 
     event.target.reset();
 
+    const texto = document.getElementById("usoAppSeleccionadaTexto");
+    if (texto) {
+      texto.textContent = "Selecciona una app para monitorear.";
+    }
+
+    const botones = document.querySelectorAll(".uso-app-opcion");
+    botones.forEach((item) => item.classList.remove("uso-app-opcion-activa"));
+
     await mostrarUsoApps();
 
     if (minutosUsados > limiteMinutos) {
@@ -4071,6 +4104,7 @@ async function guardarUsoAppBackend(event) {
     }
   } catch (error) {
     console.error("Error al guardar uso de app:", error);
+
     mostrarToastVitality(
       "No se pudo conectar con el servidor. Detalle: " +
         error.message +
@@ -4390,12 +4424,18 @@ if (document.readyState === "loading") {
    USO REAL DE APPS ANDROID
 ========================= */
 const PACKAGES_APPS_VITALITY = {
-  TikTok: "com.zhiliaoapp.musically",
   Instagram: "com.instagram.android",
+  TikTok: "com.zhiliaoapp.musically",
   YouTube: "com.google.android.youtube",
-  WhatsApp: "com.whatsapp"
+  WhatsApp: "com.whatsapp",
+  Spotify: "com.spotify.music",
+  Chrome: "com.android.chrome",
+  Gmail: "com.google.android.gm",
+  Facebook: "com.facebook.katana",
+  Messenger: "com.facebook.orca",
+  Netflix: "com.netflix.mediaclient",
+  X: "com.twitter.android"
 };
-
 function obtenerPluginUsoAppsVitality() {
   if (!window.Capacitor || !window.Capacitor.Plugins) {
     return null;
@@ -4472,7 +4512,7 @@ async function obtenerEstadisticasUsoHoyVitality() {
   });
 }
 
-function obtenerPackageAppVitality(nombreApp, packageManual) {
+function obtenerPackageAppVitality(nombreApp, packageManual = "") {
   if (packageManual && packageManual.trim() !== "") {
     return packageManual.trim();
   }

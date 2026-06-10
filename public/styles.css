@@ -4965,3 +4965,47 @@ body.dark-mode .chat-recomendacion-rechazada {
   margin: 6px 0;
   line-height: 1.4;
 }
+/* =========================
+   BOTONES DE APPS MONITOREADAS
+========================= */
+.uso-apps-opciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0 8px;
+}
+
+.uso-app-opcion {
+  width: 100%;
+  border: 2px solid rgba(17, 92, 103, 0.18);
+  border-radius: 16px;
+  padding: 14px 10px;
+  background: #eefbe8;
+  color: #115c67;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.uso-app-opcion-activa {
+  background: #115c67;
+  color: #ffffff;
+  border-color: #115c67;
+  box-shadow: 0 8px 18px rgba(17, 92, 103, 0.25);
+}
+
+body.dark-mode .uso-app-opcion {
+  background: #163b3f;
+  color: #e9ffe2;
+  border-color: rgba(158, 228, 147, 0.35);
+}
+
+body.dark-mode .uso-app-opcion-activa {
+  background: #4a9516;
+  color: #ffffff;
+}
+
+@media (max-width: 420px) {
+  .uso-apps-opciones {
+    grid-template-columns: 1fr;
+  }
+}
