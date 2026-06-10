@@ -4163,12 +4163,12 @@ async function mostrarUsoApps() {
         ? "Uso real leído desde Android"
         : "Uso guardado manualmente";
 
-      if (excedida) {
-        enviarNotificacionCelularVitality(
-          "Uso excesivo detectado",
-          `${uso.nombreApp}: ${uso.minutosUsados} min de ${uso.limiteMinutos} min permitidos.`
-        );
-      }
+      if (excedida && !alertaUsoAppsEstaPausada()) {
+  enviarNotificacionCelularVitality(
+    "Uso excesivo detectado",
+    `${uso.nombreApp}: ${uso.minutosUsados} min de ${uso.limiteMinutos} min permitidos.`
+  );
+}
 
       return `
         <div class="uso-app-item ${clase}">
@@ -4213,8 +4213,51 @@ function cerrarAlertaUsoApps() {
   if (alerta) {
     alerta.remove();
   }
+
+  const treintaMinutos = 30 * 60 * 1000;
+  const fechaReactivacion = Date.now() + treintaMinutos;
+
+  localStorage.setItem(
+    "alertaUsoAppsPausadaHasta",
+    String(fechaReactivacion)
+  );
+
+  mostrarToastVitality("Alerta pausada por 30 minutos.");
+}
+function alertaUsoAppsEstaPausada() {
+  const pausadaHasta = Number(
+    localStorage.getItem("alertaUsoAppsPausadaHasta") || 0
+  );
+
+  if (!pausadaHasta) {
+    return false;
+  }
+
+  if (Date.now() >= pausadaHasta) {
+    localStorage.removeItem("alertaUsoAppsPausadaHasta");
+    return false;
+  }
+
+  return true;
 }
 
+function obtenerMinutosRestantesPausaUsoApps() {
+  const pausadaHasta = Number(
+    localStorage.getItem("alertaUsoAppsPausadaHasta") || 0
+  );
+
+  if (!pausadaHasta) {
+    return 0;
+  }
+
+  const diferencia = pausadaHasta - Date.now();
+
+  if (diferencia <= 0) {
+    return 0;
+  }
+
+  return Math.ceil(diferencia / 60000);
+}
 function mostrarAlertaUsoExcesivoGlobal(usoApp) {
   const alerta = crearContenedorAlertaUsoApps();
 
@@ -4238,14 +4281,25 @@ async function revisarUsoExcesivoGlobal() {
 
   if (!usuario || !usuario.id) return;
 
-  const usos = await obtenerUsoAppsBackend();
+  if (alertaUsoAppsEstaPausada()) {
+    const alerta = document.getElementById("alertaUsoAppsGlobal");
+
+    if (alerta) {
+      alerta.remove();
+    }
+
+    return;
+  }
+
+  let usos = await obtenerUsoAppsBackend();
+  usos = await enriquecerUsoAppsConUsoRealVitality(usos);
+
   const usoExcesivo = usos.find((uso) => usoAppExcedida(uso));
 
   if (usoExcesivo) {
     mostrarAlertaUsoExcesivoGlobal(usoExcesivo);
   }
 }
-
 function iniciarControlUsoApps() {
   const usoAppForm = document.getElementById("usoAppForm");
 
@@ -4256,6 +4310,14 @@ function iniciarControlUsoApps() {
   actualizarEstadoPermisoUsoAppsVitality();
   mostrarUsoApps();
   revisarUsoExcesivoGlobal();
+
+  if (!window.__intervaloUsoAppsVitalityActivo) {
+    window.__intervaloUsoAppsVitalityActivo = true;
+
+    setInterval(() => {
+      revisarUsoExcesivoGlobal();
+    }, 30 * 60 * 1000);
+  }
 }
 
 if (document.readyState === "loading") {
