@@ -4828,3 +4828,140 @@ body.dark-mode .chat-recomendacion-rechazada {
   }
 }
 
+/* =========================
+   RECOMENDACIÓN IA EN INICIO
+========================= */
+.recomendacion-inicio-card {
+  margin-top: 16px;
+}
+
+.recomendacion-inicio-item {
+  background: #eefbe8;
+  border-left: 5px solid #115c67;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: left;
+}
+
+.recomendacion-inicio-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.recomendacion-inicio-etiqueta {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #115c67;
+  margin-bottom: 4px;
+}
+
+.recomendacion-inicio-item h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #123d12;
+}
+
+.recomendacion-inicio-estado {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #115c67;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.estado-pendiente {
+  background: #fff4cc;
+  color: #7a5700;
+}
+
+.estado-aceptada,
+.estado-aplicada {
+  background: #dff5d8;
+  color: #2f7d18;
+}
+
+.estado-rechazada {
+  background: #ffe1e1;
+  color: #b83232;
+}
+
+.recomendacion-inicio-accion {
+  margin: 12px 0;
+  color: #244024;
+  line-height: 1.4;
+}
+
+.recomendacion-inicio-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.recomendacion-inicio-acciones button,
+.btn-ir-chat-recomendacion,
+.recomendacion-inicio-vacia button {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #4a9516;
+  color: white;
+}
+
+.recomendacion-inicio-acciones .btn-rechazar-inicio {
+  background: #b83232;
+}
+
+.btn-ir-chat-recomendacion {
+  width: 100%;
+  margin-top: 8px;
+  background: #115c67;
+}
+/* =========================
+   VER / ELIMINAR RECOMENDACIÓN IA
+========================= */
+.btn-eliminar-recomendacion,
+.btn-eliminar-recomendacion-chat {
+  background: #b83232 !important;
+  color: #ffffff !important;
+}
+
+.btn-eliminar-recomendacion-chat {
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.recomendacion-chat-detalle {
+  border-left: 5px solid #115c67;
+  background: #eefbe8;
+}
+
+.recomendacion-chat-label {
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #115c67;
+}
+
+.recomendacion-chat-detalle h3 {
+  margin: 4px 0 10px;
+  color: #123d12;
+  font-size: 1rem;
+}
+
+.recomendacion-chat-detalle p {
+  margin: 6px 0;
+  line-height: 1.4;
+}

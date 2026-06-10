@@ -4552,3 +4552,346 @@ async function enriquecerUsoAppsConUsoRealVitality(usos) {
     };
   });
 }
+/* =========================
+   RECOMENDACIÓN IA EN INICIO
+========================= */
+async function obtenerRecomendacionesIAInicio() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/${usuarioId}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener recomendaciones IA:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con recomendaciones IA:", error);
+    return [];
+  }
+}
+
+async function mostrarRecomendacionIAInicio() {
+  const contenedor = document.getElementById("recomendacionIAInicioContainer");
+
+  if (!contenedor) {
+    return;
+  }
+
+  const recomendaciones = await obtenerRecomendacionesIAInicio();
+
+  if (!recomendaciones || recomendaciones.length === 0) {
+    contenedor.innerHTML = `
+      <div class="recomendacion-inicio-vacia">
+        <p>No hay recomendaciones recientes todavía.</p>
+        <button type="button" onclick="window.location.href='chat.html'">
+          Hablar con Vitality
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  const recomendacion = recomendaciones[0];
+
+  const estado = recomendacion.estado || "pendiente";
+  const categoria = recomendacion.categoriaBarrera || "SIN_BARRERA_CLARA";
+  const accion = recomendacion.accionSugerida || {};
+
+  const tituloAccion =
+    accion.titulo ||
+    accion.tipo ||
+    "Recomendación personalizada";
+
+  let textoCategoria = "Recomendación general";
+
+  if (categoria === "DISTRACCION_DIGITAL") {
+    textoCategoria = "Distracción digital";
+  }
+
+  if (categoria === "BARRERA_INTERNA_EMOCIONAL") {
+    textoCategoria = "Cansancio o bienestar emocional";
+  }
+
+  if (categoria === "BARRERA_INTERNA_COGNITIVA") {
+    textoCategoria = "Organización y foco";
+  }
+
+  contenedor.innerHTML = `
+    <div class="recomendacion-inicio-item">
+      <div class="recomendacion-inicio-header">
+        <div>
+          <span class="recomendacion-inicio-etiqueta">IA adaptativa</span>
+          <h3>${escaparHTML(textoCategoria)}</h3>
+        </div>
+
+        <span class="recomendacion-inicio-estado estado-${escaparHTML(estado)}">
+          ${escaparHTML(estado)}
+        </span>
+      </div>
+
+      <p class="recomendacion-inicio-accion">
+        ${escaparHTML(tituloAccion)}
+      </p>
+
+      ${
+        estado === "pendiente"
+          ? `
+            <div class="recomendacion-inicio-acciones">
+              <button type="button" onclick="aceptarRecomendacionIAInicio('${escaparHTML(recomendacion._id)}')">
+                Aceptar
+              </button>
+
+              <button type="button" class="btn-rechazar-inicio" onclick="rechazarRecomendacionIAInicio('${escaparHTML(recomendacion._id)}')">
+                Rechazar
+              </button>
+
+              <button type="button" class="btn-eliminar-recomendacion" onclick="eliminarRecomendacionIA('${escaparHTML(recomendacion._id)}')">
+                Eliminar
+              </button>
+            </div>
+          `
+          : `
+            <div class="recomendacion-inicio-acciones">
+              <button type="button" class="btn-ir-chat-recomendacion" onclick="window.location.href='chat.html?recomendacionId=${escaparHTML(recomendacion._id)}'">
+                Ver en el chat
+              </button>
+
+              <button type="button" class="btn-eliminar-recomendacion" onclick="eliminarRecomendacionIA('${escaparHTML(recomendacion._id)}')">
+                Eliminar
+              </button>
+            </div>
+          `
+      }
+    </div>
+  `;
+}
+async function aceptarRecomendacionIAInicio(recomendacionId) {
+  try {
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/aceptar`,
+      { method: "PATCH" }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo aceptar la recomendación.");
+      return;
+    }
+
+    mostrarToastVitality("Recomendación aceptada.");
+
+    await mostrarRecomendacionIAInicio();
+
+    if (typeof sincronizarActividadesBackendConInterfaz === "function") {
+      await sincronizarActividadesBackendConInterfaz();
+    }
+  } catch (error) {
+    console.error("Error al aceptar recomendación desde inicio:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+async function rechazarRecomendacionIAInicio(recomendacionId) {
+  try {
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/rechazar`,
+      { method: "PATCH" }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo rechazar la recomendación.");
+      return;
+    }
+
+    mostrarToastVitality("Recomendación rechazada.");
+    await mostrarRecomendacionIAInicio();
+  } catch (error) {
+    console.error("Error al rechazar recomendación desde inicio:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(mostrarRecomendacionIAInicio, 800);
+});
+/* =========================
+   VER Y ELIMINAR RECOMENDACIÓN IA
+========================= */
+function obtenerParametroURLVitality(nombre) {
+  const parametros = new URLSearchParams(window.location.search);
+  return parametros.get(nombre);
+}
+
+async function eliminarRecomendacionIA(recomendacionId) {
+  const confirmar = confirm("¿Seguro que quieres eliminar esta recomendación IA?");
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar la recomendación.");
+      return;
+    }
+
+    mostrarToastVitality("Recomendación eliminada correctamente.");
+
+    if (typeof mostrarRecomendacionIAInicio === "function") {
+      await mostrarRecomendacionIAInicio();
+    }
+  } catch (error) {
+    console.error("Error al eliminar recomendación IA:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+async function obtenerRecomendacionIASeleccionada(recomendacionId) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !recomendacionId) {
+    return null;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/${usuarioId}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return null;
+    }
+
+    return data.find((item) => String(item._id) === String(recomendacionId)) || null;
+  } catch (error) {
+    console.error("Error al buscar recomendación IA:", error);
+    return null;
+  }
+}
+
+function crearTarjetaRecomendacionChat(recomendacion) {
+  const tarjeta = document.createElement("div");
+  tarjeta.className = "message bot recomendacion-chat-detalle";
+
+  const estado = recomendacion.estado || "pendiente";
+  const categoria = recomendacion.categoriaBarrera || "SIN_BARRERA_CLARA";
+  const accion = recomendacion.accionSugerida || {};
+
+  tarjeta.innerHTML = `
+    <p class="recomendacion-chat-label">Recomendación IA seleccionada</p>
+    <h3>${escaparHTML(accion.titulo || "Recomendación personalizada")}</h3>
+    <p><strong>Categoría:</strong> ${escaparHTML(categoria)}</p>
+    <p><strong>Estado:</strong> ${escaparHTML(estado)}</p>
+    <p>${escaparHTML(accion.descripcion || recomendacion.mensajeIA || "Sin descripción.")}</p>
+  `;
+
+  if (estado === "pendiente") {
+    const acciones = crearAccionesRecomendacionChat(
+      recomendacion._id,
+      recomendacion
+    );
+
+    tarjeta.appendChild(acciones);
+  }
+
+  const botonEliminar = document.createElement("button");
+  botonEliminar.type = "button";
+  botonEliminar.textContent = "Eliminar recomendación";
+  botonEliminar.className = "btn-eliminar-recomendacion-chat";
+
+  botonEliminar.addEventListener("click", async () => {
+    const confirmar = confirm("¿Seguro que quieres eliminar esta recomendación IA?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(
+        `${API_URL}/api/recomendaciones-ia/${recomendacion._id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      const data = await respuesta.json();
+
+      if (!respuesta.ok) {
+        mostrarToastVitality(data.mensaje || "No se pudo eliminar la recomendación.");
+        return;
+      }
+
+      tarjeta.remove();
+      mostrarToastVitality("Recomendación eliminada correctamente.");
+    } catch (error) {
+      console.error("Error al eliminar recomendación desde chat:", error);
+      mostrarToastVitality("No se pudo conectar con el servidor.");
+    }
+  });
+
+  tarjeta.appendChild(botonEliminar);
+
+  return tarjeta;
+}
+
+async function mostrarRecomendacionSeleccionadaEnChat() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  if (window.__recomendacionChatMostrada) {
+    return;
+  }
+
+  const recomendacionId = obtenerParametroURLVitality("recomendacionId");
+
+  if (!recomendacionId) {
+    return;
+  }
+
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const recomendacion = await obtenerRecomendacionIASeleccionada(recomendacionId);
+
+  if (!recomendacion) {
+    addMessage("No pude encontrar esa recomendación IA.", "bot");
+    window.__recomendacionChatMostrada = true;
+    return;
+  }
+
+  const tarjeta = crearTarjetaRecomendacionChat(recomendacion);
+
+  chatBox.appendChild(tarjeta);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  window.__recomendacionChatMostrada = true;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(mostrarRecomendacionSeleccionadaEnChat, 1200);
+});

@@ -259,5 +259,32 @@ router.patch("/:recomendacionId/aceptar", async (req, res) => {
     });
   }
 });
+/* =========================
+   ELIMINAR RECOMENDACIÓN IA
+========================= */
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const recomendacion = await RecomendacionIA.findByIdAndDelete(id);
+
+    if (!recomendacion) {
+      return res.status(404).json({
+        mensaje: "Recomendación IA no encontrada."
+      });
+    }
+
+    return res.json({
+      mensaje: "Recomendación IA eliminada correctamente.",
+      recomendacion
+    });
+  } catch (error) {
+    console.error("Error al eliminar recomendación IA:", error);
+
+    return res.status(500).json({
+      mensaje: "Error al eliminar recomendación IA.",
+      error: error.message
+    });
+  }
+});
 module.exports = router;
