@@ -202,7 +202,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://10.31.0.69:3000";
+    return "http://192.168.1.140:3000";
   }
 
   return "";
@@ -1935,43 +1935,13 @@ async function sendMessage(event) {
 
 function actualizarBotonesChat() {
   const contenedor = document.getElementById("chatQuickActions");
-  if (!contenedor) return;
 
-  if (chatState === "inicio") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('conversar')">Conversar</button>
-      <button type="button" onclick="usarOpcionRapida('organización')">Organizar mi día</button>
-      <button type="button" onclick="usarOpcionRapida('recomendación')">Dame una recomendación</button>
-    `;
+  if (!contenedor) {
     return;
   }
 
-  if (chatState === "conversacion") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('quiero seguir conversando')">Seguir conversando</button>
-      <button type="button" onclick="usarOpcionRapida('organizar mi día')">Organizar mi día</button>
-      <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
-    `;
-    return;
-  }
-
-  if (chatState === "organizacion") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('sí')">Sí</button>
-      <button type="button" onclick="usarOpcionRapida('no')">No</button>
-      <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
-    `;
-    return;
-  }
-
-  if (chatState === "recomendacion") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('otra')">Otra recomendación</button>
-      <button type="button" onclick="usarOpcionRapida('gracias')">Gracias</button>
-      <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
-    `;
-    return;
-  }
+  contenedor.innerHTML = "";
+  contenedor.style.display = "none";
 }
 
 function reiniciarChat() {

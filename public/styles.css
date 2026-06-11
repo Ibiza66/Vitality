@@ -5009,3 +5009,303 @@ body.dark-mode .uso-app-opcion-activa {
     grid-template-columns: 1fr;
   }
 }
+/* =========================
+   CHAT CON ALTURA FIJA Y SCROLL
+========================= */
+.chat-app-screen {
+  min-height: calc(100vh - 90px);
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-mobile-card,
+.chat-container,
+.chat-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#chatBox {
+  height: 420px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  scroll-behavior: smooth;
+}
+
+#chatBox .message {
+  max-width: 85%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#chatBox .message.bot {
+  align-self: flex-start;
+}
+
+#chatBox .message.user {
+  align-self: flex-end;
+}
+
+.chat-input-area,
+.chat-form,
+#chatForm {
+  flex-shrink: 0;
+}
+
+#userInput {
+  max-height: 120px;
+  resize: none;
+}
+
+/* En pantallas chicas baja un poco la altura */
+@media (max-height: 720px) {
+  #chatBox {
+    height: 340px;
+    max-height: 340px;
+  }
+}
+
+/* Modo oscuro */
+body.dark-mode #chatBox {
+  background: rgba(10, 35, 35, 0.92);
+}
+/* =========================
+   OCULTAR BOTONES RÁPIDOS DEL CHAT
+========================= */
+#chatQuickActions {
+  display: none !important;
+}
+/* =========================
+   PANTALLA DE BIENVENIDA
+========================= */
+.welcome-page {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top, rgba(226, 247, 216, 0.9), transparent 38%),
+    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
+  color: #241b14;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.welcome-screen {
+  min-height: 100vh;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-content {
+  width: 100%;
+  max-width: 430px;
+  min-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: welcomeFadeIn 0.5s ease;
+}
+
+.welcome-logo-card {
+  width: 118px;
+  height: 118px;
+  border-radius: 32px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 18px 40px rgba(255, 109, 20, 0.18),
+    0 8px 22px rgba(0, 0, 0, 0.08);
+  margin-bottom: 34px;
+}
+
+.welcome-logo-card img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+}
+
+.welcome-content h1 {
+  margin: 0;
+  max-width: 330px;
+  font-size: 2.45rem;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #2b2119;
+}
+
+.welcome-subtitle {
+  margin: 24px auto 0;
+  max-width: 340px;
+  color: #6a5c4d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.18rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.welcome-actions {
+  width: 100%;
+  margin-top: auto;
+  padding-bottom: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.welcome-primary-btn {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, #ff7a1a, #f05e13);
+  color: #ffffff;
+  font-size: 1.12rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(240, 94, 19, 0.28);
+}
+
+.welcome-secondary-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #2b2119;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.welcome-login-card {
+  width: 100%;
+  max-width: 430px;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10);
+  animation: welcomeFadeIn 0.45s ease;
+}
+
+.welcome-back-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 16px;
+  background: #f2eadf;
+  color: #2b2119;
+  font-size: 1.4rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.welcome-logo-small {
+  width: 86px;
+  height: 86px;
+  align-self: center;
+  border-radius: 26px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 28px rgba(255, 109, 20, 0.14);
+}
+
+.welcome-logo-small img {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}
+
+.welcome-login-card h2 {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 2rem;
+  color: #2b2119;
+}
+
+.welcome-login-card p {
+  margin: 0;
+  text-align: center;
+  color: #6a5c4d;
+  line-height: 1.45;
+}
+
+.welcome-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.welcome-login-form label {
+  color: #2b2119;
+  font-weight: 800;
+  text-align: left;
+}
+
+.welcome-login-form input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #eadfce;
+  border-radius: 18px;
+  padding: 15px 16px;
+  font-size: 1rem;
+  background: #fffaf2;
+  color: #2b2119;
+  outline: none;
+}
+
+.welcome-login-form input:focus {
+  border-color: #ff7a1a;
+  box-shadow: 0 0 0 4px rgba(255, 122, 26, 0.12);
+}
+
+@keyframes welcomeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-height: 720px) {
+  .welcome-content {
+    min-height: 88vh;
+  }
+
+  .welcome-logo-card {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 24px;
+  }
+
+  .welcome-logo-card img {
+    width: 68px;
+    height: 68px;
+  }
+
+  .welcome-content h1 {
+    font-size: 2rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1rem;
+  }
+}
