@@ -364,17 +364,18 @@ async function registrarUsuario(event) {
   const nombreInput = document.getElementById("nombre");
   const correoInput = document.getElementById("correo");
   const passwordInput = document.getElementById("password");
+  const confirmarPasswordInput = document.getElementById("confirmarPassword");
   const edadInput = document.getElementById("edad");
   const ocupacionInput = document.getElementById("ocupacion");
-  const actividadesFavoritasInput = document.getElementById("actividadesFavoritas");
+  const ocupacionDetalleInput = document.getElementById("ocupacionDetalle");
 
   if (
     !nombreInput ||
     !correoInput ||
     !passwordInput ||
+    !confirmarPasswordInput ||
     !edadInput ||
-    !ocupacionInput ||
-    !actividadesFavoritasInput
+    !ocupacionInput
   ) {
     return;
   }
@@ -382,12 +383,25 @@ async function registrarUsuario(event) {
   const nombre = nombreInput.value.trim();
   const correo = correoInput.value.trim().toLowerCase();
   const password = passwordInput.value.trim();
+  const confirmarPassword = confirmarPasswordInput.value.trim();
   const edad = Number(edadInput.value);
-  const ocupacion = ocupacionInput.value.trim();
-  const actividadesFavoritas = actividadesFavoritasInput.value.trim();
+  const ocupacionBase = ocupacionInput.value.trim();
+  const ocupacionDetalle = ocupacionDetalleInput
+    ? ocupacionDetalleInput.value.trim()
+    : "";
 
-  if (!nombre || !correo || !password || !edad || !ocupacion || !actividadesFavoritas) {
+  if (!nombre || !correo || !password || !confirmarPassword || !edad || !ocupacionBase) {
     mostrarToastVitality("Por favor completa todos los campos.");
+    return;
+  }
+
+  if (password !== confirmarPassword) {
+    mostrarToastVitality("Las contraseñas no coinciden.");
+    return;
+  }
+
+  if (password.length < 6) {
+    mostrarToastVitality("La contraseña debe tener al menos 6 caracteres.");
     return;
   }
 
@@ -395,6 +409,22 @@ async function registrarUsuario(event) {
     mostrarToastVitality("Ingresa una edad válida.");
     return;
   }
+
+  if (
+    (ocupacionBase === "Estudiante universitario" ||
+      ocupacionBase === "Trabajador" ||
+      ocupacionBase === "Otra") &&
+    !ocupacionDetalle
+  ) {
+    mostrarToastVitality("Completa el detalle de tu ocupación.");
+    return;
+  }
+
+ const ocupacion = ocupacionBase;
+
+const actividadesFavoritas = ocupacionDetalle
+  ? ocupacionDetalle
+  : "Se definirá en el onboarding inicial.";
 
   try {
     const respuesta = await fetch(`${API_URL}/api/usuarios/registro`, {
@@ -420,10 +450,15 @@ async function registrarUsuario(event) {
     }
 
     limpiarDatosLocalesUsuario();
-    guardarUsuario(data.usuario);
+guardarUsuario(data.usuario);
 
-    mostrarToastVitality("Cuenta creada con éxito.");
-    window.location.href = "onboarding.html";
+guardarJSON("detalleOcupacionVitality", {
+  ocupacion: ocupacionBase,
+  detalle: ocupacionDetalle
+});
+
+mostrarToastVitality("Cuenta creada con éxito.");
+window.location.href = "onboarding.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     mostrarToastVitality(
@@ -434,7 +469,6 @@ async function registrarUsuario(event) {
     );
   }
 }
-
 async function iniciarSesion(event) {
   event.preventDefault();
 
@@ -5156,3 +5190,62 @@ function finalizarOnboardingVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", inicializarOnboardingVitality);
+/* =========================
+   REGISTRO - INTERACCIONES
+========================= */
+function alternarVisibilidadPassword(inputId, boton) {
+  const input = document.getElementById(inputId);
+
+  if (!input) {
+    return;
+  }
+
+  if (input.type === "password") {
+    input.type = "text";
+    if (boton) boton.textContent = "Ocultar";
+  } else {
+    input.type = "password";
+    if (boton) boton.textContent = "Ver";
+  }
+}
+
+function actualizarCampoDetalleOcupacion() {
+  const ocupacion = document.getElementById("ocupacion");
+  const grupo = document.getElementById("ocupacionDetalleGroup");
+  const label = document.getElementById("ocupacionDetalleLabel");
+  const input = document.getElementById("ocupacionDetalle");
+
+  if (!ocupacion || !grupo || !label || !input) {
+    return;
+  }
+
+  const valor = ocupacion.value;
+
+  if (valor === "Estudiante universitario") {
+    grupo.style.display = "block";
+    label.textContent = "Carrera";
+    input.placeholder = "Ej: Ingeniería civil informática";
+    input.required = true;
+    return;
+  }
+
+  if (valor === "Trabajador") {
+    grupo.style.display = "block";
+    label.textContent = "Área o cargo";
+    input.placeholder = "Ej: Atención al cliente, ventas, informática";
+    input.required = true;
+    return;
+  }
+
+  if (valor === "Otra") {
+    grupo.style.display = "block";
+    label.textContent = "Cuéntanos tu ocupación";
+    input.placeholder = "Ej: emprendedora, deportista, cuidadora";
+    input.required = true;
+    return;
+  }
+
+  grupo.style.display = "none";
+  input.value = "";
+  input.required = false;
+}

@@ -6,21 +6,37 @@
   <title>Vitality - Registro</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="login-page">
 
-  <main class="login-app-screen">
-    <section class="login-app-card registro-app-card">
-      <div class="login-logo-box">
-        <img src="logo.jpg" alt="Logo Vitality" class="login-logo">
-      </div>
+<body class="registro-warm-page">
 
-      <div class="login-text">
-        <h1>Crear cuenta</h1>
-        <p>Personaliza Vitality según tu edad, ocupación y actividades favoritas.</p>
-      </div>
+  <main class="registro-warm-screen">
 
-      <form id="registroForm" class="login-app-form">
-        <div class="input-app-group">
+    <section class="registro-warm-card">
+      <button
+        type="button"
+        class="registro-back-btn"
+        onclick="window.location.href='index.html'"
+      >
+        ←
+      </button>
+
+      <div class="registro-question-header">
+  <div class="registro-logo-mini">
+    <img src="logo.jpg" alt="Logo Vitality">
+  </div>
+
+  <div class="registro-warm-text">
+    <span>Crear cuenta</span>
+    <h1>Cuéntanos lo básico de ti</h1>
+    <p>
+      Luego completarás una breve guía personal para adaptar Vitality a ti.
+    </p>
+  </div>
+</div>
+
+      <form id="registroForm" class="registro-warm-form">
+
+        <div class="registro-input-group">
           <label for="nombre">Nombre completo</label>
           <input
             type="text"
@@ -30,7 +46,7 @@
           >
         </div>
 
-        <div class="input-app-group">
+        <div class="registro-input-group">
           <label for="correo">Correo electrónico</label>
           <input
             type="email"
@@ -40,17 +56,47 @@
           >
         </div>
 
-        <div class="input-app-group">
+        <div class="registro-input-group">
           <label for="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Crea una contraseña"
-            required
-          >
+
+          <div class="registro-password-wrapper">
+            <input
+              type="password"
+              id="password"
+              placeholder="Crea una contraseña"
+              required
+            >
+
+            <button
+              type="button"
+              onclick="alternarVisibilidadPassword('password', this)"
+            >
+              Ver
+            </button>
+          </div>
         </div>
 
-        <div class="input-app-group">
+        <div class="registro-input-group">
+          <label for="confirmarPassword">Confirmar contraseña</label>
+
+          <div class="registro-password-wrapper">
+            <input
+              type="password"
+              id="confirmarPassword"
+              placeholder="Repite tu contraseña"
+              required
+            >
+
+            <button
+              type="button"
+              onclick="alternarVisibilidadPassword('confirmarPassword', this)"
+            >
+              Ver
+            </button>
+          </div>
+        </div>
+
+        <div class="registro-input-group">
           <label for="edad">Edad</label>
           <input
             type="number"
@@ -62,43 +108,46 @@
           >
         </div>
 
-        <div class="input-app-group">
-          <label for="ocupacion">Ocupación</label>
-          <select id="ocupacion" required>
+        <div class="registro-input-group">
+          <label for="ocupacion">Ocupación principal</label>
+
+          <select
+            id="ocupacion"
+            required
+            onchange="actualizarCampoDetalleOcupacion()"
+          >
             <option value="">Selecciona una opción</option>
-            <option value="Trabajador">Trabajador</option>
             <option value="Estudiante universitario">Estudiante universitario</option>
             <option value="Estudiante escolar">Estudiante escolar</option>
+            <option value="Trabajador">Trabajador/a</option>
+            <option value="Otra">Otra</option>
           </select>
         </div>
 
-        <div class="input-app-group">
-          <label for="actividadesFavoritas">Actividades favoritas</label>
-          <textarea
-            id="actividadesFavoritas"
-            placeholder="Ej: caminar, escuchar música, estudiar, nadar"
-            required
-          ></textarea>
+        <div class="registro-input-group" id="ocupacionDetalleGroup" style="display: none;">
+          <label id="ocupacionDetalleLabel" for="ocupacionDetalle">
+            Detalle
+          </label>
+
+          <input
+            type="text"
+            id="ocupacionDetalle"
+            placeholder="Escribe el detalle"
+          >
         </div>
 
-        <button type="submit" class="login-primary-btn">
+        <button type="submit" class="registro-primary-btn">
           Crear cuenta
         </button>
+
       </form>
 
-      <div class="login-secondary-actions">
+      <div class="registro-secondary-actions">
         <p>¿Ya tienes cuenta?</p>
         <a href="index.html">Iniciar sesión</a>
       </div>
-
-      <button
-        type="button"
-        class="login-theme-btn"
-        onclick="toggleTheme()"
-      >
-        🌙 / ☀️ Cambiar tema
-      </button>
     </section>
+
   </main>
 
   <script src="nav.js"></script>
