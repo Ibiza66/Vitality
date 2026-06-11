@@ -161,4 +161,40 @@ router.delete("/:checkinId", async (req, res) => {
     });
   }
 });
+/* =========================
+   HISTORIAL DE CHECK-INS POR USUARIO
+========================= */
+router.get("/historial/:usuarioId", async (req, res) => {
+  try {
+    const { usuarioId } = req.params;
+
+    if (!usuarioId) {
+      return res.status(400).json({
+        mensaje: "Falta el ID del usuario."
+      });
+    }
+
+    const fechaInicio = new Date();
+    fechaInicio.setDate(fechaInicio.getDate() - 7);
+    fechaInicio.setHours(0, 0, 0, 0);
+
+    const checkins = await Checkin.find({
+      usuario: usuarioId,
+      createdAt: {
+        $gte: fechaInicio
+      }
+    }).sort({
+      createdAt: -1
+    });
+
+    return res.json(checkins);
+  } catch (error) {
+    console.error("Error al obtener historial de check-ins:", error);
+
+    return res.status(500).json({
+      mensaje: "Error al obtener historial de check-ins.",
+      error: error.message
+    });
+  }
+});
 module.exports = router;
