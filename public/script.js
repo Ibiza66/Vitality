@@ -6274,3 +6274,178 @@ window.addEventListener("DOMContentLoaded", () => {
     iniciarHomeWarmVitality();
   }, 1000);
 });
+/* =========================
+   ORGANIZAR - LISTA ACTIVIDADES FIJAS
+========================= */
+function obtenerActividadesFijasOrganizarVitality() {
+  try {
+    if (typeof obtenerActividadesFijas === "function") {
+      return obtenerActividadesFijas();
+    }
+
+    return leerJSON("actividadesFijasVitality", []);
+  } catch (error) {
+    console.error("Error obteniendo actividades fijas:", error);
+    return [];
+  }
+}
+
+function mostrarActividadesFijasOrganizarVitality() {
+  const contenedor = document.getElementById("listaActividadesFijasOrganizar");
+
+  if (!contenedor) {
+    return;
+  }
+
+  const actividades = obtenerActividadesFijasOrganizarVitality();
+
+  if (!Array.isArray(actividades) || actividades.length === 0) {
+    contenedor.innerHTML = `
+      <div class="organizar-fija-item">
+        <h3>No hay actividades fijas guardadas</h3>
+        <p>Agrega una rutina semanal para verla luego en tu inicio.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividades
+    .map((actividad) => {
+      const id = escaparHTML(actividad.id || actividad._id || "");
+      const titulo = escaparHTML(actividad.actividad || actividad.titulo || "Actividad");
+      const dia = escaparHTML(actividad.dia || "Sin día");
+      const horario = escaparHTML(obtenerRangoHora(actividad.hora, actividad.horaFin));
+
+      return `
+        <article class="organizar-fija-item">
+          <h3>${titulo}</h3>
+          <p>${dia} · ${horario}</p>
+
+          <div class="organizar-fija-actions">
+            <button
+              type="button"
+              class="organizar-fija-edit"
+              onclick="editarActividadFijaOrganizarVitality('${id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="organizar-fija-delete"
+              onclick="eliminarActividadFijaOrganizarVitality('${id}')"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function editarActividadFijaOrganizarVitality(id) {
+  const actividades = obtenerActividadesFijasOrganizarVitality();
+  const actividad = actividades.find((item) => String(item.id || item._id) === String(id));
+
+  if (!actividad) {
+    mostrarToastVitality("No se encontró la actividad.");
+    return;
+  }
+
+  const idInput = document.getElementById("editandoActividadFijaId");
+  const diaInput = document.getElementById("diaFijo");
+  const horaInput = document.getElementById("horaFija");
+  const horaFinInput = document.getElementById("horaFinFija");
+  const actividadInput = document.getElementById("actividadFija");
+  const titulo = document.getElementById("tituloActividadFija");
+  const botonGuardar = document.getElementById("btnGuardarActividadFija");
+  const botonCancelar = document.getElementById("btnCancelarEdicionFija");
+
+  if (idInput) idInput.value = actividad.id || actividad._id || "";
+  if (diaInput) diaInput.value = actividad.dia || "";
+  if (horaInput) horaInput.value = actividad.hora || "";
+  if (horaFinInput) horaFinInput.value = actividad.horaFin || "";
+  if (actividadInput) actividadInput.value = actividad.actividad || actividad.titulo || "";
+
+  if (titulo) titulo.textContent = "Editar actividad fija";
+  if (botonGuardar) botonGuardar.textContent = "Guardar cambios";
+  if (botonCancelar) botonCancelar.style.display = "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+async function eliminarActividadFijaOrganizarVitality(id) {
+  const confirmar = confirm("¿Quieres eliminar esta actividad fija?");
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    if (typeof eliminarActividadFija === "function") {
+      await eliminarActividadFija(id);
+    } else {
+      const actividades = obtenerActividadesFijasOrganizarVitality();
+      const nuevasActividades = actividades.filter(
+        (item) => String(item.id || item._id) !== String(id)
+      );
+
+      guardarJSON("actividadesFijasVitality", nuevasActividades);
+    }
+
+    mostrarToastVitality("Actividad eliminada.");
+    mostrarActividadesFijasOrganizarVitality();
+  } catch (error) {
+    console.error("Error eliminando actividad fija:", error);
+    mostrarToastVitality("No se pudo eliminar la actividad.");
+  }
+}
+
+function reiniciarFormularioFijaOrganizarVitality() {
+  const form = document.getElementById("actividadFijaForm");
+  const idInput = document.getElementById("editandoActividadFijaId");
+  const titulo = document.getElementById("tituloActividadFija");
+  const botonGuardar = document.getElementById("btnGuardarActividadFija");
+  const botonCancelar = document.getElementById("btnCancelarEdicionFija");
+
+  if (form) form.reset();
+  if (idInput) idInput.value = "";
+  if (titulo) titulo.textContent = "Agregar actividad fija";
+  if (botonGuardar) botonGuardar.textContent = "Guardar actividad fija";
+  if (botonCancelar) botonCancelar.style.display = "none";
+}
+
+const cancelarEdicionActividadFijaOriginalVitality = window.cancelarEdicionActividadFija;
+
+window.cancelarEdicionActividadFija = function () {
+  if (typeof cancelarEdicionActividadFijaOriginalVitality === "function") {
+    cancelarEdicionActividadFijaOriginalVitality();
+  }
+
+  reiniciarFormularioFijaOrganizarVitality();
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "organizar_horario.html") {
+    return;
+  }
+
+  setTimeout(mostrarActividadesFijasOrganizarVitality, 700);
+
+  const form = document.getElementById("actividadFijaForm");
+
+  if (form) {
+    form.addEventListener("submit", () => {
+      setTimeout(() => {
+        reiniciarFormularioFijaOrganizarVitality();
+        mostrarActividadesFijasOrganizarVitality();
+      }, 900);
+    });
+  }
+});
