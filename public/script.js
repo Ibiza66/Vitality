@@ -1873,6 +1873,7 @@ async function obtenerRespuestaIAChat(texto) {
 
   let actividadesHoy = null;
   let objetivos = [];
+  let onboarding = null;
 
   try {
     if (typeof obtenerResumenHorarioHoy === "function") {
@@ -1881,6 +1882,10 @@ async function obtenerRespuestaIAChat(texto) {
 
     if (typeof obtenerObjetivosBackend === "function") {
       objetivos = await obtenerObjetivosBackend();
+    }
+
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      onboarding = await obtenerOnboardingBackendVitality();
     }
   } catch (error) {
     console.error("Error preparando contexto para IA:", error);
@@ -1896,7 +1901,8 @@ async function obtenerRespuestaIAChat(texto) {
       mensaje: texto,
       checkin,
       actividadesHoy,
-      objetivos
+      objetivos,
+      onboarding
     })
   });
 
@@ -5178,13 +5184,21 @@ function actualizarContadorIdentidadVitality() {
   contador.textContent = `${identidadInput.value.length} / 240`;
 }
 
-function finalizarOnboardingVitality() {
+async function finalizarOnboardingVitality() {
   const datos = obtenerDatosOnboardingVitality();
 
   datos.completado = true;
   datos.fecha = new Date().toISOString();
 
   guardarDatosOnboardingVitality(datos);
+
+  const resultado = await guardarOnboardingBackendVitality(datos);
+
+  if (resultado.ok) {
+    mostrarToastVitality("Perfil inicial guardado correctamente.");
+  } else {
+    mostrarToastVitality(resultado.mensaje);
+  }
 
   window.location.href = "checkin.html";
 }
@@ -5248,4 +5262,90 @@ function actualizarCampoDetalleOcupacion() {
   grupo.style.display = "none";
   input.value = "";
   input.required = false;
+}
+/* =========================
+   ONBOARDING EN BACKEND
+========================= */
+async function guardarOnboardingBackendVitality(datos) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return {
+      ok: false,
+      mensaje: "No se encontró el usuario para guardar el onboarding."
+    };
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/onboarding`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        objetivos: datos.objetivos || [],
+        identidad: datos.identidad || "",
+        estres: datos.estres || [],
+        completado: true
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudo guardar el onboarding."
+      };
+    }
+
+    return {
+      ok: true,
+      onboarding: data.onboarding
+    };
+  } catch (error) {
+    console.error("Error al guardar onboarding en backend:", error);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor para guardar el onboarding."
+    };
+  }
+}
+
+async function obtenerOnboardingBackendVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return obtenerDatosOnboardingVitality();
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/onboarding/${usuarioId}`);
+
+    if (respuesta.status === 404) {
+      return obtenerDatosOnboardingVitality();
+    }
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return obtenerDatosOnboardingVitality();
+    }
+
+    const onboarding = {
+      objetivos: data.objetivos || [],
+      identidad: data.identidad || "",
+      estres: data.estres || [],
+      completado: data.completado || false
+    };
+
+    guardarDatosOnboardingVitality(onboarding);
+
+    return onboarding;
+  } catch (error) {
+    console.error("Error al obtener onboarding desde backend:", error);
+    return obtenerDatosOnboardingVitality();
+  }
 }

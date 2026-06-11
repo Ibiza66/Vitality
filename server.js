@@ -5,6 +5,7 @@ const path = require("path");
 require("dotenv").config();
 
 const usuariosRoutes = require("./routes/usuarios");
+const onboardingRoutes = require("./routes/onboarding");
 const perfilesRoutes = require("./routes/perfiles");
 const checkinsRoutes = require("./routes/checkins");
 const actividadesRoutes = require("./routes/actividades");
@@ -13,6 +14,7 @@ const iaRoutes = require("./routes/ia");
 const usoAppsRoutes = require("./routes/usoApps");
 const recomendacionesIARoutes = require("./routes/recomendacionesIA");
 
+
 const app = express();
 
 app.use(cors());
@@ -20,6 +22,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/usuarios", usuariosRoutes);
+app.use("/api/onboarding", onboardingRoutes);
 app.use("/api/perfiles", perfilesRoutes);
 app.use("/api/checkins", checkinsRoutes);
 app.use("/api/actividades", actividadesRoutes);
