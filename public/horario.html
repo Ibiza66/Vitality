@@ -3,178 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitality - Horario</title>
+  <title>Vitality - Inicio</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="app-mobile-page horario-app-page">
+<body class="home-warm-page">
 
-  <header class="app-mobile-header">
-    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
+  <main class="home-warm-screen">
 
-    <a href="horario.html" class="app-header-logo">
-      <img src="logo.jpg" alt="Logo Vitality">
-    </a>
-
-    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
-
-    <ul class="menu app-dropdown-menu" id="menu">
-      <li><a href="horario.html">Horario</a></li>
-      <li><a href="perfil.html">Perfil</a></li>
-      <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="alertas.html">Alertas</a></li>
-      <li><a href="chat.html">Chat de apoyo</a></li>
-      <li><a href="uso_apps.html">Uso de apps</a></li>
-    </ul>
-
-    <ul class="profile-menu app-profile-menu" id="profileMenu">
-      <li><a href="perfil.html">Mi perfil</a></li>
-      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-    </ul>
-  </header>
-
-  <main class="horario-app-screen">
-
-    <section class="horario-hero-card">
+    <section class="home-warm-header">
       <div>
-        <span class="horario-badge">Mi día</span>
-        <h1>Organiza tu horario</h1>
-        <p>Revisa tus actividades, eventos importantes y recomendaciones para avanzar con calma.</p>
+        <span id="homeFechaActual">Hoy</span>
+        <h1 id="homeSaludoUsuario">Hola</h1>
       </div>
-    </section>
 
-    <section class="horario-quick-actions">
-      <button type="button" class="quick-card" onclick="mostrarSoloActividadesDeHoy()">
-        <span class="quick-icon">📌</span>
-        <strong>Hoy</strong>
-        <small>Ver actividades</small>
-      </button>
-
-      <button type="button" class="quick-card" onclick="irASeccion('seccionHorarioSemanal')">
-        <span class="quick-icon">📅</span>
-        <strong>Semana</strong>
-        <small>Ver horario</small>
-      </button>
-
-      <button type="button" class="quick-card" onclick="window.location.href='organizar_horario.html'">
-        <span class="quick-icon quick-icon-plus">＋</span>
-        <strong>Agregar</strong>
-        <small>Actividad</small>
-      </button>
-    </section>
-
-    <!-- RECOMENDACIÓN IA EN INICIO -->
-    <section class="horario-mobile-card recomendacion-inicio-card">
-      <div class="horario-section-title">
-        <div>
-          <span>Vitality IA</span>
-          <h2>Recomendación IA</h2>
+      <div class="home-header-actions">
+        <div class="home-racha-badge racha-inactiva" id="homeRachaBadge">
+          <span id="homeRachaIcon">🔥</span>
+          <strong id="homeRachaNumero">0</strong>
         </div>
+
+        <button
+          type="button"
+          class="home-avatar-btn profile-btn"
+          onclick="toggleProfileMenu()"
+        >
+          👤
+        </button>
       </div>
 
-      <div id="recomendacionIAInicioContainer">
-        <p>No hay recomendaciones recientes todavía.</p>
+      <ul class="profile-menu app-profile-menu" id="profileMenu">
+        <li><a href="perfil.html">Mi perfil</a></li>
+        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+      </ul>
+    </section>
+
+    <section class="home-identidad-card">
+      <div>
+        <span>Tu identidad</span>
+        <h2 id="homeIdentidadUsuario">Construyendo tu identidad</h2>
+      </div>
+
+      <button type="button" onclick="window.location.href='perfil.html'">
+        ✎
+      </button>
+    </section>
+
+    <section class="home-stats-grid">
+      <article class="home-stat-card">
+        <div class="home-stat-title">
+          <span>Check-ins</span>
+          <strong id="homePorcentajeSemana">0%</strong>
+        </div>
+
+        <div class="home-mini-bars" id="homeMiniBars">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="home-days">
+          <small>L</small>
+          <small>M</small>
+          <small>Mi</small>
+          <small>J</small>
+          <small>V</small>
+          <small>S</small>
+          <small>D</small>
+        </div>
+      </article>
+
+      <article class="home-circle-card">
+        <div class="home-progress-circle">
+          <span id="homeAccionesNumero">0/0</span>
+        </div>
+
+        <p>acciones hoy</p>
+      </article>
+    </section>
+
+    <section class="home-focus-card">
+      <div class="home-focus-top">
+        <span>Tu foco ahora</span>
+        <strong id="homeFocoHora">IA</strong>
+      </div>
+
+      <h2 id="homeFocoTitulo">Esperando recomendación</h2>
+      <p id="homeFocoDetalle">Cuando converses con Vitality, aquí aparecerá una recomendación personalizada.</p>
+
+      <div class="home-focus-actions">
+        <button type="button" id="homeFocoCompletarBtn">
+          Ver recomendación
+        </button>
+
+        <button type="button" onclick="window.location.href='chat.html'">
+          💬
+        </button>
       </div>
     </section>
 
-    <section class="horario-mobile-card">
-      <div class="horario-section-title">
-        <div>
-          <span>Hoy</span>
-          <h2 id="seccionHoy">Actividades de hoy</h2>
-        </div>
+    <section class="home-actions-section">
+      <div class="home-section-title">
+        <h2>Acciones de hoy</h2>
+        <span id="homeAccionesResumen">0 de 0 hechas</span>
       </div>
 
-      <div class="actividades-hoy horario-lista-mobile" id="listaActividadesHoy">
-        <div class="actividad-card">
+      <div id="homeAccionesLista" class="home-actions-list">
+        <article class="home-action-item">
           <p>No hay actividades para hoy.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="horario-mobile-card">
-      <div class="horario-section-title">
-        <div>
-          <span>Importante</span>
-          <h2 id="seccionEventosHoy">Eventos de hoy</h2>
-        </div>
-      </div>
-
-      <div class="actividades-hoy horario-lista-mobile" id="listaEventosHoy">
-        <div class="actividad-card">
-          <p>No hay eventos especiales para hoy.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="horario-mobile-card">
-      <div class="horario-section-title">
-        <div>
-          <span>Resumen</span>
-          <h2 id="seccionHorarioSemanal">Horario semanal</h2>
-        </div>
-      </div>
-
-      <div class="tabla-semanal horario-table-mobile">
-        <table id="tablaHorarioSemanal">
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Lunes</th>
-              <th>Martes</th>
-              <th>Miércoles</th>
-              <th>Jueves</th>
-              <th>Viernes</th>
-              <th>Sábado</th>
-              <th>Domingo</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr>
-              <td colspan="8">No hay actividades fijas registradas.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="horario-mobile-card">
-      <div class="horario-section-title">
-        <div>
-          <span>Rutina</span>
-          <h2 id="seccionActividades">Actividades fijas</h2>
-        </div>
-      </div>
-
-      <div class="actividades-hoy horario-lista-mobile" id="listaActividadesFijas">
-        <div class="actividad-card">
-          <p>No hay actividades fijas guardadas todavía.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="horario-mobile-card">
-      <div class="horario-section-title">
-        <div>
-          <span>Extras</span>
-          <h2>Actividades especiales</h2>
-        </div>
-      </div>
-
-      <div class="actividades-hoy horario-lista-mobile" id="listaActividadesEspeciales">
-        <div class="actividad-card">
-          <p>No hay actividades especiales guardadas todavía.</p>
-        </div>
+        </article>
       </div>
     </section>
 
   </main>
 
-  <nav class="bottom-app-nav">
+  <nav class="bottom-app-nav home-bottom-nav">
     <a href="horario.html" class="active">
       <span>🏠</span>
       <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
     </a>
 
     <a href="checkin.html">
