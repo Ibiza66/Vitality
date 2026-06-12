@@ -14,6 +14,7 @@ const iaRoutes = require("./routes/ia");
 const usoAppsRoutes = require("./routes/usoApps");
 const recomendacionesIARoutes = require("./routes/recomendacionesIA");
 const chatHistorialRoutes = require("./routes/chatHistorial");
+const configuracionRoutes = require("./routes/configuracion");
 
 
 const app = express();
@@ -31,9 +32,8 @@ app.use("/api/objetivos", objetivosRoutes);
 app.use("/api/ia", iaRoutes);
 app.use("/api/uso-apps", usoAppsRoutes);
 app.use("/api/recomendaciones-ia", recomendacionesIARoutes);
-
-
 app.use("/api/chat-historial", chatHistorialRoutes);
+app.use("/api/configuracion", configuracionRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

@@ -42,8 +42,308 @@ function sumarMinutosAHora(hora, minutos) {
 
   return `${horaFinal}:${minutoFinal}`;
 }
+/* =========================
+   GENERAR RECOMENDACIÓN DESDE CHAT
+========================= */
+function limpiarIdChatIA(id) {
+  return String(id || "").trim();
+}
+
+function idValidoChatIA(id) {
+  const mongoose = require("mongoose");
+  return mongoose.Types.ObjectId.isValid(id);
+}
+
+function crearRecomendacionDesdeTextoChat(mensajeUsuario) {
+  const texto = String(mensajeUsuario || "").toLowerCase();
+
+  if (
+    texto.includes("estres") ||
+    texto.includes("estrés") ||
+    texto.includes("ansiedad") ||
+    texto.includes("agobi")
+  ) {
+    return {
+      categoria: "BIENESTAR_EMOCIONAL",
+      mensajeIA:
+        "Noté que estás con estrés alto. Te recomiendo bajar la carga del momento y partir con una pausa breve antes de seguir.",
+      accionSugerida: {
+        tipo: "Pausa de calma",
+        titulo: "Respira y baja la intensidad",
+        descripcion:
+          "Haz 1 minuto de respiración lenta. Luego elige una sola tarea pequeña para avanzar sin sobrecargarte.",
+        hora: "Ahora",
+        duracionMinutos: 10
+      }
+    };
+  }
+
+  if (
+    texto.includes("dorm") ||
+    texto.includes("sueño") ||
+    texto.includes("cansad") ||
+    texto.includes("agotad")
+  ) {
+    return {
+      categoria: "DESCANSO",
+      mensajeIA:
+        "Veo que tu descanso no está bien. Hoy conviene avanzar con menos presión y priorizar una actividad breve.",
+      accionSugerida: {
+        tipo: "Bajar carga",
+        titulo: "Haz una tarea corta",
+        descripcion:
+          "Elige una tarea simple de 15 minutos y evita exigirte demasiado si dormiste mal.",
+        hora: "Ahora",
+        duracionMinutos: 15
+      }
+    };
+  }
+
+  if (
+    texto.includes("estudi") ||
+    texto.includes("tarea") ||
+    texto.includes("prueba") ||
+    texto.includes("solemne")
+  ) {
+    return {
+      categoria: "ESTUDIO",
+      mensajeIA:
+        "Para estudiar sin bloquearte, te recomiendo partir con un bloque corto y una meta concreta.",
+      accionSugerida: {
+        tipo: "Bloque de estudio",
+        titulo: "Estudia 25 minutos",
+        descripcion:
+          "Elige una sola materia o ejercicio. Trabaja 25 minutos y luego descansa 5.",
+        hora: "Ahora",
+        duracionMinutos: 25
+      }
+    };
+  }
+
+  if (
+    texto.includes("instagram") ||
+    texto.includes("tiktok") ||
+    texto.includes("celular") ||
+    texto.includes("apps")
+  ) {
+    return {
+      categoria: "DISTRACCION_DIGITAL",
+      mensajeIA:
+        "Parece que el celular puede estar afectando tu foco. Te recomiendo hacer una pausa digital breve.",
+      accionSugerida: {
+        tipo: "Pausa digital",
+        titulo: "Aleja el celular",
+        descripcion:
+          "Deja el celular fuera de alcance por 25 minutos y vuelve a una actividad concreta.",
+        hora: "Ahora",
+        duracionMinutos: 25
+      }
+    };
+  }
+
+  return {
+    categoria: "APOYO_GENERAL",
+    mensajeIA:
+      "Te entiendo. Para ayudarte mejor, partamos con algo simple y concreto para este momento.",
+    accionSugerida: {
+      tipo: "Organización breve",
+      titulo: "Elige una acción pequeña",
+      descripcion:
+        "Piensa en una sola cosa que puedas hacer ahora en menos de 15 minutos. Solo empieza por eso.",
+      hora: "Ahora",
+      duracionMinutos: 15
+    }
+  };
+}
 
 /* =========================
+   GENERAR RECOMENDACIÓN DESDE CHAT
+========================= */
+function obtenerTipoAccionSeguroChatVitality(tipoPreferido) {
+  const enumValues =
+    RecomendacionIA.schema.path("accionSugerida.tipo")?.enumValues || [];
+
+  if (!enumValues.length) {
+    return tipoPreferido;
+  }
+
+  const exacto = enumValues.find(
+    (valor) => String(valor).toLowerCase() === String(tipoPreferido).toLowerCase()
+  );
+
+  if (exacto) {
+    return exacto;
+  }
+
+  const candidatos = [
+    "Pausa digital",
+    "Bajar carga",
+    "Bajar carga del día",
+    "Bloque corto",
+    "Bloque de estudio",
+    "Organización breve",
+    "Pausa breve",
+    "Descanso",
+    "Recomendación"
+  ];
+
+  const encontrado = candidatos.find((valor) => enumValues.includes(valor));
+
+  return encontrado || enumValues[0];
+}
+
+function crearRecomendacionDesdeTextoChatVitality(mensajeUsuario) {
+  const texto = String(mensajeUsuario || "").toLowerCase();
+
+  if (
+    texto.includes("estres") ||
+    texto.includes("estrés") ||
+    texto.includes("ansiedad") ||
+    texto.includes("agobi")
+  ) {
+    return {
+      categoria: "BIENESTAR_EMOCIONAL",
+      mensajeIA:
+        "Noté que estás con mucho estrés. Te recomiendo bajar la intensidad antes de seguir.",
+      accionSugerida: {
+        tipo: "Pausa digital",
+        titulo: "Respira y baja la intensidad",
+        descripcion:
+          "Haz 1 minuto de respiración lenta. Luego elige una sola tarea pequeña para avanzar sin sobrecargarte.",
+        hora: "Ahora",
+        duracionMinutos: 10
+      }
+    };
+  }
+
+  if (
+    texto.includes("dorm") ||
+    texto.includes("sueño") ||
+    texto.includes("cansad") ||
+    texto.includes("agotad")
+  ) {
+    return {
+      categoria: "DESCANSO",
+      mensajeIA:
+        "Veo que tu descanso no está bien. Hoy conviene avanzar con menos presión y priorizar una actividad breve.",
+      accionSugerida: {
+        tipo: "Bajar carga del día",
+        titulo: "Haz una tarea corta",
+        descripcion:
+          "Elige una tarea simple de 15 minutos y evita exigirte demasiado si dormiste mal.",
+        hora: "Ahora",
+        duracionMinutos: 15
+      }
+    };
+  }
+
+  if (
+    texto.includes("estudi") ||
+    texto.includes("tarea") ||
+    texto.includes("prueba") ||
+    texto.includes("solemne")
+  ) {
+    return {
+      categoria: "ESTUDIO",
+      mensajeIA:
+        "Para estudiar sin bloquearte, te recomiendo partir con un bloque corto y una meta concreta.",
+      accionSugerida: {
+        tipo: "Bloque corto",
+        titulo: "Estudia 25 minutos",
+        descripcion:
+          "Elige una sola materia o ejercicio. Trabaja 25 minutos y luego descansa 5.",
+        hora: "Ahora",
+        duracionMinutos: 25
+      }
+    };
+  }
+
+  if (
+    texto.includes("instagram") ||
+    texto.includes("tiktok") ||
+    texto.includes("celular") ||
+    texto.includes("apps")
+  ) {
+    return {
+      categoria: "DISTRACCION_DIGITAL",
+      mensajeIA:
+        "Parece que el celular puede estar afectando tu foco. Te recomiendo hacer una pausa digital breve.",
+      accionSugerida: {
+        tipo: "Pausa digital",
+        titulo: "Aleja el celular",
+        descripcion:
+          "Deja el celular fuera de alcance por 25 minutos y vuelve a una actividad concreta.",
+        hora: "Ahora",
+        duracionMinutos: 25
+      }
+    };
+  }
+
+  return {
+    categoria: "APOYO_GENERAL",
+    mensajeIA:
+      "Te entiendo. Para ayudarte mejor, partamos con algo simple y concreto para este momento.",
+    accionSugerida: {
+      tipo: "Organización breve",
+      titulo: "Elige una acción pequeña",
+      descripcion:
+        "Piensa en una sola cosa que puedas hacer ahora en menos de 15 minutos. Solo empieza por eso.",
+      hora: "Ahora",
+      duracionMinutos: 15
+    }
+  };
+}
+
+router.post("/generar-chat", async (req, res) => {
+  try {
+    const { usuarioId, mensajeUsuario } = req.body;
+
+    if (!usuarioId || !mensajeUsuario) {
+      return res.status(400).json({
+        mensaje: "Faltan datos para generar recomendación desde chat."
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(usuarioId)) {
+      return res.status(400).json({
+        mensaje: "ID de usuario inválido."
+      });
+    }
+
+    const recomendacionBase = crearRecomendacionDesdeTextoChatVitality(mensajeUsuario);
+
+    const accionSugeridaSegura = {
+      ...recomendacionBase.accionSugerida,
+      tipo: obtenerTipoAccionSeguroChatVitality(
+        recomendacionBase.accionSugerida.tipo
+      )
+    };
+
+    const recomendacion = await RecomendacionIA.create({
+      usuario: usuarioId,
+      usuarioId,
+      mensajeUsuario,
+      categoria: recomendacionBase.categoria,
+      mensajeIA: recomendacionBase.mensajeIA,
+      accionSugerida: accionSugeridaSegura,
+      estado: "pendiente",
+      origen: "chat"
+    });
+
+    return res.status(201).json({
+      mensaje: "Recomendación generada desde chat.",
+      mensajeIA: recomendacion.mensajeIA,
+      recomendacion
+    });
+  } catch (error) {
+    console.error("Error al generar recomendación desde chat:", error);
+
+    return res.status(500).json({
+      mensaje: "Error al generar recomendación desde chat.",
+      error: error.message
+    });
+  }
+});/* =========================
    CREAR RECOMENDACIÓN IA
 ========================= */
 router.post("/", async (req, res) => {

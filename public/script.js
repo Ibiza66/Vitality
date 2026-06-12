@@ -2038,7 +2038,8 @@ function addMessage(text, sender, recomendacionId = null, recomendacion = null, 
   if (typeof bajarChatAlUltimoMensajeVitality === "function") {
     bajarChatAlUltimoMensajeVitality();
   }
-}function crearAccionesRecomendacionChat(recomendacionId, recomendacion) {
+}
+function crearAccionesRecomendacionChat(recomendacionId, recomendacion) {
   const contenedor = document.createElement("div");
   contenedor.className = "chat-recomendacion-acciones";
 
@@ -6541,118 +6542,6 @@ function iniciarChatUXWarmVitality() {
 
 window.addEventListener("DOMContentLoaded", iniciarChatUXWarmVitality);
 /* =========================
-   CHAT - HISTORIAL EN MONGODB
-========================= */
-async function guardarMensajeChatMongoVitality(sender, texto, recomendacionId = null, recomendacion = null) {
-  const usuarioId = obtenerUsuarioIdVitality();
-
-  if (!usuarioId || !texto) {
-    return;
-  }
-
-  try {
-    await fetch(`${API_URL}/api/chat-historial`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        usuarioId,
-        sender,
-        texto,
-        recomendacionId,
-        recomendacion
-      })
-    });
-  } catch (error) {
-    console.error("Error guardando mensaje del chat en MongoDB:", error);
-  }
-}
-
-async function obtenerHistorialChatMongoVitality() {
-  const usuarioId = obtenerUsuarioIdVitality();
-
-  if (!usuarioId) {
-    return [];
-  }
-
-  try {
-    const respuesta = await fetch(`${API_URL}/api/chat-historial/${usuarioId}`);
-
-    if (!respuesta.ok) {
-      return [];
-    }
-
-    const data = await respuesta.json();
-
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error("Error obteniendo historial del chat:", error);
-    return [];
-  }
-}
-
-function renderizarMensajeChatMongoVitality(mensaje) {
-  const chatBox = document.getElementById("chatBox");
-
-  if (!chatBox) {
-    return;
-  }
-
-  const clase = mensaje.sender === "user" ? "user" : "bot";
-
-  const div = document.createElement("div");
-  div.className = `message ${clase}`;
-
-  const p = document.createElement("p");
-  p.textContent = mensaje.texto;
-
-  div.appendChild(p);
-
-  if (mensaje.sender === "bot" && mensaje.recomendacionId) {
-    const acciones = crearAccionesRecomendacionChat(
-      mensaje.recomendacionId,
-      mensaje.recomendacion || null
-    );
-
-    div.appendChild(acciones);
-  }
-
-  chatBox.appendChild(div);
-}
-
-async function cargarHistorialChatMongoVitality() {
-  const pagina = obtenerPaginaActual();
-
-  if (pagina !== "chat.html") {
-    return;
-  }
-
-  const chatBox = document.getElementById("chatBox");
-
-  if (!chatBox) {
-    return;
-  }
-
-  const historial = await obtenerHistorialChatMongoVitality();
-
-  if (!historial || historial.length === 0) {
-    return;
-  }
-
-  chatBox.innerHTML = "";
-
-  historial.forEach((mensaje) => {
-    renderizarMensajeChatMongoVitality(mensaje);
-  });
-
-  if (typeof bajarChatAlUltimoMensajeVitality === "function") {
-    bajarChatAlUltimoMensajeVitality();
-  }
-}
-
-window.addEventListener("DOMContentLoaded", cargarHistorialChatMongoVitality);
-/* =========================
    PERFIL WARM VISUAL
 ========================= */
 function obtenerFechaSimplePerfilVitality(fecha) {
@@ -7658,4 +7547,643 @@ async function iniciarHomeWarmVitality() {
 
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(iniciarHomeWarmVitality, 600);
+});
+/* =========================
+   CHAT - HISTORIAL MONGODB FIX FINAL
+========================= */
+async function guardarMensajeChatMongoVitality(sender, texto, recomendacionId = null, recomendacion = null) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !texto) {
+    return;
+  }
+
+  try {
+    await fetch(`${API_URL}/api/chat-historial`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        sender,
+        texto,
+        recomendacionId,
+        recomendacion
+      })
+    });
+  } catch (error) {
+    console.error("Error guardando mensaje del chat en MongoDB:", error);
+  }
+}
+
+async function obtenerHistorialChatMongoVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/chat-historial/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      console.warn("No se pudo cargar historial del chat:", respuesta.status);
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error obteniendo historial del chat:", error);
+    return [];
+  }
+}
+
+function renderizarMensajeChatMongoVitality(mensaje) {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox || !mensaje || !mensaje.texto) {
+    return;
+  }
+
+  const clase = mensaje.sender === "user" ? "user" : "bot";
+
+  const div = document.createElement("div");
+  div.className = `message ${clase}`;
+
+  const p = document.createElement("p");
+
+  if (typeof formatearTextoChat === "function") {
+    p.innerHTML = formatearTextoChat(mensaje.texto);
+  } else {
+    p.textContent = mensaje.texto;
+  }
+
+  div.appendChild(p);
+
+  if (
+    mensaje.sender === "bot" &&
+    mensaje.recomendacionId &&
+    typeof crearAccionesRecomendacionChat === "function"
+  ) {
+    const acciones = crearAccionesRecomendacionChat(
+      mensaje.recomendacionId,
+      mensaje.recomendacion || null
+    );
+
+    div.appendChild(acciones);
+  }
+
+  chatBox.appendChild(div);
+}
+
+async function cargarHistorialChatMongoVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const historial = await obtenerHistorialChatMongoVitality();
+
+  if (!historial || historial.length === 0) {
+    return;
+  }
+
+  chatBox.innerHTML = "";
+
+  historial.forEach((mensaje) => {
+    renderizarMensajeChatMongoVitality(mensaje);
+  });
+
+  if (typeof bajarChatAlUltimoMensajeVitality === "function") {
+    bajarChatAlUltimoMensajeVitality();
+  } else {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+}
+
+/*
+  Este fix carga el historial después de que todas las otras funciones del chat
+  terminaron de pintar mensajes iniciales. Así MongoDB gana y no se borra.
+*/
+function iniciarHistorialChatMongoFixVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  setTimeout(cargarHistorialChatMongoVitality, 300);
+  setTimeout(cargarHistorialChatMongoVitality, 900);
+  setTimeout(cargarHistorialChatMongoVitality, 1600);
+}
+
+window.addEventListener("DOMContentLoaded", iniciarHistorialChatMongoFixVitality);
+window.addEventListener("pageshow", iniciarHistorialChatMongoFixVitality);
+/* =========================
+   CHAT MONGODB - CONTROLADOR UNICO FINAL
+========================= */
+function limpiarMensajesDuplicadosChatVitality(mensajes) {
+  const vistos = new Set();
+
+  return mensajes.filter((mensaje) => {
+    const texto = String(mensaje.texto || "").trim();
+    const sender = mensaje.sender || "bot";
+    const clave = `${sender}-${texto}`;
+
+    if (!texto) {
+      return false;
+    }
+
+    if (vistos.has(clave)) {
+      return false;
+    }
+
+    vistos.add(clave);
+    return true;
+  });
+}
+
+async function guardarMensajeChatMongoVitality(sender, texto, recomendacionId = null, recomendacion = null) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !texto) {
+    return;
+  }
+
+  try {
+    await fetch(`${API_URL}/api/chat-historial`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        sender,
+        texto,
+        recomendacionId,
+        recomendacion
+      })
+    });
+  } catch (error) {
+    console.error("Error guardando mensaje del chat en MongoDB:", error);
+  }
+}
+
+async function obtenerHistorialChatMongoVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/chat-historial/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      console.warn("No se pudo cargar historial del chat:", respuesta.status);
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    return Array.isArray(data) ? limpiarMensajesDuplicadosChatVitality(data) : [];
+  } catch (error) {
+    console.error("Error obteniendo historial del chat:", error);
+    return [];
+  }
+}
+
+function crearMensajeChatVitality(texto, sender = "bot", recomendacionId = null, recomendacion = null) {
+  const message = document.createElement("div");
+  message.classList.add("message", sender);
+
+  const paragraph = document.createElement("p");
+
+  if (typeof formatearTextoChat === "function") {
+    paragraph.innerHTML = formatearTextoChat(texto);
+  } else {
+    paragraph.textContent = texto;
+  }
+
+  message.appendChild(paragraph);
+
+  if (
+    sender === "bot" &&
+    recomendacionId &&
+    typeof crearAccionesRecomendacionChat === "function"
+  ) {
+    const acciones = crearAccionesRecomendacionChat(recomendacionId, recomendacion);
+    message.appendChild(acciones);
+  }
+
+  return message;
+}
+
+function bajarChatAlUltimoMensajeVitality() {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+function addMessage(text, sender, recomendacionId = null, recomendacion = null, guardarMongo = true) {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox || !text) {
+    return;
+  }
+
+  const message = crearMensajeChatVitality(text, sender, recomendacionId, recomendacion);
+  chatBox.appendChild(message);
+
+  bajarChatAlUltimoMensajeVitality();
+
+  if (guardarMongo) {
+    guardarMensajeChatMongoVitality(sender, text, recomendacionId, recomendacion);
+  }
+}
+
+async function cargarHistorialChatMongoVitality() {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const historial = await obtenerHistorialChatMongoVitality();
+
+  chatBox.innerHTML = "";
+
+  if (!historial || historial.length === 0) {
+    addMessage("Hola, soy Vitality 💚", "bot", null, null, false);
+    addMessage("Cuéntame cómo te sientes hoy o qué necesitas organizar.", "bot", null, null, false);
+    return;
+  }
+
+  historial.forEach((mensaje) => {
+    const texto = mensaje.texto || "";
+    const sender = mensaje.sender === "user" ? "user" : "bot";
+
+    const elemento = crearMensajeChatVitality(
+      texto,
+      sender,
+      mensaje.recomendacionId || null,
+      mensaje.recomendacion || null
+    );
+
+    chatBox.appendChild(elemento);
+  });
+
+  bajarChatAlUltimoMensajeVitality();
+}
+
+async function generarRespuestaChatVitalityMongo(textoUsuario) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return {
+      texto: "No pude identificar tu usuario. Vuelve a iniciar sesión para darte una recomendación personalizada.",
+      recomendacionId: null,
+      recomendacion: null
+    };
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/generar-chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        mensajeUsuario: textoUsuario,
+        origen: "chat"
+      })
+    });
+
+    if (!respuesta.ok) {
+      const errorTexto = await respuesta.text();
+      console.error("Error respuesta IA chat:", respuesta.status, errorTexto);
+
+      return {
+        texto: "No pude generar una recomendación ahora. Revisa que el backend esté funcionando correctamente.",
+        recomendacionId: null,
+        recomendacion: null
+      };
+    }
+
+    const data = await respuesta.json();
+
+    const recomendacion =
+      data.recomendacion ||
+      data.recomendacionIA ||
+      data.nuevaRecomendacion ||
+      null;
+
+    return {
+      texto:
+        data.mensajeIA ||
+        recomendacion?.mensajeIA ||
+        "Vitality generó una recomendación personalizada para ti.",
+      recomendacionId:
+        recomendacion?._id ||
+        data.recomendacionId ||
+        null,
+      recomendacion
+    };
+  } catch (error) {
+    console.error("Error conectando con IA del chat:", error);
+
+    return {
+      texto: "No pude conectar con la IA. Revisa que el servidor esté encendido y que la app esté usando la IP correcta.",
+      recomendacionId: null,
+      recomendacion: null
+    };
+  }
+}
+async function manejarEnvioChatVitality(event) {
+  event.preventDefault();
+
+  const input = document.getElementById("userInput");
+
+  if (!input) {
+    return;
+  }
+
+  const texto = input.value.trim();
+
+  if (!texto) {
+    return;
+  }
+
+  input.value = "";
+
+  addMessage(texto, "user", null, null, true);
+
+  const respuestaIA = await generarRespuestaChatVitalityMongo(texto);
+
+setTimeout(() => {
+  addMessage(
+    respuestaIA.texto,
+    "bot",
+    respuestaIA.recomendacionId,
+    respuestaIA.recomendacion,
+    true
+  );
+}, 350);
+}
+
+function iniciarChatMongoControladorUnicoVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  const formOriginal = document.getElementById("chatForm");
+
+  if (!formOriginal) {
+    return;
+  }
+
+  /*
+    Reemplaza el formulario por una copia para eliminar listeners antiguos.
+    Así evitamos que otro bloque del script borre o duplique los mensajes.
+  */
+  const formNuevo = formOriginal.cloneNode(true);
+  formOriginal.parentNode.replaceChild(formNuevo, formOriginal);
+
+  formNuevo.addEventListener("submit", manejarEnvioChatVitality);
+
+  const input = document.getElementById("userInput");
+
+  if (input) {
+    input.addEventListener("focus", () => {
+      document.body.classList.add("chat-input-focused");
+      setTimeout(bajarChatAlUltimoMensajeVitality, 300);
+    });
+
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("chat-input-focused");
+      }, 250);
+    });
+  }
+
+  if (window.visualViewport) {
+    const alturaInicial = window.visualViewport.height;
+
+    window.visualViewport.addEventListener("resize", () => {
+      const diferencia = alturaInicial - window.visualViewport.height;
+
+      if (diferencia > 120) {
+        document.body.classList.add("chat-keyboard-open");
+      } else {
+        document.body.classList.remove("chat-keyboard-open");
+      }
+
+      setTimeout(bajarChatAlUltimoMensajeVitality, 120);
+    });
+  }
+
+  setTimeout(cargarHistorialChatMongoVitality, 400);
+}
+
+window.addEventListener("DOMContentLoaded", iniciarChatMongoControladorUnicoVitality);
+window.addEventListener("pageshow", iniciarChatMongoControladorUnicoVitality);
+/* =========================
+   CONFIGURACION VITALITY
+========================= */
+function aplicarModoOscuroVitality() {
+  const modo = localStorage.getItem("vitalityModoOscuro") === "true";
+  const boton = document.getElementById("configThemeToggle");
+
+  document.documentElement.classList.toggle("vitality-dark-mode", modo);
+
+  if (boton) {
+    boton.classList.toggle("activo", modo);
+  }
+}
+
+function toggleModoOscuroVitality() {
+  const modoActual = localStorage.getItem("vitalityModoOscuro") === "true";
+  localStorage.setItem("vitalityModoOscuro", String(!modoActual));
+  aplicarModoOscuroVitality();
+}
+
+function actualizarUsuarioLocalConfiguracionVitality(usuarioActualizado) {
+  if (!usuarioActualizado) return;
+
+  const posiblesClaves = [
+    "usuarioVitality",
+    "usuario",
+    "usuarioActual",
+    "vitalityUsuario"
+  ];
+
+  posiblesClaves.forEach((clave) => {
+    const valor = localStorage.getItem(clave);
+
+    if (!valor) return;
+
+    try {
+      const usuario = JSON.parse(valor);
+
+      if (usuario && (usuario._id || usuario.id)) {
+        localStorage.setItem(
+          clave,
+          JSON.stringify({
+            ...usuario,
+            ...usuarioActualizado
+          })
+        );
+      }
+    } catch (error) {
+      // Ignorar claves que no sean JSON
+    }
+  });
+}
+
+async function cargarConfiguracionVitality() {
+  if (obtenerPaginaActual() !== "configuracion.html") {
+    return;
+  }
+
+  aplicarModoOscuroVitality();
+
+  const usuario = typeof obtenerUsuario === "function" ? obtenerUsuario() : null;
+  const nombreInput = document.getElementById("configNombreUsuario");
+  const identidadInput = document.getElementById("configIdentidadUsuario");
+  const contador = document.getElementById("configIdentidadContador");
+
+  if (nombreInput && usuario?.nombre) {
+    nombreInput.value = usuario.nombre;
+  }
+
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+
+      if (identidadInput && onboarding?.identidad) {
+        identidadInput.value = onboarding.identidad;
+      }
+    }
+  } catch (error) {
+    console.error("Error cargando identidad en configuración:", error);
+  }
+
+  function actualizarContador() {
+    if (!identidadInput || !contador) return;
+    contador.textContent = `${identidadInput.value.length}/240`;
+  }
+
+  if (identidadInput) {
+    identidadInput.addEventListener("input", actualizarContador);
+    actualizarContador();
+  }
+
+  if (typeof actualizarEstadoPermisoUsoAppsVitality === "function") {
+    actualizarEstadoPermisoUsoAppsVitality();
+  }
+}
+
+async function guardarConfiguracionPerfilVitality(event) {
+  event.preventDefault();
+
+  const usuarioId = obtenerUsuarioIdVitality();
+  const nombreInput = document.getElementById("configNombreUsuario");
+  const identidadInput = document.getElementById("configIdentidadUsuario");
+
+  const nombre = nombreInput ? nombreInput.value.trim() : "";
+  const identidad = identidadInput ? identidadInput.value.trim() : "";
+
+  if (!usuarioId) {
+    mostrarToastVitality("No se encontró el usuario.");
+    return;
+  }
+
+  if (!nombre || !identidad) {
+    mostrarToastVitality("Completa nombre e identidad.");
+    return;
+  }
+
+  try {
+    const respuestaUsuario = await fetch(`${API_URL}/api/configuracion/usuario/${usuarioId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ nombre })
+    });
+
+    if (!respuestaUsuario.ok) {
+      throw new Error("No se pudo actualizar el nombre.");
+    }
+
+    const dataUsuario = await respuestaUsuario.json();
+
+    if (dataUsuario.usuario) {
+      actualizarUsuarioLocalConfiguracionVitality(dataUsuario.usuario);
+    }
+
+    const respuestaOnboarding = await fetch(`${API_URL}/api/configuracion/onboarding/${usuarioId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ identidad })
+    });
+
+    if (!respuestaOnboarding.ok) {
+      throw new Error("No se pudo actualizar la identidad.");
+    }
+
+    mostrarToastVitality("Configuración guardada.");
+  } catch (error) {
+    console.error("Error guardando configuración:", error);
+    mostrarToastVitality("No se pudo guardar la configuración.");
+  }
+}
+
+function abrirAjustesPermisosVitality() {
+  if (window.AndroidUsageStats && typeof window.AndroidUsageStats.openAppSettings === "function") {
+    window.AndroidUsageStats.openAppSettings();
+    return;
+  }
+
+  if (window.AndroidUsagePlugin && typeof window.AndroidUsagePlugin.openAppSettings === "function") {
+    window.AndroidUsagePlugin.openAppSettings();
+    return;
+  }
+
+  mostrarToastVitality("Abre Ajustes > Apps > Vitality > Permisos para desactivarlos.");
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  aplicarModoOscuroVitality();
+
+  if (obtenerPaginaActual() === "configuracion.html") {
+    cargarConfiguracionVitality();
+
+    const form = document.getElementById("configPerfilForm");
+
+    if (form) {
+      form.addEventListener("submit", guardarConfiguracionPerfilVitality);
+    }
+  }
 });

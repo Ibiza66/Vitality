@@ -9334,3 +9334,486 @@ body.chat-keyboard-open #chatBox {
     font-size: 1.2rem;
   }
 }
+/* =========================
+   CONFIGURACION WARM
+========================= */
+.config-warm-page {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
+    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
+  color: #261d16;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.config-warm-screen {
+  min-height: 100vh;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 28px 24px 120px;
+  box-sizing: border-box;
+}
+
+.config-warm-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.config-warm-back {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #261d16;
+  font-size: 1.5rem;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(38, 29, 22, 0.08);
+}
+
+.config-question-header {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.config-warm-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #f3d7c5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 28px rgba(255, 104, 28, 0.12);
+}
+
+.config-warm-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.config-question-header span,
+.config-section-title span {
+  display: block;
+  color: #ff681c;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.76rem;
+  font-weight: 900;
+  margin-bottom: 7px;
+}
+
+.config-question-header h1 {
+  margin: 0;
+  color: #261d16;
+  font-size: 1.65rem;
+  line-height: 1.12;
+  font-weight: 900;
+}
+
+.config-question-header p {
+  margin: 10px 0 0;
+  color: #6d6259;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.config-warm-card {
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 12px 28px rgba(38, 29, 22, 0.08);
+  border: 1px solid rgba(228, 215, 200, 0.75);
+}
+
+.config-section-title h2 {
+  margin: 0;
+  color: #261d16;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.config-warm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-top: 18px;
+}
+
+.config-warm-form label {
+  color: #261d16;
+  font-weight: 900;
+}
+
+.config-warm-form input,
+.config-warm-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #e4d7c8;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #261d16;
+  padding: 15px 16px;
+  font-size: 1rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.config-warm-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.config-warm-form input:focus,
+.config-warm-form textarea:focus {
+  border-color: #ff681c;
+  box-shadow: 0 0 0 4px rgba(255, 104, 28, 0.12);
+}
+
+#configIdentidadContador {
+  color: #8b7b6b;
+  text-align: right;
+  font-weight: 800;
+}
+
+.config-primary-btn,
+.config-secondary-btn,
+.config-danger-btn {
+  width: 100%;
+  border-radius: 999px;
+  padding: 16px 20px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+.config-primary-btn {
+  border: none;
+  background: linear-gradient(135deg, #ff7a1a, #f05e13);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(240, 94, 19, 0.25);
+}
+
+.config-secondary-btn {
+  border: 1px solid #e4d7c8;
+  background: #ffffff;
+  color: #261d16;
+}
+
+.config-danger-btn {
+  border: none;
+  background: #bb2f2f;
+  color: #ffffff;
+}
+
+.config-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.config-row strong,
+.config-permission-box strong {
+  color: #261d16;
+}
+
+.config-row p,
+.config-permission-box p,
+.config-muted {
+  margin: 6px 0 0;
+  color: #6d6259;
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+.config-switch {
+  width: 64px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: #eadfce;
+  padding: 4px;
+  flex: 0 0 auto;
+}
+
+.config-switch span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(38, 29, 22, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.config-switch.activo {
+  background: #ff681c;
+}
+
+.config-switch.activo span {
+  transform: translateX(28px);
+}
+
+.config-permission-box {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 20px;
+  background: #fff8f2;
+  border: 1px solid #f3d7c5;
+  margin-top: 18px;
+}
+
+.config-permission-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: #fff0e5;
+  color: #ff681c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+}
+
+/* =========================
+   MODO OSCURO GLOBAL SIMPLE
+========================= */
+html.vitality-dark-mode body {
+  background:
+    radial-gradient(circle at top, rgba(70, 45, 28, 0.85), transparent 42%),
+    linear-gradient(180deg, #17120f 0%, #241914 100%) !important;
+  color: #fff8f2 !important;
+}
+
+html.vitality-dark-mode .config-warm-card,
+html.vitality-dark-mode .perfil-balance-card,
+html.vitality-dark-mode .perfil-bienestar-card,
+html.vitality-dark-mode .perfil-tags-card,
+html.vitality-dark-mode .perfil-semana-card,
+html.vitality-dark-mode .perfil-streak-card,
+html.vitality-dark-mode .perfil-identity-main-card,
+html.vitality-dark-mode .chat-warm-card,
+html.vitality-dark-mode .checkin-warm-card,
+html.vitality-dark-mode .organizar-warm-card,
+html.vitality-dark-mode .home-focus-card,
+html.vitality-dark-mode .home-app-reco-card {
+  background: #241914 !important;
+  color: #fff8f2 !important;
+  border-color: rgba(255, 240, 229, 0.18) !important;
+}
+
+html.vitality-dark-mode h1,
+html.vitality-dark-mode h2,
+html.vitality-dark-mode strong,
+html.vitality-dark-mode label {
+  color: #fff8f2 !important;
+}
+
+html.vitality-dark-mode p,
+html.vitality-dark-mode small {
+  color: #dbcbbc !important;
+}
+
+html.vitality-dark-mode input,
+html.vitality-dark-mode textarea,
+html.vitality-dark-mode select {
+  background: #17120f !important;
+  color: #fff8f2 !important;
+  border-color: rgba(255, 240, 229, 0.22) !important;
+}
+
+@media (max-width: 390px) {
+  .config-warm-screen {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .config-question-header {
+    grid-template-columns: 52px 1fr;
+    gap: 14px;
+  }
+
+  .config-warm-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .config-warm-logo img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .config-question-header h1 {
+    font-size: 1.45rem;
+  }
+}
+/* =========================
+   OCULTAR BOTÓN ATRÁS EN PÁGINAS INTERNAS
+========================= */
+
+/* Agregar actividades */
+.organizar-warm-header,
+.organizar-warm-header-simple {
+  display: none !important;
+}
+
+/* Check-in */
+.checkin-warm-header {
+  display: none !important;
+}
+
+/* Chat */
+.chat-warm-header-simple {
+  display: none !important;
+}
+
+/* Perfil */
+.perfil-visual-header,
+.perfil-warm-header {
+  display: none !important;
+}
+
+/* Configuración */
+.config-warm-header {
+  display: none !important;
+}
+
+/* Ajuste para que no quede espacio arriba */
+.organizar-warm-screen,
+.checkin-warm-screen,
+.chat-warm-screen,
+.perfil-visual-screen,
+.perfil-warm-screen,
+.config-warm-screen {
+  padding-top: 24px !important;
+}/* =========================
+   OCULTAR BOTÓN ATRÁS EN PÁGINAS INTERNAS
+========================= */
+
+/* Agregar actividades */
+.organizar-warm-header,
+.organizar-warm-header-simple {
+  display: none !important;
+}
+
+/* Check-in */
+.checkin-warm-header {
+  display: none !important;
+}
+
+/* Chat */
+.chat-warm-header-simple {
+  display: none !important;
+}
+
+/* Perfil */
+.perfil-visual-header,
+.perfil-warm-header {
+  display: none !important;
+}
+
+/* Configuración */
+.config-warm-header {
+  display: none !important;
+}
+
+/* Ajuste para que no quede espacio arriba */
+.organizar-warm-screen,
+.checkin-warm-screen,
+.chat-warm-screen,
+.perfil-visual-screen,
+.perfil-warm-screen,
+.config-warm-screen {
+  padding-top: 24px !important;
+}
+/* =========================
+   AGREGAR - BOTONES SUPERIORES COMPACTOS
+========================= */
+.organizar-shortcuts {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 18px !important;
+}
+
+.organizar-shortcuts button,
+.organizar-switch-btn {
+  min-height: 74px !important;
+  padding: 12px 14px !important;
+  border-radius: 22px !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  text-align: left !important;
+}
+
+.organizar-shortcuts button span,
+.organizar-switch-btn span {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  border-radius: 15px !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  font-size: 1.35rem !important;
+}
+
+.organizar-shortcuts button strong,
+.organizar-switch-btn strong {
+  font-size: 0.92rem !important;
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+.organizar-switch-btn.active span {
+  background: #ff681c !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 390px) {
+  .organizar-shortcuts {
+    gap: 8px !important;
+  }
+
+  .organizar-shortcuts button,
+  .organizar-switch-btn {
+    min-height: 68px !important;
+    padding: 10px 11px !important;
+    gap: 8px !important;
+  }
+
+  .organizar-shortcuts button span,
+  .organizar-switch-btn span {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .organizar-shortcuts button strong,
+  .organizar-switch-btn strong {
+    font-size: 0.82rem !important;
+  }
+}
