@@ -6652,3 +6652,634 @@ async function cargarHistorialChatMongoVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", cargarHistorialChatMongoVitality);
+/* =========================
+   PERFIL WARM VISUAL
+========================= */
+function obtenerFechaSimplePerfilVitality(fecha) {
+  if (!fecha) return null;
+
+  if (typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return fecha;
+  }
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function restarDiasPerfilVitality(fechaSimple, dias) {
+  const fecha = new Date(`${fechaSimple}T00:00:00`);
+  fecha.setDate(fecha.getDate() - dias);
+  return obtenerFechaSimplePerfilVitality(fecha);
+}
+
+function obtenerUltimos7DiasPerfilVitality() {
+  const hoy = obtenerFechaSimplePerfilVitality(new Date());
+  const dias = [];
+
+  for (let i = 6; i >= 0; i--) {
+    dias.push(restarDiasPerfilVitality(hoy, i));
+  }
+
+  return dias;
+}
+
+function obtenerPuntajePerfilCheckin(estado) {
+  const valores = {
+    "Muy mal": 25,
+    "Mal": 38,
+    "Normal": 52,
+    "Bien": 70,
+    "Muy bien": 88
+  };
+
+  return valores[estado] || 55;
+}
+
+async function obtenerHistorialPerfilVitality() {
+  try {
+    if (typeof obtenerHistorialCheckinsBackend === "function") {
+      const historial = await obtenerHistorialCheckinsBackend();
+      return Array.isArray(historial) ? historial : [];
+    }
+  } catch (error) {
+    console.error("Error obteniendo historial para perfil:", error);
+  }
+
+  return [];
+}
+
+function calcularRachaPerfilVitality(historial) {
+  if (!Array.isArray(historial) || historial.length === 0) {
+    return 0;
+  }
+
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) =>
+          obtenerFechaSimplePerfilVitality(item.createdAt || item.fecha || item.fechaISO)
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  const hoy = obtenerFechaSimplePerfilVitality(new Date());
+
+  if (!diasUnicos.includes(hoy)) {
+    return 0;
+  }
+
+  let racha = 0;
+  let diaEsperado = hoy;
+
+  while (diasUnicos.includes(diaEsperado)) {
+    racha += 1;
+    diaEsperado = restarDiasPerfilVitality(diaEsperado, 1);
+  }
+
+  return racha;
+}
+
+async function obtenerOnboardingPerfilVitality() {
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+
+      if (onboarding) {
+        return onboarding;
+      }
+    }
+  } catch (error) {
+    console.error("Error obteniendo onboarding para perfil:", error);
+  }
+
+  try {
+    return leerJSON("onboardingVitality", {});
+  } catch (error) {
+    return {};
+  }
+}
+
+function obtenerAccionesHoyPerfilVitality() {
+  try {
+    const diaHoy = obtenerNombreDiaHoy();
+    const fechaHoy = obtenerFechaHoyFormatoInput();
+
+    const fijas = obtenerActividadesFijas()
+      .filter((item) => item.dia === diaHoy);
+
+    const especiales = obtenerActividadesEspeciales()
+      .filter((item) => item.fecha === fechaHoy);
+
+    return [...fijas, ...especiales];
+  } catch (error) {
+    console.error("Error obteniendo acciones para perfil:", error);
+    return [];
+  }
+}
+
+function pintarPerfilWarmChips(contenedorId, items, icono) {
+  const contenedor = document.getElementById(contenedorId);
+
+  if (!contenedor) return;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    contenedor.innerHTML = `
+      <div class="perfil-empty-state">
+        <p>Aún no hay datos registrados.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = items
+    .map((item) => `
+      <div class="perfil-chip">
+        <div class="perfil-chip-icon">${icono}</div>
+        <strong>${escaparHTML(String(item))}</strong>
+      </div>
+    `)
+    .join("");
+}
+
+function pintarGraficoPerfilCheckins(historial) {
+  const barras = document.getElementById("perfilWarmBarrasCheckin");
+  const porcentajeTexto = document.getElementById("perfilWarmCheckinPorcentaje");
+  const numero = document.getElementById("perfilWarmCheckinNumero");
+  const circle = document.getElementById("perfilWarmCircleCheckin");
+
+  if (!barras) return;
+
+  const ultimos7 = obtenerUltimos7DiasPerfilVitality();
+  const hoy = obtenerFechaSimplePerfilVitality(new Date());
+
+  const historialPorDia = {};
+
+  historial.forEach((item) => {
+    const fechaSimple = obtenerFechaSimplePerfilVitality(
+      item.createdAt || item.fecha || item.fechaISO
+    );
+
+    if (fechaSimple) {
+      historialPorDia[fechaSimple] = item;
+    }
+  });
+
+  const diasConCheckin = ultimos7.filter((dia) => historialPorDia[dia]).length;
+  const porcentaje = Math.round((diasConCheckin / 7) * 100);
+
+  if (porcentajeTexto) porcentajeTexto.textContent = `${porcentaje}%`;
+  if (numero) numero.textContent = `${diasConCheckin}/7`;
+  if (circle) circle.style.setProperty("--avance", `${porcentaje}%`);
+
+  barras.innerHTML = ultimos7
+    .map((dia) => {
+      const checkin = historialPorDia[dia];
+
+      if (!checkin) {
+        return `<span style="height: 18%;"></span>`;
+      }
+
+      const altura = obtenerPuntajePerfilCheckin(checkin.estadoAnimo);
+      const clase = dia === hoy ? "hoy" : "con-checkin";
+
+      return `<span class="${clase}" style="height: ${altura}%;"></span>`;
+    })
+    .join("");
+}
+
+function pintarAccionesPerfilVitality() {
+  const acciones = obtenerAccionesHoyPerfilVitality();
+  const total = acciones.length;
+  const completadas = acciones.filter((item) => item.completada).length;
+  const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
+
+  const numero = document.getElementById("perfilWarmAccionesNumero");
+  const circle = document.getElementById("perfilWarmCircleAcciones");
+
+  if (numero) numero.textContent = `${completadas}/${total}`;
+  if (circle) circle.style.setProperty("--avance", `${porcentaje}%`);
+}
+
+function pintarRachaPerfilVitality(historial) {
+  const racha = calcularRachaPerfilVitality(historial);
+  const numero = document.getElementById("perfilWarmRachaNumero");
+  const card = document.querySelector(".perfil-racha-card");
+
+  if (numero) numero.textContent = String(racha);
+
+  if (card) {
+    if (racha > 0) {
+      card.classList.remove("racha-inactiva");
+    } else {
+      card.classList.add("racha-inactiva");
+    }
+  }
+}
+
+async function iniciarPerfilWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "perfil.html") {
+    return;
+  }
+
+  try {
+    if (typeof obtenerActividadesBackend === "function") {
+      await obtenerActividadesBackend();
+    }
+  } catch (error) {
+    console.error("Error cargando actividades en perfil:", error);
+  }
+
+  const usuario = obtenerUsuario ? obtenerUsuario() : null;
+  const onboarding = await obtenerOnboardingPerfilVitality();
+  const historial = await obtenerHistorialPerfilVitality();
+
+  const nombre = usuario && usuario.nombre ? usuario.nombre : "Usuario";
+  const primerNombre = nombre.split(" ")[0];
+  const inicial = primerNombre.charAt(0).toUpperCase() || "U";
+
+  const titulo = document.getElementById("perfilWarmNombre");
+  const nombreCard = document.getElementById("perfilWarmNombreCard");
+  const correo = document.getElementById("perfilWarmCorreo");
+  const avatar = document.getElementById("perfilWarmAvatar");
+  const identidad = document.getElementById("perfilWarmIdentidad");
+
+  if (titulo) titulo.textContent = `Hola, ${primerNombre}`;
+  if (nombreCard) nombreCard.textContent = nombre;
+  if (correo) correo.textContent = usuario && usuario.correo ? usuario.correo : "Sin correo registrado";
+  if (avatar) avatar.textContent = inicial;
+
+  if (identidad) {
+    identidad.textContent = onboarding.identidad || "Construyendo tu identidad";
+  }
+
+  pintarGraficoPerfilCheckins(historial);
+  pintarAccionesPerfilVitality();
+  pintarRachaPerfilVitality(historial);
+
+  pintarPerfilWarmChips(
+    "perfilWarmObjetivos",
+    onboarding.objetivos || [],
+    "✓"
+  );
+
+  pintarPerfilWarmChips(
+    "perfilWarmEstres",
+    onboarding.estres || [],
+    "!"
+  );
+}
+
+window.addEventListener("DOMContentLoaded", iniciarPerfilWarmVitality);
+
+/* =========================
+   PERFIL VISUAL - IDENTIDAD Y PORCENTAJES
+========================= */
+function escaparPerfilVisualVitality(texto) {
+  const div = document.createElement("div");
+  div.textContent = texto;
+  return div.innerHTML;
+}
+
+function fechaSimplePerfilVisualVitality(fecha) {
+  if (!fecha) return null;
+
+  if (typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return fecha;
+  }
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function restarDiasPerfilVisualVitality(fechaSimple, dias) {
+  const fecha = new Date(`${fechaSimple}T00:00:00`);
+  fecha.setDate(fecha.getDate() - dias);
+  return fechaSimplePerfilVisualVitality(fecha);
+}
+
+function ultimos7DiasPerfilVisualVitality() {
+  const hoy = fechaSimplePerfilVisualVitality(new Date());
+  const dias = [];
+
+  for (let i = 6; i >= 0; i--) {
+    dias.push(restarDiasPerfilVisualVitality(hoy, i));
+  }
+
+  return dias;
+}
+
+function valorAnimoPerfilVisual(estado) {
+  const mapa = {
+    "Muy mal": 20,
+    "Mal": 40,
+    "Normal": 60,
+    "Bien": 80,
+    "Muy bien": 95
+  };
+
+  return mapa[estado] || 55;
+}
+
+function valorEstresPerfilVisual(estres) {
+  const mapa = {
+    "Alto": 30,
+    "Medio": 60,
+    "Bajo": 90
+  };
+
+  return mapa[estres] || 55;
+}
+
+function valorSuenoPerfilVisual(sueno) {
+  const mapa = {
+    "Mal": 30,
+    "Regular": 60,
+    "Bien": 90
+  };
+
+  return mapa[sueno] || 55;
+}
+
+function valorEnergiaPerfilVisual(energia) {
+  const mapa = {
+    "Baja": 30,
+    "Media": 60,
+    "Alta": 90
+  };
+
+  return mapa[energia] || 55;
+}
+
+async function historialPerfilVisualVitality() {
+  try {
+    if (typeof obtenerHistorialCheckinsBackend === "function") {
+      const historial = await obtenerHistorialCheckinsBackend();
+      return Array.isArray(historial) ? historial : [];
+    }
+  } catch (error) {
+    console.error("Error obteniendo historial perfil visual:", error);
+  }
+
+  return [];
+}
+
+async function onboardingPerfilVisualVitality() {
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+      return onboarding || {};
+    }
+  } catch (error) {
+    console.error("Error obteniendo onboarding perfil visual:", error);
+  }
+
+  try {
+    return leerJSON("onboardingVitality", {});
+  } catch (error) {
+    return {};
+  }
+}
+
+function accionesHoyPerfilVisualVitality() {
+  try {
+    const diaHoy = obtenerNombreDiaHoy();
+    const fechaHoy = obtenerFechaHoyFormatoInput();
+
+    const fijas = obtenerActividadesFijas().filter((item) => item.dia === diaHoy);
+    const especiales = obtenerActividadesEspeciales().filter((item) => item.fecha === fechaHoy);
+
+    return [...fijas, ...especiales];
+  } catch (error) {
+    console.error("Error obteniendo acciones perfil visual:", error);
+    return [];
+  }
+}
+
+function calcularRachaPerfilVisualVitality(historial) {
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) => fechaSimplePerfilVisualVitality(item.createdAt || item.fecha || item.fechaISO))
+        .filter(Boolean)
+    )
+  ];
+
+  const hoy = fechaSimplePerfilVisualVitality(new Date());
+
+  if (!diasUnicos.includes(hoy)) {
+    return 0;
+  }
+
+  let racha = 0;
+  let dia = hoy;
+
+  while (diasUnicos.includes(dia)) {
+    racha += 1;
+    dia = restarDiasPerfilVisualVitality(dia, 1);
+  }
+
+  return racha;
+}
+
+function pintarRingPerfilVisual(id, porcentaje) {
+  const elemento = document.getElementById(id);
+
+  if (elemento) {
+    elemento.style.setProperty("--avance", `${porcentaje}%`);
+  }
+}
+
+function pintarBarraPerfilVisual(idBarra, idTexto, porcentaje) {
+  const barra = document.getElementById(idBarra);
+  const texto = document.getElementById(idTexto);
+
+  if (barra) barra.style.width = `${porcentaje}%`;
+  if (texto) texto.textContent = `${porcentaje}%`;
+}
+
+function pintarSemanaPerfilVisual(historial) {
+  const contenedor = document.getElementById("perfilVisualSemana");
+  const texto = document.getElementById("perfilVisualSemanaTexto");
+
+  if (!contenedor) return;
+
+  const dias = ultimos7DiasPerfilVisualVitality();
+  const hoy = fechaSimplePerfilVisualVitality(new Date());
+
+  const diasHistorial = [
+    ...new Set(
+      historial
+        .map((item) => fechaSimplePerfilVisualVitality(item.createdAt || item.fecha || item.fechaISO))
+        .filter(Boolean)
+    )
+  ];
+
+  const letras = ["L", "M", "Mi", "J", "V", "S", "D"];
+  const diasConCheckin = dias.filter((dia) => diasHistorial.includes(dia)).length;
+
+  contenedor.innerHTML = dias
+    .map((dia, index) => {
+      let clase = "";
+
+      if (diasHistorial.includes(dia)) {
+        clase = "con-checkin";
+      }
+
+      if (dia === hoy && diasHistorial.includes(dia)) {
+        clase = "hoy";
+      }
+
+      return `
+        <div class="${clase}">
+          <span></span>
+          <small>${letras[index]}</small>
+        </div>
+      `;
+    })
+    .join("");
+
+  if (texto) {
+    texto.textContent = `${diasConCheckin} de 7 días con check-in.`;
+  }
+
+  return diasConCheckin;
+}
+
+function pintarTagsPerfilVisual(id, items, icono) {
+  const contenedor = document.getElementById(id);
+
+  if (!contenedor) return;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    contenedor.innerHTML = "<p>Aún no hay datos registrados.</p>";
+    return;
+  }
+
+  contenedor.innerHTML = items
+    .map((item) => `
+      <div class="perfil-tag">
+        <span>${icono}</span>
+        ${escaparPerfilVisualVitality(String(item))}
+      </div>
+    `)
+    .join("");
+}
+
+async function iniciarPerfilVisualVitality() {
+  if (obtenerPaginaActual() !== "perfil.html") {
+    return;
+  }
+
+  try {
+    if (typeof obtenerActividadesBackend === "function") {
+      await obtenerActividadesBackend();
+    }
+  } catch (error) {
+    console.error("Error cargando actividades perfil visual:", error);
+  }
+
+  const usuario = typeof obtenerUsuario === "function" ? obtenerUsuario() : null;
+  const onboarding = await onboardingPerfilVisualVitality();
+  const historial = await historialPerfilVisualVitality();
+
+  const nombre = usuario && usuario.nombre ? usuario.nombre : "Usuario";
+  const primerNombre = nombre.split(" ")[0];
+  const inicial = primerNombre.charAt(0).toUpperCase() || "U";
+
+  const titulo = document.getElementById("perfilVisualTitulo");
+  const avatar = document.getElementById("perfilVisualAvatar");
+  const identidad = document.getElementById("perfilVisualIdentidad");
+  const usuarioTexto = document.getElementById("perfilVisualUsuario");
+
+  if (titulo) titulo.textContent = `Hola, ${primerNombre}`;
+  if (avatar) avatar.textContent = inicial;
+  if (identidad) identidad.textContent = onboarding.identidad || "Construyendo tu identidad";
+  if (usuarioTexto) usuarioTexto.textContent = usuario && usuario.correo ? usuario.correo : "Usuario Vitality";
+
+  const ultimoCheckin = historial.length > 0
+    ? historial[0]
+    : null;
+
+  const animo = ultimoCheckin ? valorAnimoPerfilVisual(ultimoCheckin.estadoAnimo) : 0;
+  const calma = ultimoCheckin ? valorEstresPerfilVisual(ultimoCheckin.nivelEstres) : 0;
+  const sueno = ultimoCheckin ? valorSuenoPerfilVisual(ultimoCheckin.sueno) : 0;
+  const energia = ultimoCheckin ? valorEnergiaPerfilVisual(ultimoCheckin.energia) : 0;
+
+  const bienestar = ultimoCheckin
+    ? Math.round((animo + calma + sueno + energia) / 4)
+    : 0;
+
+  pintarBarraPerfilVisual("perfilBarraAnimo", "perfilValorAnimo", animo);
+  pintarBarraPerfilVisual("perfilBarraEstres", "perfilValorEstres", calma);
+  pintarBarraPerfilVisual("perfilBarraSueno", "perfilValorSueno", sueno);
+  pintarBarraPerfilVisual("perfilBarraEnergia", "perfilValorEnergia", energia);
+
+  const diasConCheckin = pintarSemanaPerfilVisual(historial) || 0;
+  const constancia = Math.round((diasConCheckin / 7) * 100);
+
+  const acciones = accionesHoyPerfilVisualVitality();
+  const totalAcciones = acciones.length;
+  const completadas = acciones.filter((item) => item.completada).length;
+  const organizacion = totalAcciones > 0
+    ? Math.round((completadas / totalAcciones) * 100)
+    : 0;
+
+  const bienestarText = document.getElementById("perfilPorcentajeBienestar");
+  const constanciaText = document.getElementById("perfilPorcentajeConstancia");
+  const organizacionText = document.getElementById("perfilPorcentajeOrganizacion");
+
+  if (bienestarText) bienestarText.textContent = `${bienestar}%`;
+  if (constanciaText) constanciaText.textContent = `${constancia}%`;
+  if (organizacionText) organizacionText.textContent = `${organizacion}%`;
+
+  pintarRingPerfilVisual("perfilRingBienestar", bienestar);
+  pintarRingPerfilVisual("perfilRingConstancia", constancia);
+  pintarRingPerfilVisual("perfilRingOrganizacion", organizacion);
+
+  const racha = calcularRachaPerfilVisualVitality(historial);
+  const rachaNumero = document.getElementById("perfilVisualRacha");
+  const rachaTexto = document.getElementById("perfilVisualRachaTexto");
+  const rachaCard = document.querySelector(".perfil-streak-card");
+
+  if (rachaNumero) rachaNumero.textContent = String(racha);
+
+  if (rachaTexto) {
+    rachaTexto.textContent = racha > 0
+      ? "Tu racha está activa hoy."
+      : "Haz tu check-in para activar tu racha.";
+  }
+
+  if (rachaCard) {
+    if (racha > 0) {
+      rachaCard.classList.remove("inactiva");
+    } else {
+      rachaCard.classList.add("inactiva");
+    }
+  }
+
+  pintarTagsPerfilVisual("perfilVisualObjetivos", onboarding.objetivos || [], "🎯");
+  pintarTagsPerfilVisual("perfilVisualEstres", onboarding.estres || [], "⚠️");
+}
+
+window.addEventListener("DOMContentLoaded", iniciarPerfilVisualVitality);
