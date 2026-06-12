@@ -1999,9 +1999,12 @@ function formatearTextoChat(texto) {
   return escaparHTML(textoLimpio).replace(/\n/g, "<br>");
 }
 
-function addMessage(text, sender, recomendacionId = null, recomendacion = null) {
+function addMessage(text, sender, recomendacionId = null, recomendacion = null, guardarMongo = true) {
   const chatBox = document.getElementById("chatBox");
-  if (!chatBox) return;
+
+  if (!chatBox) {
+    return;
+  }
 
   const message = document.createElement("div");
   message.classList.add("message", sender);
@@ -2022,8 +2025,20 @@ function addMessage(text, sender, recomendacionId = null, recomendacion = null) 
 
   chatBox.appendChild(message);
   chatBox.scrollTop = chatBox.scrollHeight;
-}
-function crearAccionesRecomendacionChat(recomendacionId, recomendacion) {
+
+  if (guardarMongo && typeof guardarMensajeChatMongoVitality === "function") {
+    guardarMensajeChatMongoVitality(
+      sender,
+      text,
+      recomendacionId,
+      recomendacion
+    );
+  }
+
+  if (typeof bajarChatAlUltimoMensajeVitality === "function") {
+    bajarChatAlUltimoMensajeVitality();
+  }
+}function crearAccionesRecomendacionChat(recomendacionId, recomendacion) {
   const contenedor = document.createElement("div");
   contenedor.className = "chat-recomendacion-acciones";
 
@@ -6525,3 +6540,115 @@ function iniciarChatUXWarmVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", iniciarChatUXWarmVitality);
+/* =========================
+   CHAT - HISTORIAL EN MONGODB
+========================= */
+async function guardarMensajeChatMongoVitality(sender, texto, recomendacionId = null, recomendacion = null) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !texto) {
+    return;
+  }
+
+  try {
+    await fetch(`${API_URL}/api/chat-historial`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        sender,
+        texto,
+        recomendacionId,
+        recomendacion
+      })
+    });
+  } catch (error) {
+    console.error("Error guardando mensaje del chat en MongoDB:", error);
+  }
+}
+
+async function obtenerHistorialChatMongoVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/chat-historial/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error obteniendo historial del chat:", error);
+    return [];
+  }
+}
+
+function renderizarMensajeChatMongoVitality(mensaje) {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const clase = mensaje.sender === "user" ? "user" : "bot";
+
+  const div = document.createElement("div");
+  div.className = `message ${clase}`;
+
+  const p = document.createElement("p");
+  p.textContent = mensaje.texto;
+
+  div.appendChild(p);
+
+  if (mensaje.sender === "bot" && mensaje.recomendacionId) {
+    const acciones = crearAccionesRecomendacionChat(
+      mensaje.recomendacionId,
+      mensaje.recomendacion || null
+    );
+
+    div.appendChild(acciones);
+  }
+
+  chatBox.appendChild(div);
+}
+
+async function cargarHistorialChatMongoVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const historial = await obtenerHistorialChatMongoVitality();
+
+  if (!historial || historial.length === 0) {
+    return;
+  }
+
+  chatBox.innerHTML = "";
+
+  historial.forEach((mensaje) => {
+    renderizarMensajeChatMongoVitality(mensaje);
+  });
+
+  if (typeof bajarChatAlUltimoMensajeVitality === "function") {
+    bajarChatAlUltimoMensajeVitality();
+  }
+}
+
+window.addEventListener("DOMContentLoaded", cargarHistorialChatMongoVitality);
