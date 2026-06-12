@@ -6,40 +6,36 @@
   <title>Vitality - Check-in diario</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="app-mobile-page checkin-page">
 
-  <header class="app-mobile-header">
-    <button class="app-icon-btn" onclick="toggleMenu()">☰</button>
+<body class="checkin-warm-page">
 
-    <a href="horario.html" class="app-header-logo">
-      <img src="logo.jpg" alt="Logo Vitality">
-    </a>
+  <main class="checkin-warm-screen">
 
-    <button class="app-icon-btn" onclick="toggleProfileMenu()">👤</button>
-
-    <ul class="menu app-dropdown-menu" id="menu">
-      <li><a href="horario.html">Horario</a></li>
-      <li><a href="perfil.html">Perfil</a></li>
-      <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="alertas.html">Alertas</a></li>
-      <li><a href="chat.html">Chat de apoyo</a></li>
-      <li><a href="uso_apps.html">Uso de apps</a></li>
-    </ul>
-
-    <ul class="profile-menu app-profile-menu" id="profileMenu">
-      <li><a href="perfil.html">Mi perfil</a></li>
-      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-    </ul>
-  </header>
-
-  <main class="checkin-slider-screen">
-    <section class="checkin-slider-header">
-      <span>Check-in diario</span>
-      <h1>¿Cómo te sientes hoy?</h1>
-      <p>Desliza y selecciona tu estado para que Vitality adapte tus recomendaciones.</p>
+    <section class="checkin-warm-header">
+      <button
+        type="button"
+        class="checkin-warm-back"
+        onclick="window.location.href='horario.html'"
+      >
+        ←
+      </button>
     </section>
 
-    <form id="checkinForm" class="checkin-slider-form">
+    <section class="checkin-question-header">
+      <div class="checkin-warm-logo">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
+
+      <div class="checkin-warm-title">
+        <span>Check-in diario</span>
+        <h1>¿Cómo te sientes hoy?</h1>
+        <p>
+          Registra tu estado para que Vitality adapte tus recomendaciones.
+        </p>
+      </div>
+    </section>
+
+    <form id="checkinForm" class="checkin-warm-form">
 
       <!-- Campos ocultos que usa script.js -->
       <input type="hidden" id="estadoAnimo" value="Normal">
@@ -47,70 +43,82 @@
       <input type="hidden" id="sueno" value="Regular">
       <input type="hidden" id="energia" value="Media">
 
-      <section class="checkin-slider-card">
-        <h2>Emoción principal</h2>
-
-        <div class="mood-grid">
-          <button type="button" class="mood-option" data-estado="Muy bien">
-            <span>😊</span>
-            <small>Muy bien</small>
-          </button>
-
-          <button type="button" class="mood-option" data-estado="Bien">
-            <span>🙂</span>
-            <small>Bien</small>
-          </button>
-
-          <button type="button" class="mood-option active" data-estado="Normal">
-            <span>😐</span>
-            <small>Normal</small>
-          </button>
-
-          <button type="button" class="mood-option" data-estado="Mal">
-            <span>😟</span>
-            <small>Mal</small>
-          </button>
-
-          <button type="button" class="mood-option" data-estado="Muy mal">
-            <span>😢</span>
-            <small>Muy mal</small>
-          </button>
+      <section class="checkin-warm-card">
+        <div class="checkin-card-title">
+          <span>Emoción</span>
+          <h2>Emoción principal</h2>
         </div>
+
+       <div class="mood-grid checkin-mood-grid">
+  <button type="button" class="mood-option checkin-mood-option mood-horrible" data-estado="Muy mal">
+    <span>😵</span>
+    <small>Horrible</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-mala" data-estado="Mal">
+    <span>🙁</span>
+    <small>Mala</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-normal active" data-estado="Normal">
+    <span>😐</span>
+    <small>Normal</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-buena" data-estado="Bien">
+    <span>🙂</span>
+    <small>Buena</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-excelente" data-estado="Muy bien">
+    <span>😊</span>
+    <small>Excelente</small>
+  </button>
+</div>
       </section>
 
-      <section class="checkin-slider-card">
-        <h2>Métricas de bienestar</h2>
+      <section class="checkin-warm-card">
+        <div class="checkin-card-title">
+          <span>Bienestar</span>
+          <h2>Métricas de hoy</h2>
+        </div>
 
-        <div class="metric-slider">
+        <div class="metric-slider checkin-metric-slider">
           <div class="metric-top">
             <label for="estresRange">Nivel de estrés</label>
             <strong id="estresValor">5</strong>
           </div>
+
           <input type="range" id="estresRange" min="1" max="10" value="5">
+
           <div class="metric-labels">
             <span>Relajada</span>
             <span>Muy tensa</span>
           </div>
         </div>
 
-        <div class="metric-slider">
+        <div class="metric-slider checkin-metric-slider">
           <div class="metric-top">
             <label for="suenoRange">Nivel de descanso</label>
             <strong id="suenoValor">5</strong>
           </div>
+
           <input type="range" id="suenoRange" min="1" max="10" value="5">
+
           <div class="metric-labels">
             <span>Agotada</span>
             <span>Renovada</span>
           </div>
         </div>
 
-        <div class="metric-slider">
+        <div class="metric-slider checkin-metric-slider">
           <div class="metric-top">
             <label for="energiaRange">Nivel de energía</label>
             <strong id="energiaValor">5</strong>
           </div>
+
           <input type="range" id="energiaRange" min="1" max="10" value="5">
+
           <div class="metric-labels">
             <span>Baja</span>
             <span>Alta</span>
@@ -118,16 +126,42 @@
         </div>
       </section>
 
-      <button type="submit" class="checkin-slider-btn">
+      <button type="submit" class="checkin-warm-primary">
         Guardar check-in
       </button>
 
-      <div class="checkin-slider-actions">
-        <a href="chat.html">Hablar con Vitality</a>
-        <a href="horario.html">Ver horario</a>
-      </div>
+      
+
     </form>
+
   </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="checkin.html" class="active">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
@@ -154,16 +188,56 @@
       return "Alta";
     }
 
-    function actualizarSliderVisual(slider) {
-      const min = Number(slider.min);
-      const max = Number(slider.max);
-      const value = Number(slider.value);
-      const porcentaje = ((value - min) / (max - min)) * 100;
+   function obtenerColorActualSlider(slider, porcentajeDecimal) {
+  let nivelBueno = porcentajeDecimal;
 
-      slider.style.background =
-        `linear-gradient(90deg, #115c67 ${porcentaje}%, #e7eef0 ${porcentaje}%)`;
-    }
+  // En estrés es al revés:
+  // 1 = bien/relajada, 10 = mal/muy tensa
+  if (slider.id === "estresRange") {
+    nivelBueno = 1 - porcentajeDecimal;
+  }
 
+  let hue;
+
+  if (nivelBueno <= 0.5) {
+    // Rojo a amarillo
+    hue = 4 + (42 - 4) * (nivelBueno / 0.5);
+  } else {
+    // Amarillo a verde
+    hue = 42 + (140 - 42) * ((nivelBueno - 0.5) / 0.5);
+  }
+
+  return `hsl(${hue}, 85%, 52%)`;
+}
+
+function obtenerColorSliderSimple(slider, valor) {
+  const numero = Number(valor);
+
+  if (slider.id === "estresRange") {
+    if (numero <= 3) return "#22c55e"; // verde: poco estrés
+    if (numero <= 7) return "#f97316"; // naranjo: estrés medio
+    return "#ef4444"; // rojo: mucho estrés
+  }
+
+  // Sueño y energía: mientras más alto, mejor
+  if (numero <= 3) return "#ef4444"; // rojo: bajo/mal
+  if (numero <= 7) return "#f97316"; // naranjo: medio
+  return "#22c55e"; // verde: bien/alto
+}
+
+function actualizarSliderVisual(slider) {
+  const min = Number(slider.min);
+  const max = Number(slider.max);
+  const value = Number(slider.value);
+  const porcentaje = ((value - min) / (max - min)) * 100;
+
+  const color = obtenerColorSliderSimple(slider, value);
+
+  slider.style.setProperty("--slider-thumb-color", color);
+
+  slider.style.background =
+    `linear-gradient(90deg, ${color} ${porcentaje}%, #eadfce ${porcentaje}%)`;
+}
     function iniciarCheckinInteractivo() {
       const moodButtons = document.querySelectorAll(".mood-option");
       const estadoInput = document.getElementById("estadoAnimo");

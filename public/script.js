@@ -202,7 +202,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://192.168.1.140:3000";
+    return "http://10.30.16.154:3000";
   }
 
   return "";
@@ -6449,3 +6449,79 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+/* =========================
+   CHAT UX WARM - INPUT, TECLADO Y AUTO SCROLL
+========================= */
+function bajarChatAlUltimoMensajeVitality() {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+function iniciarChatUXWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  document.body.classList.add("chat-warm-page");
+
+  const input = document.getElementById("userInput");
+  const chatBox = document.getElementById("chatBox");
+
+  if (input) {
+    input.addEventListener("focus", () => {
+      document.body.classList.add("chat-input-focused");
+      setTimeout(bajarChatAlUltimoMensajeVitality, 350);
+    });
+
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("chat-input-focused");
+      }, 250);
+    });
+
+    input.addEventListener("input", () => {
+      setTimeout(bajarChatAlUltimoMensajeVitality, 80);
+    });
+  }
+
+  if (window.visualViewport) {
+    const alturaInicial = window.visualViewport.height;
+
+    window.visualViewport.addEventListener("resize", () => {
+      const diferencia = alturaInicial - window.visualViewport.height;
+
+      if (diferencia > 120) {
+        document.body.classList.add("chat-keyboard-open");
+      } else {
+        document.body.classList.remove("chat-keyboard-open");
+      }
+
+      setTimeout(bajarChatAlUltimoMensajeVitality, 120);
+    });
+  }
+
+  if (chatBox) {
+    const observador = new MutationObserver(() => {
+      bajarChatAlUltimoMensajeVitality();
+    });
+
+    observador.observe(chatBox, {
+      childList: true,
+      subtree: true
+    });
+
+    setTimeout(bajarChatAlUltimoMensajeVitality, 400);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", iniciarChatUXWarmVitality);
