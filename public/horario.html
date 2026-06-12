@@ -32,22 +32,33 @@
         </button>
       </div>
 
-      <ul class="profile-menu app-profile-menu" id="profileMenu">
-        <li><a href="perfil.html">Mi perfil</a></li>
-        <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-      </ul>
+      <ul class="profile-menu app-profile-menu home-user-menu" id="profileMenu">
+  <li><a href="perfil.html">Mi perfil</a></li>
+  <li><a href="configuracion.html">Configuración</a></li>
+  <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+</ul>
     </section>
 
-    <section class="home-identidad-card">
-      <div>
-        <span>Tu identidad</span>
-        <h2 id="homeIdentidadUsuario">Construyendo tu identidad</h2>
-      </div>
+    <section class="home-app-reco-card">
+  <div class="home-app-reco-head">
+    <div>
+      <span>Recomendación de la app</span>
+      <h2 id="homeTipTitulo">Pausa breve</h2>
+    </div>
 
-      <button type="button" onclick="window.location.href='perfil.html'">
-        ✎
-      </button>
-    </section>
+    <div class="home-tip-emoji" id="homeTipEmoji">✨</div>
+  </div>
+
+  <p id="homeTipDescripcion">
+    Toma un momento para respirar y volver con calma a tu día.
+  </p>
+
+  <div class="home-tip-dots" id="homeTipDots">
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+  </div>
+</section>
 
     <section class="home-stats-grid">
       <article class="home-stat-card">
@@ -66,7 +77,7 @@
           <span></span>
         </div>
 
-        <div class="home-days">
+        <div class="home-days" id="homeDaysLabels">
           <small>L</small>
           <small>M</small>
           <small>Mi</small>
@@ -86,25 +97,33 @@
       </article>
     </section>
 
-    <section class="home-focus-card">
-      <div class="home-focus-top">
-        <span>Tu foco ahora</span>
-        <strong id="homeFocoHora">IA</strong>
-      </div>
+   <section class="home-focus-card home-focus-ia-card">
+  <div class="home-focus-top">
+    <span>Tu foco ahora</span>
+    <strong id="homeFocoHora">IA</strong>
+  </div>
 
+  <div class="home-focus-content">
+    <div class="home-focus-emoji" id="homeFocoEmoji">✨</div>
+
+    <div>
       <h2 id="homeFocoTitulo">Esperando recomendación</h2>
-      <p id="homeFocoDetalle">Cuando converses con Vitality, aquí aparecerá una recomendación personalizada.</p>
+      <p id="homeFocoDetalle">
+        Cuando converses con Vitality, aquí aparecerá una idea principal para tu día.
+      </p>
+    </div>
+  </div>
 
-      <div class="home-focus-actions">
-        <button type="button" id="homeFocoCompletarBtn">
-          Ver recomendación
-        </button>
+  <div class="home-focus-actions">
+    <button type="button" id="homeFocoCompletarBtn">
+      Ver recomendación
+    </button>
 
-        <button type="button" onclick="window.location.href='chat.html'">
-          💬
-        </button>
-      </div>
-    </section>
+    <button type="button" onclick="window.location.href='chat.html'">
+      💬
+    </button>
+  </div>
+</section>
 
     <section class="home-actions-section">
       <div class="home-section-title">

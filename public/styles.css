@@ -9164,3 +9164,173 @@ body.chat-keyboard-open #chatBox {
     font-size: 0.75rem;
   }
 }
+/* =========================
+   HOME - RECOMENDACIONES CARRUSEL
+========================= */
+.home-app-reco-card {
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 22px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(228, 215, 200, 0.75);
+  border-top: 5px solid #ff681c;
+  box-shadow: 0 12px 28px rgba(38, 29, 22, 0.08);
+}
+
+.home-app-reco-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.home-app-reco-head span {
+  display: block;
+  color: #ff681c;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.76rem;
+  font-weight: 900;
+  margin-bottom: 7px;
+}
+
+.home-app-reco-head h2 {
+  margin: 0;
+  color: #261d16;
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.home-tip-emoji {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: #fff0e5;
+  color: #ff681c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  flex: 0 0 auto;
+}
+
+.home-app-reco-card p {
+  margin center;
+  font-size: 1.55rem;
+  flex: 0 0 auto;
+}
+
+.home-app-reco-card p {
+  margin: 12px 0 0;
+  color: #6d6259;
+  line-height: 1.45;
+}
+
+.home-tip-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.home-tip-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #eadfce;
+}
+
+.home-tip-dots span.active {
+  width: 22px;
+  background: #ff681c;
+}
+
+/* =========================
+   HOME - FOCO IA MEJORADO
+========================= */
+.home-focus-ia-card {
+  background: #fff8f2 !important;
+}
+
+.home-focus-content {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 16px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.home-focus-emoji {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #f3d7c5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  box-shadow: 0 10px 20px rgba(38, 29, 22, 0.06);
+}
+
+.home-focus-content h2 {
+  margin-top: 0 !important;
+}
+
+.home-focus-content p {
+  margin-bottom: 0 !important;
+}
+
+/* =========================
+   MENU USUARIO HOME
+========================= */
+.home-user-menu,
+.app-profile-menu {
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(38, 29, 22, 0.16) !important;
+  border: 1px solid rgba(228, 215, 200, 0.85) !important;
+  overflow: hidden !important;
+}
+
+.home-user-menu li,
+.app-profile-menu li {
+  border-bottom: 1px solid #f1e7dc !important;
+}
+
+.home-user-menu li:last-child,
+.app-profile-menu li:last-child {
+  border-bottom: none !important;
+}
+
+.home-user-menu a,
+.app-profile-menu a {
+  color: #16420f !important;
+  font-weight: 900 !important;
+  padding: 14px 16px !important;
+  display: block !important;
+  text-decoration: none !important;
+}
+
+.home-user-menu a:hover,
+.app-profile-menu a:hover {
+  background: #fff0e5 !important;
+  color: #ff681c !important;
+}
+
+@media (max-width: 390px) {
+  .home-focus-content {
+    grid-template-columns: 50px 1fr;
+    gap: 12px;
+  }
+
+  .home-focus-emoji,
+  .home-tip-emoji {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+
+  .home-app-reco-head h2 {
+    font-size: 1.2rem;
+  }
+}

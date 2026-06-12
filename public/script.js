@@ -7283,3 +7283,379 @@ async function iniciarPerfilVisualVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", iniciarPerfilVisualVitality);
+
+/* =========================
+   HOME - FOCO IA + CARRUSEL + DIAS CORRECTOS
+========================= */
+function obtenerEmojiFocoHomeVitality(texto = "") {
+  const t = String(texto).toLowerCase();
+
+  if (t.includes("agua") || t.includes("hidrata")) return "💧";
+  if (t.includes("respira") || t.includes("respiración")) return "🌬️";
+  if (t.includes("camina") || t.includes("ejercicio") || t.includes("mover")) return "🚶";
+  if (t.includes("dormir") || t.includes("sueño") || t.includes("descanso")) return "🌙";
+  if (t.includes("estudi") || t.includes("tarea") || t.includes("foco")) return "📚";
+  if (t.includes("pausa") || t.includes("descanso")) return "☕";
+  if (t.includes("digital") || t.includes("instagram") || t.includes("tiktok") || t.includes("celular")) return "📱";
+  if (t.includes("medita") || t.includes("calma") || t.includes("ansiedad")) return "🧘";
+
+  return "✨";
+}
+
+function obtenerDescripcionCortaHomeVitality(texto = "") {
+  const limpio = String(texto)
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!limpio) {
+    return "Vitality preparó una sugerencia breve para ayudarte a avanzar con calma.";
+  }
+
+  if (limpio.length <= 105) {
+    return limpio;
+  }
+
+  return `${limpio.slice(0, 105).trim()}...`;
+}
+
+function obtenerTituloCortoRecomendacionHomeVitality(recomendacion) {
+  const accion = recomendacion?.accionSugerida || {};
+
+  return (
+    accion.titulo ||
+    accion.tipo ||
+    recomendacion?.categoria ||
+    "Recomendación personalizada"
+  );
+}
+
+function obtenerTextoRecomendacionHomeVitality(recomendacion) {
+  const accion = recomendacion?.accionSugerida || {};
+
+  return (
+    accion.descripcion ||
+    accion.detalle ||
+    recomendacion?.resumen ||
+    recomendacion?.mensajeIA ||
+    recomendacion?.mensaje ||
+    "Vitality generó una recomendación personalizada según tu estado y tus datos."
+  );
+}
+
+async function pintarFocoHomeVitality(acciones) {
+  const focoHora = document.getElementById("homeFocoHora");
+  const focoTitulo = document.getElementById("homeFocoTitulo");
+  const focoDetalle = document.getElementById("homeFocoDetalle");
+  const focoEmoji = document.getElementById("homeFocoEmoji");
+  const focoBtn = document.getElementById("homeFocoCompletarBtn");
+
+  const recomendacion = await obtenerUltimaRecomendacionIAHomeVitality();
+
+  if (recomendacion) {
+    const accion = recomendacion.accionSugerida || {};
+    const titulo = obtenerTituloCortoRecomendacionHomeVitality(recomendacion);
+    const texto = obtenerTextoRecomendacionHomeVitality(recomendacion);
+    const emoji = obtenerEmojiFocoHomeVitality(`${titulo} ${texto}`);
+
+    if (focoHora) focoHora.textContent = accion.hora || "IA";
+    if (focoTitulo) focoTitulo.textContent = titulo;
+    if (focoDetalle) focoDetalle.textContent = obtenerDescripcionCortaHomeVitality(texto);
+    if (focoEmoji) focoEmoji.textContent = emoji;
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Ver recomendación";
+      focoBtn.onclick = () => {
+        window.location.href = `chat.html?recomendacionId=${recomendacion._id}`;
+      };
+    }
+
+    return;
+  }
+
+  const objetivo = await obtenerObjetivoPendienteHomeVitality();
+
+  if (objetivo) {
+    const titulo = objetivo.titulo || "Objetivo pendiente";
+    const texto = objetivo.descripcion || "Tienes un objetivo personal pendiente para avanzar hoy.";
+
+    if (focoHora) focoHora.textContent = "Meta";
+    if (focoTitulo) focoTitulo.textContent = titulo;
+    if (focoDetalle) focoDetalle.textContent = obtenerDescripcionCortaHomeVitality(texto);
+    if (focoEmoji) focoEmoji.textContent = obtenerEmojiFocoHomeVitality(`${titulo} ${texto}`);
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Ver perfil";
+      focoBtn.onclick = () => {
+        window.location.href = "perfil.html";
+      };
+    }
+
+    return;
+  }
+
+  const proxima = obtenerProximaAccionHomeVitality(acciones);
+
+  if (proxima) {
+    const titulo = proxima.titulo || "Próxima acción";
+    const texto = `Próxima acción de tu día · ${obtenerRangoHora(proxima.hora, proxima.horaFin)}`;
+
+    if (focoHora) focoHora.textContent = proxima.hora || "Hoy";
+    if (focoTitulo) focoTitulo.textContent = titulo;
+    if (focoDetalle) focoDetalle.textContent = texto;
+    if (focoEmoji) focoEmoji.textContent = obtenerEmojiFocoHomeVitality(titulo);
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Completar";
+      focoBtn.onclick = () => completarAccionHomeVitality(proxima.origen, proxima.id);
+    }
+
+    return;
+  }
+
+  if (focoHora) focoHora.textContent = "Hoy";
+  if (focoTitulo) focoTitulo.textContent = "Día organizado";
+  if (focoDetalle) focoDetalle.textContent = "No tienes acciones pendientes por ahora.";
+  if (focoEmoji) focoEmoji.textContent = "✅";
+
+  if (focoBtn) {
+    focoBtn.disabled = true;
+    focoBtn.textContent = "Completado";
+  }
+}
+
+/* =========================
+   HOME - CARRUSEL DE RECOMENDACIONES CORTAS
+========================= */
+function crearTipsHomeVitality(historial = [], onboarding = {}) {
+  const tips = [
+    {
+      emoji: "💧",
+      titulo: "Toma agua",
+      descripcion: "Haz una pausa breve y toma un vaso de agua."
+    },
+    {
+      emoji: "🌬️",
+      titulo: "Respira 1 minuto",
+      descripcion: "Inhala lento, exhala suave y vuelve a tu día con calma."
+    },
+    {
+      emoji: "🚶",
+      titulo: "Muévete un poco",
+      descripcion: "Camina unos minutos para despejar la mente."
+    },
+    {
+      emoji: "📚",
+      titulo: "Bloque corto",
+      descripcion: "Elige una tarea pequeña y avanza solo 15 minutos."
+    },
+    {
+      emoji: "📱",
+      titulo: "Pausa digital",
+      descripcion: "Deja el celular unos minutos y vuelve a tu foco."
+    },
+    {
+      emoji: "🧘",
+      titulo: "Baja la tensión",
+      descripcion: "Haz una pausa tranquila antes de seguir."
+    }
+  ];
+
+  const ultimo = Array.isArray(historial) && historial.length > 0 ? historial[0] : null;
+
+  if (ultimo?.nivelEstres === "Alto") {
+    tips.unshift({
+      emoji: "🌿",
+      titulo: "Baja el estrés",
+      descripcion: "Respira lento por un minuto antes de continuar."
+    });
+  }
+
+  if (ultimo?.sueno === "Mal") {
+    tips.unshift({
+      emoji: "🌙",
+      titulo: "Cuida tu descanso",
+      descripcion: "Hoy intenta bajar el ritmo y evitar sobrecargarte."
+    });
+  }
+
+  if (Array.isArray(onboarding.objetivos) && onboarding.objetivos.includes("Estudiar con foco")) {
+    tips.unshift({
+      emoji: "📚",
+      titulo: "Estudia con foco",
+      descripcion: "Parte por una tarea mínima para evitar bloquearte."
+    });
+  }
+
+  return tips.slice(0, 6);
+}
+
+function pintarTipsHomeVitality(historial = [], onboarding = {}) {
+  const titulo = document.getElementById("homeTipTitulo");
+  const descripcion = document.getElementById("homeTipDescripcion");
+  const emoji = document.getElementById("homeTipEmoji");
+  const dots = document.getElementById("homeTipDots");
+
+  if (!titulo || !descripcion || !emoji) return;
+
+  const tips = crearTipsHomeVitality(historial, onboarding);
+  let indice = 0;
+
+  function renderTip() {
+    const tip = tips[indice];
+
+    titulo.textContent = tip.titulo;
+    descripcion.textContent = tip.descripcion;
+    emoji.textContent = tip.emoji;
+
+    if (dots) {
+      dots.innerHTML = tips
+        .slice(0, 3)
+        .map((_, i) => `<span class="${i === indice % 3 ? "active" : ""}"></span>`)
+        .join("");
+    }
+
+    indice = (indice + 1) % tips.length;
+  }
+
+  renderTip();
+
+  if (window.homeTipsIntervalVitality) {
+    clearInterval(window.homeTipsIntervalVitality);
+  }
+
+  window.homeTipsIntervalVitality = setInterval(renderTip, 4500);
+}
+
+/* =========================
+   HOME - GRAFICO CHECKINS CON DIAS CORRECTOS
+========================= */
+function obtenerEtiquetaDiaHomeVitality(fechaSimple) {
+  const fecha = new Date(`${fechaSimple}T12:00:00`);
+  const etiquetas = ["D", "L", "M", "Mi", "J", "V", "S"];
+
+  return etiquetas[fecha.getDay()];
+}
+
+function pintarGraficoCheckinsHomeVitality(historial) {
+  const contenedor = document.getElementById("homeMiniBars");
+  const labels = document.getElementById("homeDaysLabels");
+  const porcentajeTexto = document.getElementById("homePorcentajeSemana");
+
+  if (!contenedor) return;
+
+  const ultimos7Dias = obtenerUltimos7DiasHomeVitality();
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+
+  const historialPorDia = {};
+
+  historial.forEach((item) => {
+    const fechaSimple = obtenerFechaSimpleHomeVitality(
+      item.createdAt || item.fecha || item.fechaISO
+    );
+
+    if (fechaSimple) {
+      historialPorDia[fechaSimple] = item;
+    }
+  });
+
+  const diasConCheckin = ultimos7Dias.filter((dia) => historialPorDia[dia]).length;
+  const porcentaje = Math.round((diasConCheckin / 7) * 100);
+
+  if (porcentajeTexto) {
+    porcentajeTexto.textContent = `${porcentaje}%`;
+  }
+
+  contenedor.innerHTML = ultimos7Dias
+    .map((dia) => {
+      const checkin = historialPorDia[dia];
+
+      if (!checkin) {
+        return `<span class="sin-checkin" style="height: 18%;"></span>`;
+      }
+
+      const altura = obtenerPuntajeHomeCheckin(checkin.estadoAnimo);
+      const clase = dia === hoy ? "hoy" : "con-checkin";
+
+      return `<span class="${clase}" style="height: ${altura}%;"></span>`;
+    })
+    .join("");
+
+  if (labels) {
+    labels.innerHTML = ultimos7Dias
+      .map((dia) => `<small>${obtenerEtiquetaDiaHomeVitality(dia)}</small>`)
+      .join("");
+  }
+}
+
+/* =========================
+   HOME - INICIO ACTUALIZADO
+========================= */
+async function iniciarHomeWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "horario.html") {
+    return;
+  }
+
+  await obtenerActividadesBackend();
+
+  const usuario = obtenerUsuario();
+  const historial = await obtenerHistorialHomeVitality();
+  const onboarding = typeof obtenerOnboardingBackendVitality === "function"
+    ? await obtenerOnboardingBackendVitality()
+    : {};
+  const acciones = obtenerAccionesHomeVitality();
+
+  const completadas = acciones.filter((item) => item.completada).length;
+  const total = acciones.length;
+  const porcentajeAcciones = total > 0 ? Math.round((completadas / total) * 100) : 0;
+
+  const fecha = document.getElementById("homeFechaActual");
+  const saludo = document.getElementById("homeSaludoUsuario");
+  const avatar = document.querySelector(".home-avatar-btn");
+  const circulo = document.querySelector(".home-progress-circle");
+  const accionesNumero = document.getElementById("homeAccionesNumero");
+  const accionesResumen = document.getElementById("homeAccionesResumen");
+
+  if (fecha) {
+    fecha.textContent = formatearFechaHomeVitality();
+  }
+
+  if (saludo) {
+    const primerNombre = usuario && usuario.nombre
+      ? usuario.nombre.split(" ")[0]
+      : "Usuario";
+
+    saludo.textContent = `Hola, ${primerNombre}`;
+  }
+
+  if (avatar && usuario) {
+    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
+  }
+
+  pintarGraficoCheckinsHomeVitality(historial);
+  pintarRachaHomeVitality(historial);
+  pintarTipsHomeVitality(historial, onboarding);
+
+  if (circulo) {
+    circulo.style.setProperty("--avance", `${porcentajeAcciones}%`);
+  }
+
+  if (accionesNumero) {
+    accionesNumero.textContent = `${completadas}/${total}`;
+  }
+
+  if (accionesResumen) {
+    accionesResumen.textContent = `${completadas} de ${total} hechas`;
+  }
+
+  pintarAccionesHomeVitality(acciones);
+  await pintarFocoHomeVitality(acciones);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(iniciarHomeWarmVitality, 600);
+});
