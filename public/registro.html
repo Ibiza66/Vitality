@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Registro</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="registro-warm-page">
+
+  <main class="registro-warm-screen">
+
+    <section class="registro-warm-card">
+      <button
+        type="button"
+        class="registro-back-btn"
+        onclick="window.location.href='index.html'"
+      >
+        ←
+      </button>
+
+      <div class="registro-question-header">
+  <div class="registro-logo-mini">
+    <img src="logo.jpg" alt="Logo Vitality">
+  </div>
+
+  <div class="registro-warm-text">
+    <span>Crear cuenta</span>
+    <h1>Cuéntanos lo básico de ti</h1>
+    <p>
+      Luego completarás una breve guía personal para adaptar Vitality a ti.
+    </p>
+  </div>
+</div>
+
+      <form id="registroForm" class="registro-warm-form">
+
+        <div class="registro-input-group">
+          <label for="nombre">Nombre completo</label>
+          <input
+            type="text"
+            id="nombre"
+            placeholder="Ej: Constanza Alegría"
+            required
+          >
+        </div>
+
+        <div class="registro-input-group">
+          <label for="correo">Correo electrónico</label>
+          <input
+            type="email"
+            id="correo"
+            placeholder="tu@email.com"
+            required
+          >
+        </div>
+
+        <div class="registro-input-group">
+          <label for="password">Contraseña</label>
+
+          <div class="registro-password-wrapper">
+            <input
+              type="password"
+              id="password"
+              placeholder="Crea una contraseña"
+              required
+            >
+
+            <button
+              type="button"
+              onclick="alternarVisibilidadPassword('password', this)"
+            >
+              Ver
+            </button>
+          </div>
+        </div>
+
+        <div class="registro-input-group">
+          <label for="confirmarPassword">Confirmar contraseña</label>
+
+          <div class="registro-password-wrapper">
+            <input
+              type="password"
+              id="confirmarPassword"
+              placeholder="Repite tu contraseña"
+              required
+            >
+
+            <button
+              type="button"
+              onclick="alternarVisibilidadPassword('confirmarPassword', this)"
+            >
+              Ver
+            </button>
+          </div>
+        </div>
+
+        <div class="registro-input-group">
+          <label for="edad">Edad</label>
+          <input
+            type="text"
+            id="edad"
+            min="1"
+            max="120"
+            placeholder="Ej: 22"
+            required
+          >
+        </div>
+
+        <div class="registro-input-group">
+          <label for="ocupacion">Ocupación principal</label>
+
+          <select
+            id="ocupacion"
+            required
+            onchange="actualizarCampoDetalleOcupacion()"
+          >
+            <option value="">Selecciona una opción</option>
+            <option value="Estudiante universitario">Estudiante universitario</option>
+            <option value="Estudiante escolar">Estudiante escolar</option>
+            <option value="Trabajador">Trabajador/a</option>
+            <option value="Otra">Otra</option>
+          </select>
+        </div>
+
+        <div class="registro-input-group" id="ocupacionDetalleGroup" style="display: none;">
+          <label id="ocupacionDetalleLabel" for="ocupacionDetalle">
+            Detalle
+          </label>
+
+          <input
+            type="text"
+            id="ocupacionDetalle"
+            placeholder="Escribe el detalle"
+          >
+        </div>
+
+        <button type="submit" class="registro-primary-btn">
+          Crear cuenta
+        </button>
+
+      </form>
+
+      <div class="registro-secondary-actions">
+        <p>¿Ya tienes cuenta?</p>
+        <a href="index.html">Iniciar sesión</a>
+        <p>o también puedes</p>
+        <button type="button" onclick="probarComoInvitado()" style="background: none; border: none; color: #115C67; font-weight: bold; cursor: pointer; text-decoration: underline; padding: 5px; font-size: 14px;">
+          Probar como Invitado (Sin Registrarse)
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

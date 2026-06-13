@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Conocerte</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="onboarding-page">
+
+  <main class="onboarding-screen">
+
+    <section class="onboarding-top">
+      <div class="onboarding-progress">
+        <span id="onboardingDot1" class="onboarding-dot activa"></span>
+        <span id="onboardingDot2" class="onboarding-dot"></span>
+        <span id="onboardingDot3" class="onboarding-dot"></span>
+      </div>
+
+      <span id="onboardingStepText">1 / 3</span>
+    </section>
+
+    <!-- PASO 1 -->
+    <section class="onboarding-step activa" id="onboardingStep1">
+      <div class="onboarding-question-header">
+  <div class="onboarding-logo-mini">
+    <img src="logo.jpg" alt="Logo Vitality">
+  </div>
+
+  <div>
+    <h1>¿Qué te gustaría lograr en esta etapa de tu vida?</h1>
+    <p>Elige las que resuenen contigo. No hay respuestas correctas.</p>
+  </div>
+</div>
+
+      <div class="onboarding-options">
+        <button type="button" class="onboarding-option" data-grupo="objetivos" data-valor="Calmar mi ansiedad">
+          <span>🌬️</span>
+          <div>
+            <strong>Calmar mi ansiedad</strong>
+            <small>Bajar el ruido mental</small>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="objetivos" data-valor="Estudiar con foco">
+          <span>📖</span>
+          <div>
+            <strong>Estudiar con foco</strong>
+            <small>Avanzar sin agobiarme</small>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="objetivos" data-valor="Más orden y claridad">
+          <span>🧭</span>
+          <div>
+            <strong>Más orden y claridad</strong>
+            <small>Saber qué hacer hoy</small>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="objetivos" data-valor="Dormir mejor">
+          <span>🌙</span>
+          <div>
+            <strong>Dormir mejor</strong>
+            <small>Descansar de verdad</small>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="objetivos" data-valor="Conocerme mejor">
+          <span>✨</span>
+          <div>
+            <strong>Conocerme mejor</strong>
+            <small>Entender quién soy</small>
+          </div>
+          <em>✓</em>
+        </button>
+      </div>
+    </section>
+
+    <!-- PASO 2 -->
+    <section class="onboarding-step" id="onboardingStep2">
+      <h1>¿Quién eres cuando estás en tu mejor versión?</h1>
+      <p>Sin filtros. Lo primero que se te venga. Esto es solo para ti.</p>
+
+      <textarea
+        id="identidadVitalityInput"
+        maxlength="240"
+        placeholder="Ej: soy tranquila, constante, creativa..."
+      ></textarea>
+
+      <div class="onboarding-textarea-footer">
+        <span>Tu identidad guía las acciones que verás.</span>
+        <span id="contadorIdentidadVitality">0 / 240</span>
+      </div>
+    </section>
+
+    <!-- PASO 3 -->
+    <section class="onboarding-step" id="onboardingStep3">
+      <div class="onboarding-question-header">
+  <div class="onboarding-logo-mini">
+    <img src="logo.jpg" alt="Logo Vitality">
+  </div>
+
+  <div>
+    <h1>¿Cómo suele manifestarse tu estrés y ansiedad?</h1>
+    <p>Puedes elegir más de una opción.</p>
+  </div>
+</div>
+
+      <div class="onboarding-options">
+        <button type="button" class="onboarding-option" data-grupo="estres" data-valor="Ataques de ansiedad o pánico">
+          <span>〽️</span>
+          <div>
+            <strong>Ataques de ansiedad o pánico</strong>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="estres" data-valor="Pensamientos negativos">
+          <span>🌧️</span>
+          <div>
+            <strong>Pensamientos negativos</strong>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="estres" data-valor="Problemas para dormir">
+          <span>🌙</span>
+          <div>
+            <strong>Problemas para dormir</strong>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="estres" data-valor="Molestias en el cuerpo">
+          <span>💗</span>
+          <div>
+            <strong>Molestias en el cuerpo</strong>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="estres" data-valor="Cambios en mi alimentación">
+          <span>🍽️</span>
+          <div>
+            <strong>Cambios en mi alimentación</strong>
+          </div>
+          <em>✓</em>
+        </button>
+
+        <button type="button" class="onboarding-option" data-grupo="estres" data-valor="Otro">
+          <span>...</span>
+          <div>
+            <strong>Otro</strong>
+          </div>
+          <em>✓</em>
+        </button>
+      </div>
+    </section>
+
+    <!-- FINAL -->
+    <section class="onboarding-step" id="onboardingFinal">
+      <div class="onboarding-check">✓</div>
+
+      <span class="onboarding-final-label">Gracias por mostrarte</span>
+
+      <h2 id="onboardingIdentidadResumen">“Tu identidad”</h2>
+
+      <p>
+        Con esto empezamos a construir tu camino.
+        La app se ajusta a ti, no tú a ella.
+      </p>
+    </section>
+
+    <section class="onboarding-actions">
+      <button type="button" class="onboarding-secondary-btn" id="onboardingBackBtn" onclick="retrocederOnboarding()">
+        Atrás
+      </button>
+
+      <button type="button" class="onboarding-primary-btn" id="onboardingNextBtn" onclick="avanzarOnboarding()">
+        Siguiente
+      </button>
+
+      <button type="button" class="onboarding-skip-btn" id="onboardingSkipBtn" onclick="saltarPreguntaOnboarding()">
+        Prefiero no responder
+      </button>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Chat</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="chat-warm-page">
+
+  <main class="chat-warm-screen">
+
+    <section class="chat-warm-header-simple">
+      <button
+        type="button"
+        class="chat-warm-back"
+        onclick="window.location.href='horario.html'"
+      >
+        ←
+      </button>
+    </section>
+
+    <section class="chat-question-header">
+      <div class="chat-warm-logo">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
+
+      <div class="chat-warm-title">
+        <span>Chat Vitality</span>
+        <h1>Apoyo personalizado</h1>
+        <p>
+          Cuéntame cómo te sientes o pide ayuda para organizar tu día.
+        </p>
+      </div>
+    </section>
+
+    <section class="chat-warm-card">
+      <div id="chatBox" class="chat-box">
+        <div class="message bot">
+          <p>Hola, soy Vitality 💚</p>
+        </div>
+
+        <div class="message bot">
+          <p>Cuéntame cómo te sientes hoy o qué necesitas organizar.</p>
+        </div>
+      </div>
+    </section>
+
+    <form id="chatForm" class="chat-warm-input">
+      <input
+        type="text"
+        id="userInput"
+        placeholder="Escribe tu mensaje..."
+        autocomplete="off"
+        required
+      >
+
+      <button type="submit" aria-label="Enviar mensaje">
+        ➤
+      </button>
+    </form>
+
+  </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="bienestar.html">
+      <span>🌸</span>
+      <small>Bienestar</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html" class="active">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

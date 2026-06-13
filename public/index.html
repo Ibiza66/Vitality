@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Bienvenida</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script>
+    const usuarioVitalityGuardado = localStorage.getItem("usuarioVitality");
+
+    if (usuarioVitalityGuardado) {
+      window.location.replace("horario.html");
+    }
+  </script>
+</head>
+<body class="welcome-page">
+
+  <main class="welcome-screen">
+
+    <section class="welcome-content" id="welcomeContent">
+      <div class="welcome-logo-card">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
+
+      <h1>Bienvenido a Vitality</h1>
+
+      <p class="welcome-subtitle">
+        Organiza tu vida, registra tu día, descubre tu identidad.
+      </p>
+
+      <div class="welcome-actions">
+        <button
+          type="button"
+          class="welcome-primary-btn"
+          onclick="window.location.href='registro.html'"
+        >
+          Comenzar
+        </button>
+
+        <button
+          type="button"
+          class="welcome-secondary-btn"
+          onclick="mostrarLoginBienvenida()"
+        >
+          Ya tengo una cuenta
+        </button>
+
+        <button
+          type="button"
+          class="welcome-secondary-btn"
+          onclick="probarComoInvitado()"
+          style="margin-top: 10px; background-color: #e0f2f1; color: #115C67;"
+        >
+          Probar como Invitado (Sin Registrarse)
+        </button>
+      </div>
+    </section>
+
+    <section class="welcome-login-card" id="welcomeLoginCard">
+      <button
+        type="button"
+        class="welcome-back-btn"
+        onclick="mostrarBienvenida()"
+      >
+        ←
+      </button>
+
+      <div class="welcome-logo-small">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
+
+      <h2>Iniciar sesión</h2>
+      <p>Ingresa a tu cuenta para continuar con tu día.</p>
+
+      <form id="loginForm" class="welcome-login-form">
+        <label for="correoLogin">Correo electrónico</label>
+        <input
+          type="email"
+          id="correoLogin"
+          placeholder="correo@ejemplo.com"
+          required
+        >
+
+        <label for="passwordLogin">Contraseña</label>
+        <input
+          type="password"
+          id="passwordLogin"
+          placeholder="Tu contraseña"
+          required
+        >
+
+        <button type="submit" class="welcome-primary-btn">
+          Entrar
+        </button>
+      </form>
+
+      <button
+        type="button"
+        class="welcome-secondary-btn"
+        onclick="window.location.href='registro.html'"
+      >
+        Crear cuenta nueva
+      </button>
+
+      <button
+        type="button"
+        class="welcome-secondary-btn"
+        onclick="probarComoInvitado()"
+        style="margin-top: 10px; background-color: #e0f2f1; color: #115C67;"
+      >
+        Probar como Invitado (Sin Registrarse)
+      </button>
+    </section>
+
+  </main>
+
+  <script>
+    function mostrarLoginBienvenida() {
+      const welcome = document.getElementById("welcomeContent");
+      const login = document.getElementById("welcomeLoginCard");
+
+      if (welcome) {
+        welcome.style.display = "none";
+      }
+
+      if (login) {
+        login.style.display = "flex";
+      }
+    }
+
+    function mostrarBienvenida() {
+      const welcome = document.getElementById("welcomeContent");
+      const login = document.getElementById("welcomeLoginCard");
+
+      if (login) {
+        login.style.display = "none";
+      }
+
+      if (welcome) {
+        welcome.style.display = "flex";
+      }
+    }
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
