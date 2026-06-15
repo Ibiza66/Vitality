@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Configuración</title>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      const dark = localStorage.getItem("vitalityModoOscuro") === "true";
+      if (dark) {
+        document.documentElement.classList.add("vitality-dark-mode");
+      }
+      const tema = localStorage.getItem("vitalityTemaColor") || "orange";
+      document.documentElement.classList.add("vitality-theme-" + tema);
+    })();
+  </script>
+</head>
+
+<body class="config-warm-page">
+
+  <main class="config-warm-screen">
+
+    <section class="config-warm-header">
+      <button
+        type="button"
+        class="config-warm-back"
+        onclick="window.location.href='horario.html'"
+      >
+        ←
+      </button>
+    </section>
+
+    <section class="config-question-header">
+      <div class="config-warm-logo">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
+
+      <div>
+        <span>Configuración</span>
+        <h1>Ajustes de Vitality</h1>
+        <p>Edita tu perfil, apariencia y permisos de Android.</p>
+      </div>
+    </section>
+
+    <section class="config-warm-card">
+      <div class="config-section-title">
+        <span>Cuenta</span>
+        <h2>Datos personales</h2>
+      </div>
+
+      <form id="configPerfilForm" class="config-warm-form">
+        <label for="configNombreUsuario">Nombre de usuario</label>
+        <input
+          type="text"
+          id="configNombreUsuario"
+          placeholder="Ej: Constanza"
+          required
+        >
+
+        <label for="configIdentidadUsuario">Mi identidad</label>
+        <textarea
+          id="configIdentidadUsuario"
+          placeholder="Ej: Constante y tranquila"
+          maxlength="240"
+          required
+        ></textarea>
+
+        <small id="configIdentidadContador">0/240</small>
+
+        <button type="submit" class="config-primary-btn">
+          Guardar cambios
+        </button>
+      </form>
+    </section>
+
+    <section class="config-warm-card">
+      <div class="config-section-title">
+        <span>Apariencia</span>
+        <h2>Personalización visual</h2>
+      </div>
+
+      <div class="config-row">
+        <div>
+          <strong>Modo oscuro</strong>
+          <p>Cambia entre modo claro y oscuro.</p>
+        </div>
+
+        <button
+          type="button"
+          id="configThemeToggle"
+          class="config-switch"
+          onclick="toggleModoOscuroVitality()"
+          aria-label="Cambiar modo oscuro"
+        >
+          <span></span>
+        </button>
+      </div>
+
+      <div class="config-theme-selector">
+        <div>
+          <strong>Color de acento</strong>
+          <p>Elige un color para personalizar la interfaz.</p>
+        </div>
+        <div class="theme-buttons">
+          <button type="button" class="theme-dot orange active" onclick="cambiarColorTemaVitality('orange')" title="Naranja"></button>
+          <button type="button" class="theme-dot blue" onclick="cambiarColorTemaVitality('blue')" title="Azul"></button>
+          <button type="button" class="theme-dot green" onclick="cambiarColorTemaVitality('green')" title="Verde"></button>
+          <button type="button" class="theme-dot purple" onclick="cambiarColorTemaVitality('purple')" title="Violeta"></button>
+          <button type="button" class="theme-dot pink" onclick="cambiarColorTemaVitality('pink')" title="Rosa"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="config-warm-card">
+      <div class="config-section-title">
+        <span>Android</span>
+        <h2>Permisos de la app</h2>
+      </div>
+
+      <div class="config-permission-box">
+        <div class="config-permission-icon">📱</div>
+
+        <div>
+          <strong>Uso de apps</strong>
+          <p id="estadoPermisoUsoApps">
+            Revisa si Vitality tiene permiso para leer el uso real del celular.
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="config-primary-btn"
+        onclick="abrirPermisoUsoAppsVitality()"
+      >
+        Activar permiso de uso de apps
+      </button>
+
+      <button
+        type="button"
+        class="config-secondary-btn"
+        onclick="abrirAjustesPermisosVitality()"
+      >
+        Abrir ajustes para desactivar permisos
+      </button>
+
+      <p class="config-muted">
+        Android no permite desactivar permisos directamente desde la app. Para quitarlos, entra a los ajustes del teléfono.
+      </p>
+    </section>
+
+    <section class="config-warm-card">
+      <div class="config-section-title">
+        <span>Sesión</span>
+        <h2>Cuenta actual</h2>
+      </div>
+
+      <button
+        type="button"
+        class="config-danger-btn"
+        onclick="cerrarSesion()"
+      >
+        Cerrar sesión
+      </button>
+    </section>
+
+  </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

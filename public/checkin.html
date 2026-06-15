@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Check-in diario</title>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      const dark = localStorage.getItem("vitalityModoOscuro") === "true";
+      if (dark) {
+        document.documentElement.classList.add("vitality-dark-mode");
+      }
+      const tema = localStorage.getItem("vitalityTemaColor") || "orange";
+      document.documentElement.classList.add("vitality-theme-" + tema);
+    })();
+  </script>
+</head>
+
+<body class="checkin-warm-page">
+
+  <main class="checkin-warm-screen">
+
+    <section class="checkin-warm-header">
+      <button
+        type="button"
+        class="checkin-warm-back"
+        onclick="window.location.href='horario.html'"
+      >
+        ←
+      </button>
+    </section>
+
+    <section class="checkin-question-header">
+      <div class="checkin-warm-logo">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
+
+      <div class="checkin-warm-title">
+        <span>Check-in diario</span>
+        <h1>¿Cómo te sientes hoy?</h1>
+        <p>
+          Registra tu estado para que Vitality adapte tus recomendaciones.
+        </p>
+      </div>
+    </section>
+
+    <form id="checkinForm" class="checkin-warm-form">
+
+      <!-- Campos ocultos que usa script.js -->
+      <input type="hidden" id="estadoAnimo" value="Normal">
+      <input type="hidden" id="nivelEstres" value="Medio">
+      <input type="hidden" id="sueno" value="Regular">
+      <input type="hidden" id="energia" value="Media">
+
+      <section class="checkin-warm-card">
+        <div class="checkin-card-title">
+          <span>Emoción</span>
+          <h2>Emoción principal</h2>
+        </div>
+
+       <div class="mood-grid checkin-mood-grid">
+  <button type="button" class="mood-option checkin-mood-option mood-horrible" data-estado="Muy mal">
+    <span>😵</span>
+    <small>Horrible</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-mala" data-estado="Mal">
+    <span>🙁</span>
+    <small>Mala</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-normal active" data-estado="Normal">
+    <span>😐</span>
+    <small>Normal</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-buena" data-estado="Bien">
+    <span>🙂</span>
+    <small>Buena</small>
+  </button>
+
+  <button type="button" class="mood-option checkin-mood-option mood-excelente" data-estado="Muy bien">
+    <span>😊</span>
+    <small>Excelente</small>
+  </button>
+</div>
+      </section>
+
+      <section class="checkin-warm-card">
+        <div class="checkin-card-title">
+          <span>Bienestar</span>
+          <h2>Métricas de hoy</h2>
+        </div>
+
+        <div class="metric-slider checkin-metric-slider">
+          <div class="metric-top">
+            <label for="estresRange">Nivel de estrés</label>
+            <strong id="estresValor">5</strong>
+          </div>
+
+          <input type="range" id="estresRange" min="1" max="10" value="5">
+
+          <div class="metric-labels">
+            <span>Relajada</span>
+            <span>Muy tensa</span>
+          </div>
+        </div>
+
+        <div class="metric-slider checkin-metric-slider">
+          <div class="metric-top">
+            <label for="suenoRange">Nivel de descanso</label>
+            <strong id="suenoValor">5</strong>
+          </div>
+
+          <input type="range" id="suenoRange" min="1" max="10" value="5">
+
+          <div class="metric-labels">
+            <span>Agotada</span>
+            <span>Renovada</span>
+          </div>
+        </div>
+
+        <div class="metric-slider checkin-metric-slider">
+          <div class="metric-top">
+            <label for="energiaRange">Nivel de energía</label>
+            <strong id="energiaValor">5</strong>
+          </div>
+
+          <input type="range" id="energiaRange" min="1" max="10" value="5">
+
+          <div class="metric-labels">
+            <span>Baja</span>
+            <span>Alta</span>
+          </div>
+        </div>
+      </section>
+
+      <button type="submit" class="checkin-warm-primary">
+        Guardar check-in
+      </button>
+
+      
+
+    </form>
+
+  </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="checkin.html" class="active">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    function convertirEstres(valor) {
+      const numero = Number(valor);
+      if (numero <= 3) return "Bajo";
+      if (numero <= 7) return "Medio";
+      return "Alto";
+    }
+
+    function convertirSueno(valor) {
+      const numero = Number(valor);
+      if (numero <= 3) return "Mal";
+      if (numero <= 7) return "Regular";
+      return "Bien";
+    }
+
+    function convertirEnergia(valor) {
+      const numero = Number(valor);
+      if (numero <= 3) return "Baja";
+      if (numero <= 7) return "Media";
+      return "Alta";
+    }
+
+   function obtenerColorActualSlider(slider, porcentajeDecimal) {
+  let nivelBueno = porcentajeDecimal;
+
+  // En estrés es al revés:
+  // 1 = bien/relajada, 10 = mal/muy tensa
+  if (slider.id === "estresRange") {
+    nivelBueno = 1 - porcentajeDecimal;
+  }
+
+  let hue;
+
+  if (nivelBueno <= 0.5) {
+    // Rojo a amarillo
+    hue = 4 + (42 - 4) * (nivelBueno / 0.5);
+  } else {
+    // Amarillo a verde
+    hue = 42 + (140 - 42) * ((nivelBueno - 0.5) / 0.5);
+  }
+
+  return `hsl(${hue}, 85%, 52%)`;
+}
+
+function obtenerColorSliderSimple(slider, valor) {
+  const numero = Number(valor);
+
+  if (slider.id === "estresRange") {
+    if (numero <= 3) return "#22c55e"; // verde: poco estrés
+    if (numero <= 7) return "#f97316"; // naranjo: estrés medio
+    return "#ef4444"; // rojo: mucho estrés
+  }
+
+  // Sueño y energía: mientras más alto, mejor
+  if (numero <= 3) return "#ef4444"; // rojo: bajo/mal
+  if (numero <= 7) return "#f97316"; // naranjo: medio
+  return "#22c55e"; // verde: bien/alto
+}
+
+function actualizarSliderVisual(slider) {
+  const min = Number(slider.min);
+  const max = Number(slider.max);
+  const value = Number(slider.value);
+  const porcentaje = ((value - min) / (max - min)) * 100;
+
+  const color = obtenerColorSliderSimple(slider, value);
+
+  slider.style.setProperty("--slider-thumb-color", color);
+
+  slider.style.background =
+    `linear-gradient(90deg, ${color} ${porcentaje}%, #eadfce ${porcentaje}%)`;
+}
+    function iniciarCheckinInteractivo() {
+      const moodButtons = document.querySelectorAll(".mood-option");
+      const estadoInput = document.getElementById("estadoAnimo");
+
+      moodButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          moodButtons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+          estadoInput.value = button.dataset.estado;
+        });
+      });
+
+      const estresRange = document.getElementById("estresRange");
+      const suenoRange = document.getElementById("suenoRange");
+      const energiaRange = document.getElementById("energiaRange");
+
+      const estresValor = document.getElementById("estresValor");
+      const suenoValor = document.getElementById("suenoValor");
+      const energiaValor = document.getElementById("energiaValor");
+
+      const nivelEstresInput = document.getElementById("nivelEstres");
+      const suenoInput = document.getElementById("sueno");
+      const energiaInput = document.getElementById("energia");
+
+      function actualizarTodo() {
+        estresValor.textContent = estresRange.value;
+        suenoValor.textContent = suenoRange.value;
+        energiaValor.textContent = energiaRange.value;
+
+        nivelEstresInput.value = convertirEstres(estresRange.value);
+        suenoInput.value = convertirSueno(suenoRange.value);
+        energiaInput.value = convertirEnergia(energiaRange.value);
+
+        actualizarSliderVisual(estresRange);
+        actualizarSliderVisual(suenoRange);
+        actualizarSliderVisual(energiaRange);
+      }
+
+      [estresRange, suenoRange, energiaRange].forEach((slider) => {
+        slider.addEventListener("input", actualizarTodo);
+      });
+
+      actualizarTodo();
+    }
+
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", iniciarCheckinInteractivo);
+    } else {
+      iniciarCheckinInteractivo();
+    }
+  </script>
+</body>
+</html>

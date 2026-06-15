@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Inicio</title>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      const dark = localStorage.getItem("vitalityModoOscuro") === "true";
+      if (dark) {
+        document.documentElement.classList.add("vitality-dark-mode");
+      }
+      const tema = localStorage.getItem("vitalityTemaColor") || "orange";
+      document.documentElement.classList.add("vitality-theme-" + tema);
+    })();
+  </script>
+</head>
+
+<body class="home-warm-page">
+
+  <main class="home-warm-screen">
+
+    <section class="home-warm-header">
+      <div>
+        <span id="homeFechaActual">Hoy</span>
+        <h1 id="homeSaludoUsuario">Hola</h1>
+      </div>
+
+      <div class="home-header-actions">
+        <div class="home-racha-badge racha-inactiva" id="homeRachaBadge">
+          <span id="homeRachaIcon">🔥</span>
+          <strong id="homeRachaNumero">0</strong>
+        </div>
+
+        <button
+          type="button"
+          class="home-avatar-btn profile-btn"
+          onclick="toggleProfileMenu()"
+        >
+          👤
+        </button>
+      </div>
+
+      <ul class="profile-menu app-profile-menu home-user-menu" id="profileMenu">
+  <li><a href="perfil.html">Mi perfil</a></li>
+  <li><a href="configuracion.html">Configuración</a></li>
+  <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+</ul>
+    </section>
+
+    <section class="home-app-reco-card">
+  <div class="home-app-reco-head">
+    <div>
+      <span>Recomendación de la app</span>
+      <h2 id="homeTipTitulo">Pausa breve</h2>
+    </div>
+
+    <div class="home-tip-emoji" id="homeTipEmoji">✨</div>
+  </div>
+
+  <p id="homeTipDescripcion">
+    Toma un momento para respirar y volver con calma a tu día.
+  </p>
+
+  <div class="home-tip-dots" id="homeTipDots">
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+  </div>
+</section>
+
+    <section class="home-stats-grid">
+      <article class="home-stat-card">
+        <div class="home-stat-title">
+          <span>Check-ins</span>
+          <strong id="homePorcentajeSemana">0%</strong>
+        </div>
+
+        <div class="home-mini-bars" id="homeMiniBars">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="home-days" id="homeDaysLabels">
+          <small>L</small>
+          <small>M</small>
+          <small>Mi</small>
+          <small>J</small>
+          <small>V</small>
+          <small>S</small>
+          <small>D</small>
+        </div>
+      </article>
+
+      <article class="home-circle-card">
+        <div class="home-progress-circle">
+          <span id="homeAccionesNumero">0/0</span>
+        </div>
+
+        <p>acciones hoy</p>
+      </article>
+    </section>
+
+   <section class="home-focus-card home-focus-ia-card">
+  <div class="home-focus-top">
+    <span>Tu foco ahora</span>
+    <strong id="homeFocoHora">IA</strong>
+  </div>
+
+  <div class="home-focus-content">
+    <div class="home-focus-emoji" id="homeFocoEmoji">✨</div>
+
+    <div>
+      <h2 id="homeFocoTitulo">Esperando recomendación</h2>
+      <p id="homeFocoDetalle">
+        Cuando converses con Vitality, aquí aparecerá una idea principal para tu día.
+      </p>
+    </div>
+  </div>
+
+  <div class="home-focus-actions">
+    <button type="button" id="homeFocoCompletarBtn">
+      Ver recomendación
+    </button>
+
+    <button type="button" onclick="window.location.href='chat.html'">
+      💬
+    </button>
+  </div>
+</section>
+
+    <section class="home-actions-section">
+      <div class="home-section-title">
+        <h2>Acciones de hoy</h2>
+        <span id="homeAccionesResumen">0 de 0 hechas</span>
+      </div>
+
+      <div id="homeAccionesLista" class="home-actions-list">
+        <article class="home-action-item">
+          <p>No hay actividades para hoy.</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html" class="active">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
