@@ -202,7 +202,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://10.30.16.154:3000";
+    return "http://192.168.1.140:3000";
   }
 
   return "";
@@ -8187,3 +8187,4 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
