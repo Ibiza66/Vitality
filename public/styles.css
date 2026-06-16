@@ -112,6 +112,7 @@ body {
   margin: 0;
   padding: 0;
   transition: background 0.3s ease, color 0.3s ease;
+  overflow-x: hidden !important;
 }
 
 /* HEADER */
@@ -5753,6 +5754,9 @@ body.dark-mode #chatBox {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 28px;
+  border-radius: 34px;
+  box-sizing: border-box;
 }
 
 .registro-back-btn {
@@ -6218,12 +6222,14 @@ body.registro-warm-page .registro-password-wrapper button {
   height: 78px;
   display: flex;
   align-items: end;
-  gap: 9px;
+  justify-content: space-between;
+  gap: 4px;
   margin-bottom: 8px;
 }
 
 .home-mini-bars span {
-  width: 18px;
+  flex: 1;
+  max-width: 18px;
   border-radius: 999px;
   background: #e8dfd4;
   height: 18%;
@@ -6252,8 +6258,15 @@ body.registro-warm-page .registro-password-wrapper button {
 .home-days {
   display: flex;
   justify-content: space-between;
+  gap: 4px;
   color: #8b7b6b;
   font-weight: 900;
+}
+
+.home-days small {
+  flex: 1;
+  text-align: center;
+  max-width: 18px;
 }
 
 .home-circle-card {
@@ -6481,6 +6494,11 @@ body.registro-warm-page .registro-password-wrapper button {
 
   .home-stats-grid {
     grid-template-columns: 1fr 0.85fr;
+  }
+
+  .home-stat-card,
+  .home-circle-card {
+    padding: 12px !important;
   }
 
   .home-identidad-card h2,
@@ -8255,13 +8273,13 @@ body.chat-warm-page {
 /* Input siempre visible sobre la barra inferior */
 .chat-warm-input {
   position: fixed !important;
-  left: 14px !important;
-  right: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   bottom: 88px !important;
   z-index: 10000 !important;
 
+  width: calc(100% - 28px) !important;
   max-width: 432px !important;
-  margin: 0 auto !important;
 
   display: flex !important;
   flex-direction: row !important;
@@ -8365,8 +8383,7 @@ body.chat-keyboard-open #chatBox {
   }
 
   .chat-warm-input {
-    left: 10px !important;
-    right: 10px !important;
+    width: calc(100% - 20px) !important;
   }
 }
 /* =========================
@@ -9610,7 +9627,14 @@ html.vitality-dark-mode .chat-warm-card,
 html.vitality-dark-mode .checkin-warm-card,
 html.vitality-dark-mode .organizar-warm-card,
 html.vitality-dark-mode .home-focus-card,
-html.vitality-dark-mode .home-app-reco-card {
+html.vitality-dark-mode .home-app-reco-card,
+html.vitality-dark-mode .home-stat-card,
+html.vitality-dark-mode .home-circle-card,
+html.vitality-dark-mode .perfil-user-card,
+html.vitality-dark-mode .perfil-identidad-card,
+html.vitality-dark-mode .perfil-warm-card,
+html.vitality-dark-mode .perfil-visual-card,
+html.vitality-dark-mode .home-action-item {
   background: #241914 !important;
   color: #fff8f2 !important;
   border-color: rgba(255, 240, 229, 0.18) !important;
@@ -9634,6 +9658,170 @@ html.vitality-dark-mode select {
   background: #17120f !important;
   color: #fff8f2 !important;
   border-color: rgba(255, 240, 229, 0.22) !important;
+}
+
+/* Mejoras de componentes en Modo Oscuro */
+html.vitality-dark-mode #chatBox {
+  background: #241914 !important;
+}
+
+html.vitality-dark-mode .chat-warm-page #chatBox .message.bot {
+  background: #36251e !important;
+  color: #fff8f2 !important;
+  border: 1px solid rgba(255, 104, 28, 0.3) !important;
+}
+
+html.vitality-dark-mode .chat-warm-input {
+  background: #241914 !important;
+  border-color: rgba(255, 240, 229, 0.15) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25) !important;
+}
+
+html.vitality-dark-mode .chat-warm-input #userInput {
+  background: #17120f !important;
+  color: #fff8f2 !important;
+}
+
+html.vitality-dark-mode .home-progress-circle {
+  background:
+    radial-gradient(circle, #241914 56%, transparent 57%),
+    conic-gradient(#ff681c var(--avance, 0%), #3a2d26 0) !important;
+}
+
+html.vitality-dark-mode .home-progress-circle span {
+  color: #fff8f2 !important;
+}
+
+html.vitality-dark-mode .home-action-item.completada {
+  background: #182e22 !important;
+  border-color: rgba(60, 148, 114, 0.4) !important;
+}
+
+html.vitality-dark-mode .home-action-item.completada h3 {
+  color: #a39487 !important;
+}
+
+html.vitality-dark-mode .perfil-identidad-icon {
+  background: #36251e !important;
+  color: #ff8540 !important;
+}
+
+html.vitality-dark-mode .home-mini-bars span.sin-checkin,
+html.vitality-dark-mode .perfil-mini-bars span {
+  background: #3a2d26 !important;
+}
+
+html.vitality-dark-mode .home-racha-badge.racha-inactiva {
+  background: #2b1f1a !important;
+  color: #6d5f54 !important;
+  border-color: rgba(255, 240, 229, 0.1) !important;
+}
+
+html.vitality-dark-mode .home-racha-badge.racha-activa {
+  background: #36251e !important;
+  color: #ff8540 !important;
+  border-color: rgba(255, 240, 229, 0.25) !important;
+}
+
+html.vitality-dark-mode .home-user-menu,
+html.vitality-dark-mode .app-profile-menu {
+  background: #241914 !important;
+  border-color: rgba(255, 240, 229, 0.15) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.vitality-dark-mode .home-user-menu a,
+html.vitality-dark-mode .app-profile-menu a {
+  color: #fff8f2 !important;
+}
+
+html.vitality-dark-mode .home-user-menu li,
+html.vitality-dark-mode .app-profile-menu li {
+  border-bottom: 1px solid rgba(255, 240, 229, 0.1) !important;
+}
+
+html.vitality-dark-mode .home-user-menu a:hover,
+html.vitality-dark-mode .app-profile-menu a:hover {
+  background: #36251e !important;
+  color: #ff8540 !important;
+}
+
+html.vitality-dark-mode .bottom-app-nav,
+html.vitality-dark-mode .bottom-app-nav.home-bottom-nav {
+  background: #241914 !important;
+  border-top: 1px solid rgba(255, 240, 229, 0.12) !important;
+  box-shadow: 0 -8px 22px rgba(0, 0, 0, 0.25) !important;
+}
+
+html.vitality-dark-mode .bottom-app-nav a,
+html.vitality-dark-mode .bottom-app-nav.home-bottom-nav a {
+  color: #a39487 !important;
+}
+
+html.vitality-dark-mode .bottom-app-nav a.active,
+html.vitality-dark-mode .bottom-app-nav.home-bottom-nav a.active {
+  color: #ff8540 !important;
+  background: #36251e !important;
+}
+
+/* Nuevos ajustes de componentes en Modo Oscuro */
+html.vitality-dark-mode #chatForm,
+html.vitality-dark-mode .chat-warm-input {
+  background: #241914 !important;
+  border-color: rgba(255, 240, 229, 0.15) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25) !important;
+}
+
+html.vitality-dark-mode .organizar-switch-btn,
+html.vitality-dark-mode .organizar-shortcuts button {
+  background: #241914 !important;
+  color: #fff8f2 !important;
+  border-color: rgba(255, 240, 229, 0.15) !important;
+}
+
+html.vitality-dark-mode .organizar-switch-btn.active,
+html.vitality-dark-mode .organizar-shortcuts button.active,
+html.vitality-dark-mode .organizar-shortcuts button:first-child {
+  background: #36251e !important;
+  border-color: #ff681c !important;
+  color: #fff8f2 !important;
+}
+
+html.vitality-dark-mode .organizar-switch-btn span,
+html.vitality-dark-mode .organizar-shortcuts button span {
+  background: #2b1f1a !important;
+  color: #ff8540 !important;
+}
+
+html.vitality-dark-mode .organizar-switch-btn.active span,
+html.vitality-dark-mode .organizar-shortcuts button.active span,
+html.vitality-dark-mode .organizar-shortcuts button:first-child span {
+  background: #ff681c !important;
+  color: #ffffff !important;
+}
+
+html.vitality-dark-mode .config-permission-box {
+  background: #17120f !important;
+  border-color: rgba(255, 240, 229, 0.12) !important;
+}
+
+html.vitality-dark-mode .config-permission-icon {
+  background: #36251e !important;
+  color: #ff8540 !important;
+}
+
+html.vitality-dark-mode .config-secondary-btn {
+  background: #241914 !important;
+  color: #fff8f2 !important;
+  border-color: rgba(255, 240, 229, 0.15) !important;
+}
+
+html.vitality-dark-mode .config-switch {
+  background: #3a2d26 !important;
+}
+
+html.vitality-dark-mode .config-switch.activo {
+  background: #ff681c !important;
 }
 
 @media (max-width: 390px) {
@@ -9816,4 +10004,908 @@ html.vitality-dark-mode select {
   .organizar-switch-btn strong {
     font-size: 0.82rem !important;
   }
+}
+
+/* ==========================================================================
+   SISTEMA DE DISEÑO: DYNAMIC GLASSMORPHISM & LIQUID MESH GRADIENTS (iOS Style)
+   ========================================================================= */
+
+/* 1. Fondo: 'Liquid Mesh Gradient' Animado (Base Global) */
+
+/* Evitar destellos en transiciones de página configurando el color de fondo en la raíz html */
+html {
+  background-color: #fdfbf7 !important;
+}
+html.vitality-dark-mode {
+  background-color: #140f0c !important;
+}
+
+/* Por defecto: Modo Claro (Pastel vibrante y luminoso) */
+body.welcome-page,
+body.registro-warm-page,
+body.home-warm-page,
+body.chat-warm-page,
+body.perfil-warm-page,
+body.perfil-visual-page,
+body.organizar-warm-page,
+body.checkin-warm-page,
+body.config-warm-page {
+  position: relative !important;
+  background: #fdfbf7 !important; /* Base clara, cálida y limpia */
+  overflow-x: hidden !important;
+  z-index: 0 !important;
+  /* Animación suave de entrada de página para evitar destellos y cambios bruscos */
+  animation: pageSmoothFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+@keyframes pageSmoothFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+body.page-fade-out-active {
+  animation: pageSmoothFadeOut 0.18s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+}
+
+@keyframes pageSmoothFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* En modo oscuro: Base oscura profunda */
+html.vitality-dark-mode body.welcome-page,
+html.vitality-dark-mode body.registro-warm-page,
+html.vitality-dark-mode body.home-warm-page,
+html.vitality-dark-mode body.chat-warm-page,
+html.vitality-dark-mode body.perfil-warm-page,
+html.vitality-dark-mode body.perfil-visual-page,
+html.vitality-dark-mode body.organizar-warm-page,
+html.vitality-dark-mode body.checkin-warm-page,
+html.vitality-dark-mode body.config-warm-page {
+  background: #140f0c !important;
+}
+
+/* Pseudo-elementos del fondo animado acelerados por GPU */
+body.welcome-page::before,
+body.registro-warm-page::before,
+body.home-warm-page::before,
+body.chat-warm-page::before,
+body.perfil-warm-page::before,
+body.perfil-visual-page::before,
+body.organizar-warm-page::before,
+body.checkin-warm-page::before,
+body.config-warm-page::before {
+  content: "" !important;
+  position: fixed !important;
+  top: -30% !important;
+  left: -30% !important;
+  width: 160% !important;
+  height: 160% !important;
+  /* Degradados pasteles luminosos para el Modo Claro */
+  background: 
+    radial-gradient(circle at 20% 30%, #ffebd0 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #dbf0d2 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, #deeffe 0%, transparent 45%),
+    radial-gradient(circle at 25% 75%, #fde0f2 0%, transparent 45%) !important;
+  filter: blur(95px) !important;
+  z-index: -2 !important;
+  animation: liquidMeshBase 30s ease-in-out infinite alternate !important;
+  pointer-events: none !important;
+  opacity: 0.92 !important;
+  /* Aceleración por hardware del navegador */
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+html.vitality-dark-mode body.welcome-page::before,
+html.vitality-dark-mode body.registro-warm-page::before,
+html.vitality-dark-mode body.home-warm-page::before,
+html.vitality-dark-mode body.chat-warm-page::before,
+html.vitality-dark-mode body.perfil-warm-page::before,
+html.vitality-dark-mode body.perfil-visual-page::before,
+html.vitality-dark-mode body.organizar-warm-page::before,
+html.vitality-dark-mode body.checkin-warm-page::before,
+html.vitality-dark-mode body.config-warm-page::before {
+  /* Degradados oscuros profundos para el Modo Oscuro */
+  background: 
+    radial-gradient(circle at 20% 30%, #5c3b22 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #1a3f28 0%, transparent 40%),
+    radial-gradient(circle at 80% 25%, #182e44 0%, transparent 40%),
+    radial-gradient(circle at 25% 75%, #471d3a 0%, transparent 40%) !important;
+  opacity: 0.85 !important;
+}
+
+body.welcome-page::after,
+body.registro-warm-page::after,
+body.home-warm-page::after,
+body.chat-warm-page::after,
+body.perfil-warm-page::after,
+body.perfil-visual-page::after,
+body.organizar-warm-page::after,
+body.checkin-warm-page::after,
+body.config-warm-page::after {
+  content: "" !important;
+  position: fixed !important;
+  top: -20% !important;
+  left: -20% !important;
+  width: 140% !important;
+  height: 140% !important;
+  /* Degradados pasteles de acento para el Modo Claro */
+  background: 
+    radial-gradient(circle at 75% 35%, #fae0f3 0%, transparent 40%),
+    radial-gradient(circle at 25% 65%, #ffebdb 0%, transparent 40%) !important;
+  filter: blur(105px) !important;
+  z-index: -1 !important;
+  animation: liquidMeshOverlay 35s ease-in-out infinite alternate !important;
+  pointer-events: none !important;
+  opacity: 0.8 !important;
+  /* Aceleración por hardware del navegador */
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+html.vitality-dark-mode body.welcome-page::after,
+html.vitality-dark-mode body.registro-warm-page::after,
+html.vitality-dark-mode body.home-warm-page::after,
+html.vitality-dark-mode body.chat-warm-page::after,
+html.vitality-dark-mode body.perfil-warm-page::after,
+html.vitality-dark-mode body.perfil-visual-page::after,
+html.vitality-dark-mode body.organizar-warm-page::after,
+html.vitality-dark-mode body.checkin-warm-page::after,
+html.vitality-dark-mode body.config-warm-page::after {
+  /* Degradados oscuros profundos para el Modo Oscuro */
+  background: 
+    radial-gradient(circle at 75% 35%, #491f3b 0%, transparent 35%),
+    radial-gradient(circle at 25% 65%, #52351c 0%, transparent 35%) !important;
+  opacity: 0.65 !important;
+}
+
+@keyframes liquidMeshBase {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -3%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-3%, 3%, 0) scale(0.95);
+  }
+}
+
+@keyframes liquidMeshOverlay {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-4%, 4%, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(4%, -4%, 0) scale(0.92);
+  }
+}
+
+/* 2. Componentes de Vidrio Premium (Light & Dark Smoked) */
+
+/* Base Glass para todo tipo de tarjetas, navbars, inputs y menús */
+.welcome-logo-card,
+.welcome-login-card,
+.registro-warm-card,
+.registro-logo-mini,
+.welcome-back-btn,
+.registro-back-btn,
+.welcome-login-form input,
+.registro-input-group input,
+.registro-input-group select,
+body.registro-warm-page .registro-password-wrapper input,
+body.registro-warm-page .registro-password-wrapper button,
+.home-app-reco-card,
+.home-stat-card,
+.home-circle-card,
+.home-focus-card,
+.home-action-item,
+.perfil-identity-main-card,
+.perfil-balance-card,
+.perfil-streak-card,
+.perfil-bienestar-card,
+.perfil-semana-card,
+.perfil-tags-card,
+.chat-warm-card,
+.organizar-warm-card,
+.checkin-warm-card,
+.config-warm-card,
+.organizar-switch-btn,
+.organizar-shortcuts button,
+.bottom-app-nav,
+.bottom-app-nav.home-bottom-nav,
+.chat-warm-input,
+.profile-menu,
+.home-user-menu,
+.app-profile-menu,
+.config-permission-box,
+.config-secondary-btn {
+  background: rgba(255, 255, 255, 0.65) !important; /* Light Frosted Glass (Opaque and brighter) */
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.5) !important; /* Refracción superior */
+  box-shadow: 
+    0 16px 36px rgba(106, 92, 77, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Smoked Glass para Modo Oscuro */
+html.vitality-dark-mode .welcome-logo-card,
+html.vitality-dark-mode .welcome-login-card,
+html.vitality-dark-mode .registro-warm-card,
+html.vitality-dark-mode .registro-logo-mini,
+html.vitality-dark-mode .welcome-back-btn,
+html.vitality-dark-mode .registro-back-btn,
+html.vitality-dark-mode .welcome-login-form input,
+html.vitality-dark-mode .registro-input-group input,
+html.vitality-dark-mode .registro-input-group select,
+html.vitality-dark-mode .registro-password-wrapper input,
+html.vitality-dark-mode .registro-password-wrapper button,
+html.vitality-dark-mode .home-app-reco-card,
+html.vitality-dark-mode .home-stat-card,
+html.vitality-dark-mode .home-circle-card,
+html.vitality-dark-mode .home-focus-card,
+html.vitality-dark-mode .home-action-item,
+html.vitality-dark-mode .perfil-identity-main-card,
+html.vitality-dark-mode .perfil-balance-card,
+html.vitality-dark-mode .perfil-streak-card,
+html.vitality-dark-mode .perfil-bienestar-card,
+html.vitality-dark-mode .perfil-semana-card,
+html.vitality-dark-mode .perfil-tags-card,
+html.vitality-dark-mode .chat-warm-card,
+html.vitality-dark-mode .checkin-warm-card,
+html.vitality-dark-mode .organizar-warm-card,
+html.vitality-dark-mode .config-warm-card,
+html.vitality-dark-mode .organizar-switch-btn,
+html.vitality-dark-mode .organizar-shortcuts button,
+html.vitality-dark-mode .bottom-app-nav,
+html.vitality-dark-mode .bottom-app-nav.home-bottom-nav,
+html.vitality-dark-mode #chatForm,
+html.vitality-dark-mode .chat-warm-input,
+html.vitality-dark-mode .profile-menu,
+html.vitality-dark-mode .home-user-menu,
+html.vitality-dark-mode .app-profile-menu,
+html.vitality-dark-mode .config-permission-box,
+html.vitality-dark-mode .config-secondary-btn {
+  background: rgba(30, 24, 20, 0.45) !important; /* Dark Smoked Glass */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 
+    0 16px 36px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 3. Animaciones e Interacciones UI/UX */
+
+/* Entrada escalonada (Staggered Entrance) */
+.welcome-content,
+.welcome-login-card,
+.registro-warm-card,
+.home-app-reco-card,
+.home-stat-card,
+.home-circle-card,
+.home-focus-card,
+.home-action-item,
+.perfil-identity-main-card,
+.perfil-balance-card,
+.perfil-streak-card,
+.perfil-bienestar-card,
+.perfil-semana-card,
+.perfil-tags-card,
+.chat-warm-card,
+.organizar-warm-card,
+.checkin-warm-card,
+.config-warm-card {
+  animation: glassEntrance 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+@keyframes glassEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Delays para efecto Staggered */
+.welcome-screen > *:nth-child(1),
+.registro-warm-screen > *:nth-child(1),
+.home-warm-screen > *:nth-child(1),
+.chat-warm-screen > *:nth-child(1),
+.perfil-warm-screen > *:nth-child(1),
+.perfil-visual-screen > *:nth-child(1),
+.organizar-warm-screen > *:nth-child(1),
+.checkin-warm-screen > *:nth-child(1),
+.config-warm-screen > *:nth-child(1) { animation-delay: 0.03s; }
+
+.welcome-screen > *:nth-child(2),
+.registro-warm-screen > *:nth-child(2),
+.home-warm-screen > *:nth-child(2),
+.chat-warm-screen > *:nth-child(2),
+.perfil-warm-screen > *:nth-child(2),
+.perfil-visual-screen > *:nth-child(2),
+.organizar-warm-screen > *:nth-child(2),
+.checkin-warm-screen > *:nth-child(2),
+.config-warm-screen > *:nth-child(2) { animation-delay: 0.08s; }
+
+.welcome-screen > *:nth-child(3),
+.registro-warm-screen > *:nth-child(3),
+.home-warm-screen > *:nth-child(3),
+.chat-warm-screen > *:nth-child(3),
+.perfil-warm-screen > *:nth-child(3),
+.perfil-visual-screen > *:nth-child(3),
+.organizar-warm-screen > *:nth-child(3),
+.checkin-warm-screen > *:nth-child(3),
+.config-warm-screen > *:nth-child(3) { animation-delay: 0.13s; }
+
+.welcome-screen > *:nth-child(4),
+.registro-warm-screen > *:nth-child(4),
+.home-warm-screen > *:nth-child(4),
+.chat-warm-screen > *:nth-child(4),
+.perfil-warm-screen > *:nth-child(4),
+.perfil-visual-screen > *:nth-child(4),
+.organizar-warm-screen > *:nth-child(4),
+.checkin-warm-screen > *:nth-child(4),
+.config-warm-screen > *:nth-child(4) { animation-delay: 0.18s; }
+
+.home-warm-screen > *:nth-child(5) { animation-delay: 0.23s; }
+
+/* Staggered delay for card contents */
+.welcome-content > *:nth-child(1), .welcome-login-card > *:nth-child(1), .registro-warm-card > *:nth-child(1) { animation-delay: 0.04s; }
+.welcome-content > *:nth-child(2), .welcome-login-card > *:nth-child(2), .registro-warm-card > *:nth-child(2) { animation-delay: 0.08s; }
+.welcome-content > *:nth-child(3), .welcome-login-card > *:nth-child(3), .registro-warm-card > *:nth-child(3) { animation-delay: 0.12s; }
+.welcome-content > *:nth-child(4), .welcome-login-card > *:nth-child(4), .registro-warm-card > *:nth-child(4) { animation-delay: 0.16s; }
+.welcome-content > *:nth-child(5), .welcome-login-card > *:nth-child(5), .registro-warm-card > *:nth-child(5) { animation-delay: 0.20s; }
+.welcome-content > *:nth-child(6), .welcome-login-card > *:nth-child(6), .registro-warm-card > *:nth-child(6) { animation-delay: 0.24s; }
+
+/* Micro-interacciones Hover y Active */
+.welcome-logo-card:hover,
+.welcome-login-card:hover,
+.registro-warm-card:hover,
+.registro-logo-mini:hover,
+.welcome-back-btn:hover,
+.registro-back-btn:hover,
+.welcome-primary-btn:hover,
+.registro-primary-btn:hover,
+.home-app-reco-card:hover,
+.home-stat-card:hover,
+.home-circle-card:hover,
+.home-focus-card:hover,
+.home-action-item:hover,
+.perfil-identity-main-card:hover,
+.perfil-balance-card:hover,
+.perfil-streak-card:hover,
+.perfil-bienestar-card:hover,
+.perfil-semana-card:hover,
+.perfil-tags-card:hover,
+.chat-warm-card:hover,
+.organizar-warm-card:hover,
+.checkin-warm-card:hover,
+.config-warm-card:hover,
+.organizar-switch-btn:hover,
+.organizar-shortcuts button:hover,
+.config-permission-box:hover,
+.config-secondary-btn:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-top-color: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(20px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+  box-shadow: 
+    0 22px 46px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+html.vitality-dark-mode .organizar-switch-btn.active,
+html.vitality-dark-mode .organizar-shortcuts button.active,
+html.vitality-dark-mode .organizar-shortcuts button:first-child {
+  background: rgba(255, 104, 28, 0.18) !important;
+  border-color: rgba(255, 104, 28, 0.45) !important;
+  border-top-color: rgba(255, 104, 28, 0.6) !important;
+  box-shadow: 
+    0 16px 36px rgba(255, 104, 28, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.welcome-logo-card:active,
+.welcome-login-card:active,
+.registro-warm-card:active,
+.registro-logo-mini:active,
+.welcome-back-btn:active,
+.registro-back-btn:active,
+.welcome-primary-btn:active,
+.registro-primary-btn:active,
+.home-app-reco-card:active,
+.home-stat-card:active,
+.home-circle-card:active,
+.home-focus-card:active,
+.home-action-item:active,
+.perfil-identity-main-card:active,
+.perfil-balance-card:active,
+.perfil-streak-card:active,
+.perfil-bienestar-card:active,
+.perfil-semana-card:active,
+.perfil-tags-card:active,
+.chat-warm-card:active,
+.organizar-warm-card:active,
+.checkin-warm-card:active,
+.config-warm-card:active,
+.organizar-switch-btn:active,
+.organizar-shortcuts button:active {
+  transform: scale(0.98) !important;
+}
+
+/* Efecto de Brillo Flotante (Shine Sweep) */
+.welcome-login-card::after,
+.registro-warm-card::after,
+.home-app-reco-card::after,
+.home-stat-card::after,
+.home-circle-card::after,
+.home-focus-card::after,
+.perfil-identity-main-card::after,
+.perfil-balance-card::after,
+.perfil-streak-card::after,
+.perfil-bienestar-card::after,
+.perfil-semana-card::after,
+.perfil-tags-card::after,
+.chat-warm-card::after,
+.organizar-warm-card::after,
+.checkin-warm-card::after,
+.config-warm-card::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -150% !important;
+  width: 50% !important;
+  height: 100% !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.13) 50%,
+    transparent 100%
+  ) !important;
+  transform: skewX(-25deg) !important;
+  pointer-events: none !important;
+  animation: shineReflect 1.5s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  animation-delay: inherit !important;
+}
+
+@keyframes shineReflect {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* 4. Tipografía, Legibilidad & Glow */
+html.vitality-dark-mode h1,
+html.vitality-dark-mode h2,
+html.vitality-dark-mode h3,
+html.vitality-dark-mode strong {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.vitality-dark-mode p,
+html.vitality-dark-mode label,
+html.vitality-dark-mode span {
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+.bottom-app-nav a.active span,
+.bottom-app-nav.home-bottom-nav a.active span {
+  text-shadow: 0 0 15px rgba(var(--accent-rgb), 0.8) !important;
+  filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.6)) !important;
+}
+
+/* 5. Ajustes de Contraste para Welcome y Registro en Modo Oscuro */
+html.vitality-dark-mode .welcome-content h1,
+html.vitality-dark-mode .welcome-login-card h2,
+html.vitality-dark-mode .registro-warm-text h1 {
+  color: #ffffff !important;
+}
+
+html.vitality-dark-mode .welcome-subtitle,
+html.vitality-dark-mode .welcome-login-card p,
+html.vitality-dark-mode .registro-warm-text p,
+html.vitality-dark-mode .registro-secondary-actions p {
+  color: #eadfce !important;
+}
+
+html.vitality-dark-mode .welcome-login-form label,
+html.vitality-dark-mode .registro-input-group label {
+  color: #f3eadf !important;
+}
+
+html.vitality-dark-mode .welcome-secondary-btn,
+html.vitality-dark-mode .registro-secondary-actions a {
+  color: var(--accent-primary) !important;
+  font-weight: 800 !important;
+}
+
+html.vitality-dark-mode .welcome-login-form input,
+html.vitality-dark-mode .registro-input-group input,
+html.vitality-dark-mode .registro-input-group select,
+html.vitality-dark-mode .registro-password-wrapper input {
+  color: #ffffff !important;
+}
+
+html.vitality-dark-mode .welcome-login-form input::placeholder,
+html.vitality-dark-mode .registro-input-group input::placeholder,
+html.vitality-dark-mode .registro-password-wrapper input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+html.vitality-dark-mode .welcome-login-form input:focus,
+html.vitality-dark-mode .registro-input-group input:focus,
+html.vitality-dark-mode .registro-input-group select:focus,
+html.vitality-dark-mode .registro-password-wrapper input:focus {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.25) !important;
+}
+
+html.vitality-dark-mode .welcome-primary-btn,
+html.vitality-dark-mode .registro-primary-btn {
+  box-shadow: 0 12px 24px var(--accent-shadow) !important;
+}
+
+html.vitality-dark-mode .welcome-back-btn,
+html.vitality-dark-mode .registro-back-btn {
+  color: #ffffff !important;
+}
+
+/* 6. Dinamismo de Color en Componentes Globales (Variables) */
+
+/* Botones Primarios y Avatares */
+.welcome-primary-btn,
+.registro-primary-btn,
+.config-primary-btn,
+.home-avatar-btn {
+  background: var(--accent-gradient) !important;
+  box-shadow: 0 12px 24px var(--accent-shadow) !important;
+}
+
+/* Enlaces y Textos Secundarios */
+.welcome-secondary-btn,
+.registro-secondary-actions a,
+.bottom-app-nav a.active,
+.bottom-app-nav.home-bottom-nav a.active {
+  color: var(--accent-primary) !important;
+}
+
+/* Pestaña / Botón de Navegación Activo */
+.bottom-app-nav a.active,
+.bottom-app-nav.home-bottom-nav a.active {
+  background: var(--accent-bg-soft) !important;
+}
+
+/* Círculos de Progreso Dinámicos */
+.home-progress-circle,
+.perfil-progress-circle {
+  background:
+    radial-gradient(circle, var(--progress-bg) 56%, transparent 57%),
+    conic-gradient(var(--accent-primary) var(--avance, 0%), var(--progress-empty) 0) !important;
+}
+
+/* Switches y Shortcuts Activos */
+.organizar-switch-btn.active,
+.organizar-shortcuts button.active,
+.organizar-shortcuts button:first-child {
+  background: rgba(var(--accent-rgb), 0.18) !important;
+  border-color: rgba(var(--accent-rgb), 0.4) !important;
+  color: var(--accent-primary) !important;
+}
+
+.perfil-identidad-icon {
+  background: var(--accent-bg-soft) !important;
+  color: var(--accent-primary) !important;
+}
+
+/* ==========================================================================
+   COLOR SCHEMES / TEMAS DE COLOR (Orange, Blue, Green, Purple, Pink)
+   ========================================================================= */
+
+/* Tema Naranja (Predeterminado) */
+:root,
+html.vitality-theme-orange {
+  --accent-primary: #ff7a1a;
+  --accent-gradient: linear-gradient(135deg, #ff7a1a, #f05e13);
+  --accent-rgb: 255, 122, 26;
+  --accent-bg-soft: #fff0e5;
+  --accent-shadow: rgba(240, 94, 19, 0.28);
+  --progress-bg: #ffffff;
+  --progress-empty: #e5d9cc;
+}
+html.vitality-dark-mode,
+html.vitality-dark-mode.vitality-theme-orange {
+  --accent-primary: #ff8540;
+  --accent-bg-soft: #36251e;
+  --progress-bg: #241914;
+  --progress-empty: #3a2d26;
+}
+
+/* Tema Azul */
+html.vitality-theme-blue {
+  --accent-primary: #0084ff;
+  --accent-gradient: linear-gradient(135deg, #00b0ff, #0055ff);
+  --accent-rgb: 0, 132, 255;
+  --accent-bg-soft: #e5f3ff;
+  --accent-shadow: rgba(0, 85, 255, 0.28);
+  --progress-bg: #ffffff;
+  --progress-empty: #d2e4f5;
+}
+html.vitality-dark-mode.vitality-theme-blue {
+  --accent-primary: #4da6ff;
+  --accent-bg-soft: #102d4a;
+  --progress-bg: #141c25;
+  --progress-empty: #243547;
+}
+
+/* Tema Verde */
+html.vitality-theme-green {
+  --accent-primary: #00c853;
+  --accent-gradient: linear-gradient(135deg, #64dd17, #009624);
+  --accent-rgb: 0, 200, 83;
+  --accent-bg-soft: #e5fbe7;
+  --accent-shadow: rgba(0, 150, 36, 0.28);
+  --progress-bg: #ffffff;
+  --progress-empty: #d0edd4;
+}
+html.vitality-dark-mode.vitality-theme-green {
+  --accent-primary: #4dff88;
+  --accent-bg-soft: #12331b;
+  --progress-bg: #142518;
+  --progress-empty: #24472c;
+}
+
+/* Tema Violeta */
+html.vitality-theme-purple {
+  --accent-primary: #a83ffb;
+  --accent-gradient: linear-gradient(135deg, #d500f9, #7b1fa2);
+  --accent-rgb: 168, 63, 251;
+  --accent-bg-soft: #f6e5ff;
+  --accent-shadow: rgba(123, 31, 162, 0.28);
+  --progress-bg: #ffffff;
+  --progress-empty: #ecdcf7;
+}
+html.vitality-dark-mode.vitality-theme-purple {
+  --accent-primary: #c880ff;
+  --accent-bg-soft: #2c1236;
+  --progress-bg: #211425;
+  --progress-empty: #3d2447;
+}
+
+/* Tema Rosa */
+html.vitality-theme-pink {
+  --accent-primary: #ff4081;
+  --accent-gradient: linear-gradient(135deg, #ff80ab, #f50057);
+  --accent-rgb: 255, 64, 129;
+  --accent-bg-soft: #ffe5ee;
+  --accent-shadow: rgba(245, 0, 87, 0.28);
+  --progress-bg: #ffffff;
+  --progress-empty: #f7dce5;
+}
+html.vitality-dark-mode.vitality-theme-pink {
+  --accent-primary: #ff80b3;
+  --accent-bg-soft: #361223;
+  --progress-bg: #25141c;
+  --progress-empty: #472433;
+}
+
+/* --- Degradados de Fondo por Tema --- */
+
+/* Tema Naranja (Predeterminado) */
+html.vitality-theme-orange body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #ffc180 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #b3e59f 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, #9ae2ff 0%, transparent 45%),
+    radial-gradient(circle at 25% 75%, #ffb3e6 0%, transparent 45%) !important;
+}
+html.vitality-theme-orange body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #ffa3e0 0%, transparent 40%),
+    radial-gradient(circle at 25% 65%, #ffd1a9 0%, transparent 40%) !important;
+}
+
+/* Tema Azul */
+html.vitality-theme-blue body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #8cd6ff 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #8eebe2 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, #bda6ff 0%, transparent 45%),
+    radial-gradient(circle at 25% 75%, #ffbde6 0%, transparent 45%) !important;
+}
+html.vitality-theme-blue body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #e4a6ff 0%, transparent 40%),
+    radial-gradient(circle at 25% 65%, #8cd6ff 0%, transparent 40%) !important;
+}
+
+/* Tema Verde */
+html.vitality-theme-green body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #9bed98 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #92f7d0 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, #fff98c 0%, transparent 45%),
+    radial-gradient(circle at 25% 75%, #9ee2ff 0%, transparent 45%) !important;
+}
+html.vitality-theme-green body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #92f2eb 0%, transparent 40%),
+    radial-gradient(circle at 25% 65%, #c5f78c 0%, transparent 40%) !important;
+}
+
+/* Tema Violeta */
+html.vitality-theme-purple body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #d6a6ff 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #ffb3f7 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, #9ae2ff 0%, transparent 45%),
+    radial-gradient(circle at 25% 75%, #ffcc99 0%, transparent 45%) !important;
+}
+html.vitality-theme-purple body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #cca6ff 0%, transparent 40%),
+    radial-gradient(circle at 25% 65%, #ff99d6 0%, transparent 40%) !important;
+}
+
+/* Tema Rosa */
+html.vitality-theme-pink body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #ffa6cc 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #ffc499 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, #e2a6ff 0%, transparent 45%),
+    radial-gradient(circle at 25% 75%, #9ae2ff 0%, transparent 45%) !important;
+}
+html.vitality-theme-pink body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #ffa6cc 0%, transparent 40%),
+    radial-gradient(circle at 25% 65%, #ffbfa6 0%, transparent 40%) !important;
+}
+
+/* --- Modo Oscuro Gradients --- */
+
+/* Tema Naranja Oscuro */
+html.vitality-dark-mode.vitality-theme-orange body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #9e4f13 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #155a30 0%, transparent 40%),
+    radial-gradient(circle at 80% 25%, #1b4e7a 0%, transparent 40%),
+    radial-gradient(circle at 25% 75%, #75205b 0%, transparent 40%) !important;
+}
+html.vitality-dark-mode.vitality-theme-orange body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #852565 0%, transparent 35%),
+    radial-gradient(circle at 25% 65%, #8a4b16 0%, transparent 35%) !important;
+}
+
+/* Tema Azul Oscuro */
+html.vitality-dark-mode.vitality-theme-blue body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #14447c 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #0f5954 0%, transparent 40%),
+    radial-gradient(circle at 80% 25%, #3b217c 0%, transparent 40%),
+    radial-gradient(circle at 25% 75%, #701d5c 0%, transparent 40%) !important;
+}
+html.vitality-dark-mode.vitality-theme-blue body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #5e1878 0%, transparent 35%),
+    radial-gradient(circle at 25% 65%, #154880 0%, transparent 35%) !important;
+}
+
+/* Tema Verde Oscuro */
+html.vitality-dark-mode.vitality-theme-green body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #195c2e 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #105e60 0%, transparent 40%),
+    radial-gradient(circle at 80% 25%, #5a6e13 0%, transparent 40%),
+    radial-gradient(circle at 25% 75%, #1b4e7a 0%, transparent 40%) !important;
+}
+html.vitality-dark-mode.vitality-theme-green body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #155a57 0%, transparent 35%),
+    radial-gradient(circle at 25% 65%, #3d5e11 0%, transparent 35%) !important;
+}
+
+/* Tema Violeta Oscuro */
+html.vitality-dark-mode.vitality-theme-purple body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #4d158c 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #6a145d 0%, transparent 40%),
+    radial-gradient(circle at 80% 25%, #1b4e7a 0%, transparent 40%),
+    radial-gradient(circle at 25% 75%, #8c3325 0%, transparent 40%) !important;
+}
+html.vitality-dark-mode.vitality-theme-purple body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #6a1575 0%, transparent 35%),
+    radial-gradient(circle at 25% 65%, #4a188c 0%, transparent 35%) !important;
+}
+
+/* Tema Rosa Oscuro */
+html.vitality-dark-mode.vitality-theme-pink body::before {
+  background: 
+    radial-gradient(circle at 20% 30%, #7c1343 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #754510 0%, transparent 40%),
+    radial-gradient(circle at 80% 25%, #481682 0%, transparent 40%),
+    radial-gradient(circle at 25% 75%, #1b4e7a 0%, transparent 40%) !important;
+}
+html.vitality-dark-mode.vitality-theme-pink body::after {
+  background: 
+    radial-gradient(circle at 75% 35%, #7a1045 0%, transparent 35%),
+    radial-gradient(circle at 25% 65%, #6e3511 0%, transparent 35%) !important;
+}
+
+/* --- Componentes del Selector de Temas --- */
+.config-theme-selector {
+  margin-top: 20px;
+  border-top: 1px solid rgba(228, 215, 200, 0.4);
+  padding-top: 20px;
+}
+html.vitality-dark-mode .config-theme-selector {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+.theme-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+.theme-dot {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  border: 3px solid transparent !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+.theme-dot:hover {
+  transform: scale(1.15) !important;
+}
+.theme-dot.active {
+  border-color: #ffffff !important;
+  outline: 3px solid var(--accent-primary) !important;
+  transform: scale(1.1) !important;
+}
+.theme-dot.orange { background: linear-gradient(135deg, #ff7a1a, #f05e13) !important; }
+.theme-dot.blue { background: linear-gradient(135deg, #00b0ff, #0055ff) !important; }
+.theme-dot.green { background: linear-gradient(135deg, #64dd17, #009624) !important; }
+.theme-dot.purple { background: linear-gradient(135deg, #d500f9, #7b1fa2) !important; }
+.theme-dot.pink { background: linear-gradient(135deg, #ff80ab, #f50057) !important; }
+
+/* 7. Corrección de Posicionamiento para Menús Desplegables de Usuario */
+.profile-menu,
+.home-user-menu,
+.app-profile-menu {
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  top: 70px !important;
+  min-width: 180px !important;
+  z-index: 10000 !important;
+  transform: none !important;
 }

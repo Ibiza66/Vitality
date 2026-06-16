@@ -162,29 +162,15 @@ La aplicación permite que una persona pueda:
   * WhatsApp.
 * Opción para ingresar manualmente un package de otra app.
 
-### Interfaz
+### Interfaz y Sistema de Diseño (iOS Glassmorphism Style)
 
-* Diseño mobile tipo app.
-* Diseño responsive.
-* Pantallas rediseñadas:
-
-  * Login.
-  * Registro.
-  * Check-in.
-  * Horario.
-  * Perfil.
-  * Chat.
-  * Uso de apps.
-  * Alertas.
-  * Organizar horario.
-* Navbar mobile.
-* Barra inferior de navegación.
-* Menú hamburguesa.
-* Menú de perfil.
-* Modo claro y oscuro.
-* Tarjetas visuales para organizar la información.
-* Toasts internos para mensajes de confirmación.
-* Reducción de alertas nativas del navegador.
+* **Diseño Mobile tipo App**: Orientado a una experiencia táctil fluida de pantalla completa en formato móvil y responsive.
+* **Fondo Mesh Gradient Animado**: Degradados líquidos que se mueven y fusionan de fondo utilizando transformaciones 3D aceleradas por GPU en pseudo-elementos fijos.
+* **Dynamic Glassmorphism**: Tarjetas y componentes construidos con refracciones realistas de vidrio esmerilado (`backdrop-filter: blur(16px)`), bordes finos con brillos reflejados, y sombras con profundidad.
+* **Temas de Colores Personalizables**: 5 temas interactivos (Naranja, Azul, Verde, Violeta, Rosa) que cambian los acentos del sistema y los colores del fondo dinámicamente adaptándose tanto al modo claro como oscuro.
+* **Rendimiento de Animación Optimizado**: Uso de `will-change` para capas GPU en transiciones de tarjetas, eliminando filtros de desenfoque de CPU durante movimientos de escala y disminuyendo la complejidad del sombreador de píxeles del desenfoque.
+* **Navegación Fluida sin Destellos**: Bloque de precarga síncrona en el `<head>` de todas las páginas para cargar la configuración de tema antes de la primera pintura de pantalla, y transiciones animadas de desvanecimiento (`fade-out/fade-in` de 180ms) al cambiar de sección.
+* **Menús Flotantes Corregidos**: Menú desplegable del avatar de usuario posicionado absolutamente y aislado de interferencias de diseño de flexbox.
 
 ## Tecnologías utilizadas
 

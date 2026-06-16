@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitality - Configuración</title>
   <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      const dark = localStorage.getItem("vitalityModoOscuro") === "true";
+      if (dark) {
+        document.documentElement.classList.add("vitality-dark-mode");
+      }
+      const tema = localStorage.getItem("vitalityTemaColor") || "orange";
+      document.documentElement.classList.add("vitality-theme-" + tema);
+    })();
+  </script>
 </head>
 
 <body class="config-warm-page">
@@ -67,7 +77,7 @@
     <section class="config-warm-card">
       <div class="config-section-title">
         <span>Apariencia</span>
-        <h2>Modo de visualización</h2>
+        <h2>Personalización visual</h2>
       </div>
 
       <div class="config-row">
@@ -85,6 +95,20 @@
         >
           <span></span>
         </button>
+      </div>
+
+      <div class="config-theme-selector">
+        <div>
+          <strong>Color de acento</strong>
+          <p>Elige un color para personalizar la interfaz.</p>
+        </div>
+        <div class="theme-buttons">
+          <button type="button" class="theme-dot orange active" onclick="cambiarColorTemaVitality('orange')" title="Naranja"></button>
+          <button type="button" class="theme-dot blue" onclick="cambiarColorTemaVitality('blue')" title="Azul"></button>
+          <button type="button" class="theme-dot green" onclick="cambiarColorTemaVitality('green')" title="Verde"></button>
+          <button type="button" class="theme-dot purple" onclick="cambiarColorTemaVitality('purple')" title="Violeta"></button>
+          <button type="button" class="theme-dot pink" onclick="cambiarColorTemaVitality('pink')" title="Rosa"></button>
+        </div>
       </div>
     </section>
 

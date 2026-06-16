@@ -1,6 +1,20 @@
-﻿/* =========================
+/* =========================
    FUNCIONES BASE DE NAVEGACIÓN VITALITY
 ========================= */
+
+if (typeof window.navegarAVitality !== "function") {
+  window.navegarAVitality = function (url) {
+    if (!url) return;
+    document.body.classList.add("page-fade-out-active");
+    setTimeout(() => {
+      window.location.href = url;
+    }, 180);
+  };
+}
+
+function navegarAVitality(url) {
+  window.navegarAVitality(url);
+}
 
 function toggleMenu() {
   const menu = document.getElementById("menu");
@@ -82,8 +96,8 @@ function cerrarSesion() {
   notificarNavVitality("Sesión cerrada correctamente.");
 
   setTimeout(() => {
-    window.location.href = "index.html";
-  }, 500);
+    navegarAVitality("index.html");
+  }, 300);
 }
 
 /* =========================

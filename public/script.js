@@ -1,4 +1,4 @@
-﻿/* =========================
+/* =========================
    NOTIFICACIONES NATIVAS ANDROID
 ========================= */
 async function pedirPermisoNotificacionesVitality() {
@@ -202,7 +202,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://192.168.1.140:3000";
+    return "http://10.30.16.154:3000";
   }
 
   return "";
@@ -8174,8 +8174,33 @@ function abrirAjustesPermisosVitality() {
   mostrarToastVitality("Abre Ajustes > Apps > Vitality > Permisos para desactivarlos.");
 }
 
+function navegarAVitality(url) {
+  if (!url) return;
+  document.body.classList.add("page-fade-out-active");
+  setTimeout(() => {
+    window.location.href = url;
+  }, 180);
+}
+
+// Interceptor global de clics en enlaces locales para transiciones suaves de página
+document.addEventListener("click", function (e) {
+  const link = e.target.closest("a");
+  if (!link) return;
+
+  const href = link.getAttribute("href");
+  // Interceptar solo páginas HTML locales, ignorando hashes, javascript o URLs externas
+  if (href && !href.startsWith("#") && !href.startsWith("javascript:") && href !== "" && !href.includes("://")) {
+    if (link.hasAttribute("onclick")) {
+      return;
+    }
+    e.preventDefault();
+    navegarAVitality(href);
+  }
+});
+
 window.addEventListener("DOMContentLoaded", () => {
   aplicarModoOscuroVitality();
+  cargarTemaColorVitality();
 
   if (obtenerPaginaActual() === "configuracion.html") {
     cargarConfiguracionVitality();
@@ -8188,3 +8213,37 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+window.addEventListener("pageshow", cargarTemaColorVitality);
+
+/* =========================
+   TEMAS DE COLORES VITALITY
+   ========================= */
+function cargarTemaColorVitality() {
+  const tema = localStorage.getItem("vitalityTemaColor") || "orange";
+  
+  const clasesTema = ["vitality-theme-orange", "vitality-theme-blue", "vitality-theme-green", "vitality-theme-purple", "vitality-theme-pink"];
+  clasesTema.forEach(c => document.documentElement.classList.remove(c));
+  
+  document.documentElement.classList.add("vitality-theme-" + tema);
+  
+  actualizarBotonesTemaConfiguracion(tema);
+}
+
+function cambiarColorTemaVitality(tema) {
+  localStorage.setItem("vitalityTemaColor", tema);
+  cargarTemaColorVitality();
+}
+
+function actualizarBotonesTemaConfiguracion(temaActivo) {
+  const contenedor = document.querySelector(".theme-buttons");
+  if (!contenedor) return;
+  
+  const botones = contenedor.querySelectorAll(".theme-dot");
+  botones.forEach(btn => {
+    if (btn.classList.contains(temaActivo)) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+}
