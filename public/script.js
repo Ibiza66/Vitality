@@ -1,4 +1,195 @@
-﻿/* =========================
+/* =========================
+   NOTIFICACIONES NATIVAS ANDROID
+========================= */
+async function pedirPermisoNotificacionesVitality() {
+  try {
+    if (!window.Capacitor || !window.Capacitor.Plugins) {
+      return false;
+    }
+
+    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+    if (!LocalNotifications) {
+      return false;
+    }
+
+    let permiso = await LocalNotifications.checkPermissions();
+
+    if (permiso.display !== "granted") {
+      permiso = await LocalNotifications.requestPermissions();
+    }
+
+    return permiso.display === "granted";
+  } catch (error) {
+    console.log("No se pudo pedir permiso de notificaciones:", error);
+    return false;
+  }
+}
+
+async function enviarNotificacionCelularVitality(titulo, mensaje) {
+  try {
+    const permitido = await pedirPermisoNotificacionesVitality();
+
+    if (!permitido) {
+      return;
+    }
+
+    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+    await LocalNotifications.schedule({
+  notifications: [
+    {
+      id: Date.now() % 100000,
+      title: titulo,
+      body: mensaje,
+      smallIcon: "ic_stat_vitality",
+      iconColor: "#115C67",
+      schedule: {
+        at: new Date(Date.now() + 1000)
+      }
+    }
+  ]
+});
+  } catch (error) {
+    console.log("No se pudo enviar notificación del celular:", error);
+  }
+}
+function mostrarToastVitality(mensaje) {
+  const texto = String(mensaje || "").trim();
+
+  if (!texto) {
+    return;
+  }
+
+  let contenedor = document.getElementById("toastVitalityContainer");
+
+  if (!contenedor) {
+    contenedor = document.createElement("div");
+    contenedor.id = "toastVitalityContainer";
+    contenedor.className = "toast-vitality-container";
+    document.body.appendChild(contenedor);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = "toast-vitality";
+  toast.textContent = texto;
+
+  contenedor.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("toast-vitality-salida");
+  }, 2600);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3100);
+}
+/* =========================
+   CALENDARIO NATIVO ANDROID / IOS
+========================= */
+function obtenerPluginCalendarioVitality() {
+  if (!window.Capacitor || !window.Capacitor.Plugins) {
+    return null;
+  }
+
+  return (
+    window.Capacitor.Plugins.CapacitorCalendar ||
+    window.Capacitor.Plugins.Calendar ||
+    window.Capacitor.Plugins.EbarooniCapacitorCalendar ||
+    null
+  );
+}
+
+async function pedirPermisoCalendarioVitality() {
+  try {
+    const Calendar = obtenerPluginCalendarioVitality();
+
+    if (!Calendar) {
+      mostrarToastVitality("Calendario no disponible en esta plataforma.");
+      return false;
+    }
+
+    if (typeof Calendar.requestWriteOnlyCalendarAccess === "function") {
+      const permiso = await Calendar.requestWriteOnlyCalendarAccess();
+      return permiso.result === "granted";
+    }
+
+    if (typeof Calendar.requestFullCalendarAccess === "function") {
+      const permiso = await Calendar.requestFullCalendarAccess();
+      return permiso.result === "granted";
+    }
+
+    if (typeof Calendar.requestAllPermissions === "function") {
+      const permiso = await Calendar.requestAllPermissions();
+      return true;
+    }
+
+    return true;
+  } catch (error) {
+    console.log("No se pudo pedir permiso de calendario:", error);
+    mostrarToastVitality("No se pudo acceder al calendario.");
+    return false;
+  }
+}
+
+function crearFechaCalendarioVitality(fecha, hora) {
+  const fechaBase = fecha || new Date().toISOString().slice(0, 10);
+  const horaBase = hora || "09:00";
+
+  return new Date(`${fechaBase}T${horaBase}:00`);
+}
+
+async function agregarEventoAlCalendarioVitality(datos) {
+  try {
+    const Calendar = obtenerPluginCalendarioVitality();
+
+    if (!Calendar) {
+      mostrarToastVitality("Calendario no disponible en esta plataforma.");
+      return;
+    }
+
+    const permitido = await pedirPermisoCalendarioVitality();
+
+    if (!permitido) {
+      mostrarToastVitality("Permiso de calendario rechazado.");
+      return;
+    }
+
+    const inicio = crearFechaCalendarioVitality(datos.fecha, datos.horaInicio);
+    const termino = crearFechaCalendarioVitality(datos.fecha, datos.horaFin);
+
+    if (termino <= inicio) {
+      termino.setMinutes(inicio.getMinutes() + 60);
+    }
+
+    const evento = {
+      title: datos.titulo || "Actividad Vitality",
+      startDate: inicio.getTime(),
+      endDate: termino.getTime(),
+      isAllDay: false,
+      description: "Actividad creada desde Vitality.",
+      alerts: [-10]
+    };
+
+    if (typeof Calendar.createEventWithPrompt === "function") {
+      await Calendar.createEventWithPrompt(evento);
+      mostrarToastVitality("Abriendo calendario del celular.");
+      return;
+    }
+
+    if (typeof Calendar.createEvent === "function") {
+      await Calendar.createEvent(evento);
+      mostrarToastVitality("Actividad agregada al calendario.");
+      return;
+    }
+
+    mostrarToastVitality("Tu calendario no permite crear eventos desde Vitality.");
+  } catch (error) {
+    console.log("Error al agregar evento al calendario:", error);
+    mostrarToastVitality("No se pudo agregar al calendario.");
+  }
+}
+/* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = (() => {
@@ -11,7 +202,7 @@ const API_URL = (() => {
     );
 
   if (esAppMovil) {
-    return "http://10.41.0.140:3000";
+    return "http://10.30.16.154:3000";
   }
 
   return "";
@@ -71,9 +262,9 @@ function limpiarDatosLocalesUsuario() {
   localStorage.removeItem("actividadesEspecialesVitality");
   localStorage.removeItem("editandoActividadFijaId");
   localStorage.removeItem("editandoActividadEspecialId");
+  localStorage.removeItem("onboardingVitality");
   sessionStorage.removeItem("notificacionesVitalityCerradas");
 }
-
 /* =========================
    MENÚ HAMBURGUESA Y PERFIL
 ========================= */
@@ -173,17 +364,18 @@ async function registrarUsuario(event) {
   const nombreInput = document.getElementById("nombre");
   const correoInput = document.getElementById("correo");
   const passwordInput = document.getElementById("password");
+  const confirmarPasswordInput = document.getElementById("confirmarPassword");
   const edadInput = document.getElementById("edad");
   const ocupacionInput = document.getElementById("ocupacion");
-  const actividadesFavoritasInput = document.getElementById("actividadesFavoritas");
+  const ocupacionDetalleInput = document.getElementById("ocupacionDetalle");
 
   if (
     !nombreInput ||
     !correoInput ||
     !passwordInput ||
+    !confirmarPasswordInput ||
     !edadInput ||
-    !ocupacionInput ||
-    !actividadesFavoritasInput
+    !ocupacionInput
   ) {
     return;
   }
@@ -191,12 +383,25 @@ async function registrarUsuario(event) {
   const nombre = nombreInput.value.trim();
   const correo = correoInput.value.trim().toLowerCase();
   const password = passwordInput.value.trim();
+  const confirmarPassword = confirmarPasswordInput.value.trim();
   const edad = Number(edadInput.value);
-  const ocupacion = ocupacionInput.value.trim();
-  const actividadesFavoritas = actividadesFavoritasInput.value.trim();
+  const ocupacionBase = ocupacionInput.value.trim();
+  const ocupacionDetalle = ocupacionDetalleInput
+    ? ocupacionDetalleInput.value.trim()
+    : "";
 
-  if (!nombre || !correo || !password || !edad || !ocupacion || !actividadesFavoritas) {
+  if (!nombre || !correo || !password || !confirmarPassword || !edad || !ocupacionBase) {
     mostrarToastVitality("Por favor completa todos los campos.");
+    return;
+  }
+
+  if (password !== confirmarPassword) {
+    mostrarToastVitality("Las contraseñas no coinciden.");
+    return;
+  }
+
+  if (password.length < 6) {
+    mostrarToastVitality("La contraseña debe tener al menos 6 caracteres.");
     return;
   }
 
@@ -204,6 +409,22 @@ async function registrarUsuario(event) {
     mostrarToastVitality("Ingresa una edad válida.");
     return;
   }
+
+  if (
+    (ocupacionBase === "Estudiante universitario" ||
+      ocupacionBase === "Trabajador" ||
+      ocupacionBase === "Otra") &&
+    !ocupacionDetalle
+  ) {
+    mostrarToastVitality("Completa el detalle de tu ocupación.");
+    return;
+  }
+
+ const ocupacion = ocupacionBase;
+
+const actividadesFavoritas = ocupacionDetalle
+  ? ocupacionDetalle
+  : "Se definirá en el onboarding inicial.";
 
   try {
     const respuesta = await fetch(`${API_URL}/api/usuarios/registro`, {
@@ -229,10 +450,15 @@ async function registrarUsuario(event) {
     }
 
     limpiarDatosLocalesUsuario();
-    guardarUsuario(data.usuario);
+guardarUsuario(data.usuario);
 
-    mostrarToastVitality("Cuenta creada con éxito.");
-    window.location.href = "checkin.html";
+guardarJSON("detalleOcupacionVitality", {
+  ocupacion: ocupacionBase,
+  detalle: ocupacionDetalle
+});
+
+mostrarToastVitality("Cuenta creada con éxito.");
+window.location.href = "onboarding.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     mostrarToastVitality(
@@ -243,7 +469,6 @@ async function registrarUsuario(event) {
     );
   }
 }
-
 async function iniciarSesion(event) {
   event.preventDefault();
 
@@ -445,13 +670,25 @@ async function mostrarDatosPerfil() {
 /* =========================
    CHECK-IN DIARIO
 ========================= */
-function guardarCheckinLocal(estadoAnimo, nivelEstres, sueno, energia, fecha = new Date().toLocaleDateString()) {
+function guardarCheckinLocal(
+  estadoAnimo,
+  nivelEstres,
+  sueno,
+  energia,
+  fecha = new Date().toLocaleDateString(),
+  estresVal = 5,
+  suenoVal = 5,
+  energiaVal = 5
+) {
   guardarJSON("checkinVitality", {
     estadoAnimo,
     nivelEstres,
     sueno,
     energia,
-    fecha
+    fecha,
+    estresVal,
+    suenoVal,
+    energiaVal
   });
 }
 
@@ -459,14 +696,27 @@ function obtenerCheckin() {
   return leerJSON("checkinVitality", null);
 }
 
-async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
+function obtenerUsuarioIdVitality() {
   const usuario = obtenerUsuario();
 
-  if (!usuario || !usuario.id) {
-    guardarCheckinLocal(estadoAnimo, nivelEstres, sueno, energia);
+  if (!usuario) {
+    return null;
+  }
+
+  return usuario.id || usuario._id || usuario.usuarioId || null;
+}
+
+async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia, estresVal = 5, suenoVal = 5, energiaVal = 5) {
+  const usuario = obtenerUsuario();
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  console.log("Usuario actual para check-in:", usuario);
+  console.log("ID detectado para check-in:", usuarioId);
+
+  if (!usuarioId) {
     return {
       ok: false,
-      mensaje: "No hay usuario conectado al backend. Check-in guardado solo localmente."
+      mensaje: "No se encontró el ID del usuario. Cierra sesión e inicia sesión nuevamente."
     };
   }
 
@@ -477,15 +727,20 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        usuarioId: usuario.id,
+        usuarioId,
         estadoAnimo,
         nivelEstres,
         sueno,
-        energia
+        energia,
+        estresVal,
+        suenoVal,
+        energiaVal
       })
     });
 
     const data = await respuesta.json();
+
+    console.log("Respuesta check-in backend:", data);
 
     if (!respuesta.ok) {
       return {
@@ -499,7 +754,14 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
       data.checkin.nivelEstres,
       data.checkin.sueno,
       data.checkin.energia,
-      new Date(data.checkin.createdAt || data.checkin.fecha || data.checkin.updatedAt).toLocaleDateString()
+      new Date(
+        data.checkin.createdAt ||
+          data.checkin.fecha ||
+          data.checkin.updatedAt
+      ).toLocaleDateString(),
+      data.checkin.estresVal,
+      data.checkin.suenoVal,
+      data.checkin.energiaVal
     );
 
     return {
@@ -508,24 +770,27 @@ async function guardarCheckinBackend(estadoAnimo, nivelEstres, sueno, energia) {
     };
   } catch (error) {
     console.error("Error al guardar check-in en backend:", error);
-    guardarCheckinLocal(estadoAnimo, nivelEstres, sueno, energia);
 
     return {
       ok: false,
-      mensaje: "No se pudo conectar con el servidor. Check-in guardado solo localmente."
+      mensaje:
+        "No se pudo conectar con el servidor para guardar el check-in. Detalle: " +
+        error.message +
+        " | API_URL: " +
+        API_URL
     };
   }
 }
 
 async function obtenerUltimoCheckinBackend() {
-  const usuario = obtenerUsuario();
+  const usuarioId = obtenerUsuarioIdVitality();
 
-  if (!usuario || !usuario.id) {
+  if (!usuarioId) {
     return obtenerCheckin();
   }
 
   try {
-    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuarioId}`);
 
     if (respuesta.status === 404) {
       return obtenerCheckin();
@@ -542,7 +807,11 @@ async function obtenerUltimoCheckinBackend() {
       nivelEstres: data.nivelEstres,
       sueno: data.sueno,
       energia: data.energia,
-      fecha: new Date(data.createdAt || data.fecha || data.updatedAt).toLocaleDateString()
+      fecha: new Date(
+        data.createdAt ||
+          data.fecha ||
+          data.updatedAt
+      ).toLocaleDateString()
     };
 
     guardarJSON("checkinVitality", checkinLocal);
@@ -561,7 +830,12 @@ async function guardarDatosCheckin(event) {
   const suenoInput = document.getElementById("sueno");
   const energiaInput = document.getElementById("energia");
 
+  const estresRange = document.getElementById("estresRange");
+  const suenoRange = document.getElementById("suenoRange");
+  const energiaRange = document.getElementById("energiaRange");
+
   if (!estadoAnimoInput || !nivelEstresInput || !suenoInput || !energiaInput) {
+    mostrarToastVitality("No se encontraron todos los campos del check-in.");
     return;
   }
 
@@ -569,6 +843,10 @@ async function guardarDatosCheckin(event) {
   const nivelEstres = nivelEstresInput.value.trim();
   const sueno = suenoInput.value.trim();
   const energia = energiaInput.value.trim();
+
+  const estresVal = estresRange ? Number(estresRange.value) : 5;
+  const suenoVal = suenoRange ? Number(suenoRange.value) : 5;
+  const energiaVal = energiaRange ? Number(energiaRange.value) : 5;
 
   if (!estadoAnimo || !nivelEstres || !sueno || !energia) {
     mostrarToastVitality("Por favor completa todo el check-in.");
@@ -579,15 +857,18 @@ async function guardarDatosCheckin(event) {
     estadoAnimo,
     nivelEstres,
     sueno,
-    energia
+    energia,
+    estresVal,
+    suenoVal,
+    energiaVal
   );
 
-  if (resultado.ok) {
-    mostrarToastVitality("Check-in guardado con éxito en MongoDB.");
-  } else {
+  if (!resultado.ok) {
     mostrarToastVitality(resultado.mensaje);
+    return;
   }
 
+  mostrarToastVitality("Check-in guardado correctamente.");
   window.location.href = "horario.html";
 }
 
@@ -603,7 +884,6 @@ async function sincronizarCheckinBackendConInterfaz() {
     iniciarChatInteligente();
   }
 }
-
 /* =========================
    ALERTAS SEGÚN CHECK-IN
 ========================= */
@@ -1108,20 +1388,13 @@ function cancelarEdicionActividadEspecial() {
 async function guardarActividadFija(event) {
   event.preventDefault();
 
-  const btnGuardar = document.getElementById("btnGuardarActividadFija");
-  if (btnGuardar && btnGuardar.disabled) return; // ya hay un guardado en curso
-  if (btnGuardar) { btnGuardar.disabled = true; btnGuardar.textContent = "Guardando..."; }
-
   const diaInput = document.getElementById("diaFijo");
   const horaInput = document.getElementById("horaFija");
   const horaFinInput = document.getElementById("horaFinFija");
   const actividadInput = document.getElementById("actividadFija");
   const editandoIdInput = document.getElementById("editandoActividadFijaId");
 
-  if (!diaInput || !horaInput || !horaFinInput || !actividadInput) {
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
-    return;
-  }
+  if (!diaInput || !horaInput || !horaFinInput || !actividadInput) return;
 
   const dia = diaInput.value.trim();
   const hora = horaInput.value.trim();
@@ -1131,14 +1404,10 @@ async function guardarActividadFija(event) {
 
   if (!dia || !hora || !horaFin || !actividad) {
     mostrarToastVitality("Por favor completa todos los campos de la actividad fija.");
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
     return;
   }
 
-  if (!validarRangoHoras(hora, horaFin)) {
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
-    return;
-  }
+  if (!validarRangoHoras(hora, horaFin)) return;
 
   const resultado = await guardarActividadFijaBackend(
     dia,
@@ -1150,24 +1419,18 @@ async function guardarActividadFija(event) {
 
   if (!resultado.ok) {
     mostrarToastVitality(resultado.mensaje);
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
     return;
   }
 
   event.target.reset();
   limpiarEdicionActividadFija();
   await sincronizarActividadesBackendConInterfaz();
-  if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad fija"; }
 
   mostrarToastVitality(editandoId ? "Actividad fija actualizada en MongoDB." : "Actividad fija guardada en MongoDB.");
 }
 
 async function guardarActividadEspecial(event) {
   event.preventDefault();
-
-  const btnGuardar = document.getElementById("btnGuardarActividadEspecial");
-  if (btnGuardar && btnGuardar.disabled) return; // ya hay un guardado en curso
-  if (btnGuardar) { btnGuardar.disabled = true; btnGuardar.textContent = "Guardando..."; }
 
   const tipoInput = document.getElementById("tipoEspecial");
   const fechaInput = document.getElementById("fechaEspecial");
@@ -1176,10 +1439,7 @@ async function guardarActividadEspecial(event) {
   const actividadInput = document.getElementById("actividadEspecial");
   const editandoIdInput = document.getElementById("editandoActividadEspecialId");
 
-  if (!tipoInput || !fechaInput || !horaInput || !horaFinInput || !actividadInput) {
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
-    return;
-  }
+  if (!tipoInput || !fechaInput || !horaInput || !horaFinInput || !actividadInput) return;
 
   const tipo = tipoInput.value.trim();
   const fecha = fechaInput.value.trim();
@@ -1190,14 +1450,10 @@ async function guardarActividadEspecial(event) {
 
   if (!tipo || !fecha || !hora || !horaFin || !actividad) {
     mostrarToastVitality("Por favor completa todos los campos de la actividad especial.");
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
     return;
   }
 
-  if (!validarRangoHoras(hora, horaFin)) {
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
-    return;
-  }
+  if (!validarRangoHoras(hora, horaFin)) return;
 
   const resultado = await guardarActividadEspecialBackend(
     tipo,
@@ -1210,14 +1466,12 @@ async function guardarActividadEspecial(event) {
 
   if (!resultado.ok) {
     mostrarToastVitality(resultado.mensaje);
-    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
     return;
   }
 
   event.target.reset();
   limpiarEdicionActividadEspecial();
   await sincronizarActividadesBackendConInterfaz();
-  if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = "Guardar actividad especial"; }
 
   mostrarToastVitality(editandoId ? "Actividad especial actualizada en MongoDB." : "Actividad especial guardada en MongoDB.");
 }
@@ -1642,6 +1896,7 @@ async function obtenerRespuestaIAChat(texto) {
 
   let actividadesHoy = null;
   let objetivos = [];
+  let onboarding = null;
 
   try {
     if (typeof obtenerResumenHorarioHoy === "function") {
@@ -1650,6 +1905,10 @@ async function obtenerRespuestaIAChat(texto) {
 
     if (typeof obtenerObjetivosBackend === "function") {
       objetivos = await obtenerObjetivosBackend();
+    }
+
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      onboarding = await obtenerOnboardingBackendVitality();
     }
   } catch (error) {
     console.error("Error preparando contexto para IA:", error);
@@ -1661,10 +1920,12 @@ async function obtenerRespuestaIAChat(texto) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
+      usuarioId: obtenerUsuarioIdVitality(),
       mensaje: texto,
       checkin,
       actividadesHoy,
-      objetivos
+      objetivos,
+      onboarding
     })
   });
 
@@ -1674,9 +1935,12 @@ async function obtenerRespuestaIAChat(texto) {
     throw new Error(data.mensaje || "No se pudo obtener respuesta de IA.");
   }
 
-  return data.respuesta;
+  return {
+    respuesta: data.respuesta,
+    recomendacionId: data.recomendacionId || null,
+    recomendacion: data.recomendacion || null
+  };
 }
-
 async function sendMessage(event) {
   event.preventDefault();
 
@@ -1698,10 +1962,17 @@ async function sendMessage(event) {
   chatBox.scrollTop = chatBox.scrollHeight;
 
   try {
-    const response = await obtenerRespuestaIAChat(text);
+    const resultadoIA = await obtenerRespuestaIAChat(text);
 
     mensajeCargando.remove();
-    addMessage(response, "bot");
+
+    addMessage(
+      resultadoIA.respuesta,
+      "bot",
+      resultadoIA.recomendacionId,
+      resultadoIA.recomendacion
+    );
+
     actualizarBotonesChat();
   } catch (error) {
     console.error("Error usando IA, se usará respuesta local:", error);
@@ -1712,8 +1983,7 @@ async function sendMessage(event) {
     addMessage(response, "bot");
     actualizarBotonesChat();
   }
-}
-function usarOpcionRapida(opcion) {
+}function usarOpcionRapida(opcion) {
   const input = document.getElementById("userInput");
   if (!input) return;
 
@@ -1728,43 +1998,13 @@ function usarOpcionRapida(opcion) {
 
 function actualizarBotonesChat() {
   const contenedor = document.getElementById("chatQuickActions");
-  if (!contenedor) return;
 
-  if (chatState === "inicio") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('conversar')">Conversar</button>
-      <button type="button" onclick="usarOpcionRapida('organización')">Organizar mi día</button>
-      <button type="button" onclick="usarOpcionRapida('recomendación')">Dame una recomendación</button>
-    `;
+  if (!contenedor) {
     return;
   }
 
-  if (chatState === "conversacion") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('quiero seguir conversando')">Seguir conversando</button>
-      <button type="button" onclick="usarOpcionRapida('organizar mi día')">Organizar mi día</button>
-      <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
-    `;
-    return;
-  }
-
-  if (chatState === "organizacion") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('sí')">Sí</button>
-      <button type="button" onclick="usarOpcionRapida('no')">No</button>
-      <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
-    `;
-    return;
-  }
-
-  if (chatState === "recomendacion") {
-    contenedor.innerHTML = `
-      <button type="button" onclick="usarOpcionRapida('otra')">Otra recomendación</button>
-      <button type="button" onclick="usarOpcionRapida('gracias')">Gracias</button>
-      <button type="button" onclick="reiniciarChat()">Volver al inicio</button>
-    `;
-    return;
-  }
+  contenedor.innerHTML = "";
+  contenedor.style.display = "none";
 }
 
 function reiniciarChat() {
@@ -1772,22 +2012,170 @@ function reiniciarChat() {
   actualizarBotonesChat();
 }
 
-function addMessage(text, sender) {
+function formatearTextoChat(texto) {
+  const textoLimpio = String(texto || "")
+    .trim()
+    .replace(/\s+([1-9]\))/g, "\n$1")
+    .replace(/\s+-\s+/g, "\n- ")
+    .replace(/\n{3,}/g, "\n\n");
+
+  return escaparHTML(textoLimpio).replace(/\n/g, "<br>");
+}
+
+function addMessage(text, sender, recomendacionId = null, recomendacion = null, guardarMongo = true) {
   const chatBox = document.getElementById("chatBox");
-  if (!chatBox) return;
+
+  if (!chatBox) {
+    return;
+  }
 
   const message = document.createElement("div");
   message.classList.add("message", sender);
 
   const paragraph = document.createElement("p");
-  paragraph.textContent = text;
+  paragraph.innerHTML = formatearTextoChat(text);
 
   message.appendChild(paragraph);
-  chatBox.appendChild(message);
 
+  if (sender === "bot" && recomendacionId) {
+    const acciones = crearAccionesRecomendacionChat(
+      recomendacionId,
+      recomendacion
+    );
+
+    message.appendChild(acciones);
+  }
+
+  chatBox.appendChild(message);
   chatBox.scrollTop = chatBox.scrollHeight;
+
+  if (guardarMongo && typeof guardarMensajeChatMongoVitality === "function") {
+    guardarMensajeChatMongoVitality(
+      sender,
+      text,
+      recomendacionId,
+      recomendacion
+    );
+  }
+
+  if (typeof bajarChatAlUltimoMensajeVitality === "function") {
+    bajarChatAlUltimoMensajeVitality();
+  }
+}
+function crearAccionesRecomendacionChat(recomendacionId, recomendacion) {
+  const contenedor = document.createElement("div");
+  contenedor.className = "chat-recomendacion-acciones";
+
+  const texto = document.createElement("p");
+  texto.className = "chat-recomendacion-texto";
+  texto.textContent = "¿Quieres aplicar esta recomendación?";
+
+  const botonAceptar = document.createElement("button");
+  botonAceptar.type = "button";
+  botonAceptar.textContent = "Aceptar recomendación";
+  botonAceptar.className = "btn-aceptar-recomendacion";
+  botonAceptar.addEventListener("click", () => {
+    aceptarRecomendacionIAChat(recomendacionId, contenedor);
+  });
+
+  const botonRechazar = document.createElement("button");
+  botonRechazar.type = "button";
+  botonRechazar.textContent = "Rechazar";
+  botonRechazar.className = "btn-rechazar-recomendacion";
+  botonRechazar.addEventListener("click", () => {
+    rechazarRecomendacionIAChat(recomendacionId, contenedor);
+  });
+
+  contenedor.appendChild(texto);
+  contenedor.appendChild(botonAceptar);
+  contenedor.appendChild(botonRechazar);
+
+  return contenedor;
 }
 
+function bloquearBotonesRecomendacion(contenedor) {
+  const botones = contenedor.querySelectorAll("button");
+
+  botones.forEach((boton) => {
+    boton.disabled = true;
+  });
+}
+
+async function aceptarRecomendacionIAChat(recomendacionId, contenedor) {
+  try {
+    bloquearBotonesRecomendacion(contenedor);
+
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/aceptar`,
+      {
+        method: "PATCH"
+      }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo aceptar la recomendación.");
+      return;
+    }
+
+    const estado = data.recomendacion?.estado || "aceptada";
+
+    contenedor.innerHTML = `
+      <p class="chat-recomendacion-aplicada">
+        Recomendación ${estado === "aplicada" ? "aplicada" : "aceptada"} correctamente.
+      </p>
+    `;
+
+    if (data.resultadoAplicado) {
+      mostrarToastVitality("Recomendación aplicada. Revisa tu horario u objetivos.");
+
+      if (typeof sincronizarActividadesBackendConInterfaz === "function") {
+        await sincronizarActividadesBackendConInterfaz();
+      }
+
+      if (typeof mostrarObjetivosPersonales === "function") {
+        await mostrarObjetivosPersonales();
+      }
+    } else {
+      mostrarToastVitality("Recomendación aceptada correctamente.");
+    }
+  } catch (error) {
+    console.error("Error al aceptar recomendación IA:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+async function rechazarRecomendacionIAChat(recomendacionId, contenedor) {
+  try {
+    bloquearBotonesRecomendacion(contenedor);
+
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/rechazar`,
+      {
+        method: "PATCH"
+      }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo rechazar la recomendación.");
+      return;
+    }
+
+    contenedor.innerHTML = `
+      <p class="chat-recomendacion-rechazada">
+        Recomendación rechazada.
+      </p>
+    `;
+
+    mostrarToastVitality("Recomendación rechazada.");
+  } catch (error) {
+    console.error("Error al rechazar recomendación IA:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
 function detectarIntencionPrincipal(msg) {
   if (
     msg.includes("organizar") ||
@@ -2573,11 +2961,11 @@ function historialFormatearFecha(fecha) {
 }
 
 async function obtenerHistorialCheckinsBackend() {
-  const usuario = obtenerUsuario();
+  const usuarioId = obtenerUsuarioIdVitality();
 
-  if (!usuario || !usuario.id) {
-    return [];
-  }
+if (!usuarioId) {
+  return false;
+}
 
   try {
     const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuario.id}`);
@@ -3495,21 +3883,35 @@ function paginaLibreCheckinDiario(pagina) {
     "",
     "index.html",
     "registro.html",
+    "onboarding.html",
     "checkin.html"
   ];
 
   return paginasLibres.includes(pagina);
 }
-
 async function usuarioTieneCheckinDeHoy() {
-  const usuario = obtenerUsuario();
+  const fechaHoy = obtenerFechaISOHoyCheckinDiario();
 
-  if (!usuario || !usuario.id) {
+  const checkinLocal = obtenerCheckin();
+
+  if (checkinLocal) {
+    const fechaLocal =
+      checkinLocal.fechaISO ||
+      convertirFechaAISOCheckinDiario(checkinLocal.fecha);
+
+    if (fechaLocal === fechaHoy) {
+      return true;
+    }
+  }
+
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
     return false;
   }
 
   try {
-    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuario.id}`);
+    const respuesta = await fetch(`${API_URL}/api/checkins/ultimo/${usuarioId}`);
 
     if (respuesta.status === 404) {
       return false;
@@ -3525,15 +3927,28 @@ async function usuarioTieneCheckinDeHoy() {
       data.createdAt || data.fecha || data.updatedAt
     );
 
-    const fechaHoy = obtenerFechaISOHoyCheckinDiario();
+    if (fechaCheckin === fechaHoy) {
+      guardarCheckinLocal(
+        data.estadoAnimo,
+        data.nivelEstres,
+        data.sueno,
+        data.energia,
+        new Date(
+          data.createdAt ||
+            data.fecha ||
+            data.updatedAt
+        ).toLocaleDateString()
+      );
 
-    return fechaCheckin === fechaHoy;
+      return true;
+    }
+
+    return false;
   } catch (error) {
     console.error("Error al verificar check-in diario:", error);
     return false;
   }
 }
-
 async function redirigirDespuesDeLoginSegunCheckin() {
   const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
 
@@ -3575,6 +3990,29 @@ window.addEventListener("DOMContentLoaded", () => {
 /* =========================
    CONTROL DE USO DE APPS
 ========================= */
+function seleccionarAppUsoVitality(nombreApp, boton) {
+  const input = document.getElementById("usoAppNombre");
+  const texto = document.getElementById("usoAppSeleccionadaTexto");
+
+  if (input) {
+    input.value = nombreApp;
+  }
+
+  if (texto) {
+    texto.textContent = `App seleccionada: ${nombreApp}`;
+  }
+
+  const botones = document.querySelectorAll(".uso-app-opcion");
+
+  botones.forEach((item) => {
+    item.classList.remove("uso-app-opcion-activa");
+  });
+
+  if (boton) {
+    boton.classList.add("uso-app-opcion-activa");
+  }
+}
+
 function obtenerUsuarioUsoApps() {
   try {
     const usuarioGuardado = localStorage.getItem("usuarioVitality");
@@ -3584,6 +4022,8 @@ function obtenerUsuarioUsoApps() {
     return null;
   }
 }
+
+
 
 function usoAppsEscaparTexto(valor) {
   return String(valor ?? "")
@@ -3632,28 +4072,28 @@ async function guardarUsoAppBackend(event) {
   }
 
   const nombreInput = document.getElementById("usoAppNombre");
-  const packageInput = document.getElementById("usoAppPackage");
   const limiteInput = document.getElementById("usoAppLimite");
 
-  if (!nombreInput || !limiteInput) return;
-
-  const nombreApp = nombreInput.value.trim();
-  const packageManual = packageInput ? packageInput.value.trim() : "";
-  const packageName = obtenerPackageAppVitality(nombreApp, packageManual);
-  const limiteMinutos = Number(limiteInput.value);
-
-  if (!nombreApp || Number.isNaN(limiteMinutos)) {
-    mostrarToastVitality("Completa correctamente la app y el límite diario.");
+  if (!nombreInput || !limiteInput) {
     return;
   }
 
-  if (limiteMinutos <= 0) {
-    mostrarToastVitality("El límite debe ser mayor a 0.");
+  const nombreApp = nombreInput.value.trim();
+  const limiteMinutos = Number(limiteInput.value);
+  const packageName = obtenerPackageAppVitality(nombreApp, "");
+
+  if (!nombreApp) {
+    mostrarToastVitality("Selecciona una app para monitorear.");
+    return;
+  }
+
+  if (Number.isNaN(limiteMinutos) || limiteMinutos <= 0) {
+    mostrarToastVitality("Ingresa un límite diario válido.");
     return;
   }
 
   if (!packageName) {
-    mostrarToastVitality("No se encontró el package de la app. Escríbelo manualmente.");
+    mostrarToastVitality("Esta app todavía no está disponible para monitoreo.");
     return;
   }
 
@@ -3691,6 +4131,14 @@ async function guardarUsoAppBackend(event) {
 
     event.target.reset();
 
+    const texto = document.getElementById("usoAppSeleccionadaTexto");
+    if (texto) {
+      texto.textContent = "Selecciona una app para monitorear.";
+    }
+
+    const botones = document.querySelectorAll(".uso-app-opcion");
+    botones.forEach((item) => item.classList.remove("uso-app-opcion-activa"));
+
     await mostrarUsoApps();
 
     if (minutosUsados > limiteMinutos) {
@@ -3705,6 +4153,7 @@ async function guardarUsoAppBackend(event) {
     }
   } catch (error) {
     console.error("Error al guardar uso de app:", error);
+
     mostrarToastVitality(
       "No se pudo conectar con el servidor. Detalle: " +
         error.message +
@@ -3763,12 +4212,12 @@ async function mostrarUsoApps() {
         ? "Uso real leído desde Android"
         : "Uso guardado manualmente";
 
-      if (excedida) {
-        enviarNotificacionCelularVitality(
-          "Uso excesivo detectado",
-          `${uso.nombreApp}: ${uso.minutosUsados} min de ${uso.limiteMinutos} min permitidos.`
-        );
-      }
+      if (excedida && !alertaUsoAppsEstaPausada()) {
+  enviarNotificacionCelularVitality(
+    "Uso excesivo detectado",
+    `${uso.nombreApp}: ${uso.minutosUsados} min de ${uso.limiteMinutos} min permitidos.`
+  );
+}
 
       return `
         <div class="uso-app-item ${clase}">
@@ -3813,8 +4262,51 @@ function cerrarAlertaUsoApps() {
   if (alerta) {
     alerta.remove();
   }
+
+  const treintaMinutos = 30 * 60 * 1000;
+  const fechaReactivacion = Date.now() + treintaMinutos;
+
+  localStorage.setItem(
+    "alertaUsoAppsPausadaHasta",
+    String(fechaReactivacion)
+  );
+
+  mostrarToastVitality("Alerta pausada por 30 minutos.");
+}
+function alertaUsoAppsEstaPausada() {
+  const pausadaHasta = Number(
+    localStorage.getItem("alertaUsoAppsPausadaHasta") || 0
+  );
+
+  if (!pausadaHasta) {
+    return false;
+  }
+
+  if (Date.now() >= pausadaHasta) {
+    localStorage.removeItem("alertaUsoAppsPausadaHasta");
+    return false;
+  }
+
+  return true;
 }
 
+function obtenerMinutosRestantesPausaUsoApps() {
+  const pausadaHasta = Number(
+    localStorage.getItem("alertaUsoAppsPausadaHasta") || 0
+  );
+
+  if (!pausadaHasta) {
+    return 0;
+  }
+
+  const diferencia = pausadaHasta - Date.now();
+
+  if (diferencia <= 0) {
+    return 0;
+  }
+
+  return Math.ceil(diferencia / 60000);
+}
 function mostrarAlertaUsoExcesivoGlobal(usoApp) {
   const alerta = crearContenedorAlertaUsoApps();
 
@@ -3838,14 +4330,25 @@ async function revisarUsoExcesivoGlobal() {
 
   if (!usuario || !usuario.id) return;
 
-  const usos = await obtenerUsoAppsBackend();
+  if (alertaUsoAppsEstaPausada()) {
+    const alerta = document.getElementById("alertaUsoAppsGlobal");
+
+    if (alerta) {
+      alerta.remove();
+    }
+
+    return;
+  }
+
+  let usos = await obtenerUsoAppsBackend();
+  usos = await enriquecerUsoAppsConUsoRealVitality(usos);
+
   const usoExcesivo = usos.find((uso) => usoAppExcedida(uso));
 
   if (usoExcesivo) {
     mostrarAlertaUsoExcesivoGlobal(usoExcesivo);
   }
 }
-
 function iniciarControlUsoApps() {
   const usoAppForm = document.getElementById("usoAppForm");
 
@@ -3856,6 +4359,14 @@ function iniciarControlUsoApps() {
   actualizarEstadoPermisoUsoAppsVitality();
   mostrarUsoApps();
   revisarUsoExcesivoGlobal();
+
+  if (!window.__intervaloUsoAppsVitalityActivo) {
+    window.__intervaloUsoAppsVitalityActivo = true;
+
+    setInterval(() => {
+      revisarUsoExcesivoGlobal();
+    }, 30 * 60 * 1000);
+  }
 }
 
 if (document.readyState === "loading") {
@@ -4024,12 +4535,18 @@ if (document.readyState === "loading") {
    USO REAL DE APPS ANDROID
 ========================= */
 const PACKAGES_APPS_VITALITY = {
-  TikTok: "com.zhiliaoapp.musically",
   Instagram: "com.instagram.android",
+  TikTok: "com.zhiliaoapp.musically",
   YouTube: "com.google.android.youtube",
-  WhatsApp: "com.whatsapp"
+  WhatsApp: "com.whatsapp",
+  Spotify: "com.spotify.music",
+  Chrome: "com.android.chrome",
+  Gmail: "com.google.android.gm",
+  Facebook: "com.facebook.katana",
+  Messenger: "com.facebook.orca",
+  Netflix: "com.netflix.mediaclient",
+  X: "com.twitter.android"
 };
-
 function obtenerPluginUsoAppsVitality() {
   if (!window.Capacitor || !window.Capacitor.Plugins) {
     return null;
@@ -4106,7 +4623,7 @@ async function obtenerEstadisticasUsoHoyVitality() {
   });
 }
 
-function obtenerPackageAppVitality(nombreApp, packageManual) {
+function obtenerPackageAppVitality(nombreApp, packageManual = "") {
   if (packageManual && packageManual.trim() !== "") {
     return packageManual.trim();
   }
@@ -4186,3 +4703,4535 @@ async function enriquecerUsoAppsConUsoRealVitality(usos) {
     };
   });
 }
+/* =========================
+   RECOMENDACIÓN IA EN INICIO
+========================= */
+async function obtenerRecomendacionesIAInicio() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/${usuarioId}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error("Error al obtener recomendaciones IA:", data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al conectar con recomendaciones IA:", error);
+    return [];
+  }
+}
+
+async function mostrarRecomendacionIAInicio() {
+  const contenedor = document.getElementById("recomendacionIAInicioContainer");
+
+  if (!contenedor) {
+    return;
+  }
+
+  const recomendaciones = await obtenerRecomendacionesIAInicio();
+
+  if (!recomendaciones || recomendaciones.length === 0) {
+    contenedor.innerHTML = `
+      <div class="recomendacion-inicio-vacia">
+        <p>No hay recomendaciones recientes todavía.</p>
+        <button type="button" onclick="window.location.href='chat.html'">
+          Hablar con Vitality
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  const recomendacion = recomendaciones[0];
+
+  const estado = recomendacion.estado || "pendiente";
+  const categoria = recomendacion.categoriaBarrera || "SIN_BARRERA_CLARA";
+  const accion = recomendacion.accionSugerida || {};
+
+  const tituloAccion =
+    accion.titulo ||
+    accion.tipo ||
+    "Recomendación personalizada";
+
+  let textoCategoria = "Recomendación general";
+
+  if (categoria === "DISTRACCION_DIGITAL") {
+    textoCategoria = "Distracción digital";
+  }
+
+  if (categoria === "BARRERA_INTERNA_EMOCIONAL") {
+    textoCategoria = "Cansancio o bienestar emocional";
+  }
+
+  if (categoria === "BARRERA_INTERNA_COGNITIVA") {
+    textoCategoria = "Organización y foco";
+  }
+
+  contenedor.innerHTML = `
+    <div class="recomendacion-inicio-item">
+      <div class="recomendacion-inicio-header">
+        <div>
+          <span class="recomendacion-inicio-etiqueta">IA adaptativa</span>
+          <h3>${escaparHTML(textoCategoria)}</h3>
+        </div>
+
+        <span class="recomendacion-inicio-estado estado-${escaparHTML(estado)}">
+          ${escaparHTML(estado)}
+        </span>
+      </div>
+
+      <p class="recomendacion-inicio-accion">
+        ${escaparHTML(tituloAccion)}
+      </p>
+
+      ${
+        estado === "pendiente"
+          ? `
+            <div class="recomendacion-inicio-acciones">
+              <button type="button" onclick="aceptarRecomendacionIAInicio('${escaparHTML(recomendacion._id)}')">
+                Aceptar
+              </button>
+
+              <button type="button" class="btn-rechazar-inicio" onclick="rechazarRecomendacionIAInicio('${escaparHTML(recomendacion._id)}')">
+                Rechazar
+              </button>
+
+              <button type="button" class="btn-eliminar-recomendacion" onclick="eliminarRecomendacionIA('${escaparHTML(recomendacion._id)}')">
+                Eliminar
+              </button>
+            </div>
+          `
+          : `
+            <div class="recomendacion-inicio-acciones">
+              <button type="button" class="btn-ir-chat-recomendacion" onclick="window.location.href='chat.html?recomendacionId=${escaparHTML(recomendacion._id)}'">
+                Ver en el chat
+              </button>
+
+              <button type="button" class="btn-eliminar-recomendacion" onclick="eliminarRecomendacionIA('${escaparHTML(recomendacion._id)}')">
+                Eliminar
+              </button>
+            </div>
+          `
+      }
+    </div>
+  `;
+}
+async function aceptarRecomendacionIAInicio(recomendacionId) {
+  try {
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/aceptar`,
+      { method: "PATCH" }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo aceptar la recomendación.");
+      return;
+    }
+
+    mostrarToastVitality("Recomendación aceptada.");
+
+    await mostrarRecomendacionIAInicio();
+
+    if (typeof sincronizarActividadesBackendConInterfaz === "function") {
+      await sincronizarActividadesBackendConInterfaz();
+    }
+  } catch (error) {
+    console.error("Error al aceptar recomendación desde inicio:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+async function rechazarRecomendacionIAInicio(recomendacionId) {
+  try {
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}/rechazar`,
+      { method: "PATCH" }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo rechazar la recomendación.");
+      return;
+    }
+
+    mostrarToastVitality("Recomendación rechazada.");
+    await mostrarRecomendacionIAInicio();
+  } catch (error) {
+    console.error("Error al rechazar recomendación desde inicio:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(mostrarRecomendacionIAInicio, 800);
+});
+/* =========================
+   VER Y ELIMINAR RECOMENDACIÓN IA
+========================= */
+function obtenerParametroURLVitality(nombre) {
+  const parametros = new URLSearchParams(window.location.search);
+  return parametros.get(nombre);
+}
+
+async function eliminarRecomendacionIA(recomendacionId) {
+  const confirmar = confirm("¿Seguro que quieres eliminar esta recomendación IA?");
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(
+      `${API_URL}/api/recomendaciones-ia/${recomendacionId}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarToastVitality(data.mensaje || "No se pudo eliminar la recomendación.");
+      return;
+    }
+
+    mostrarToastVitality("Recomendación eliminada correctamente.");
+
+    if (typeof mostrarRecomendacionIAInicio === "function") {
+      await mostrarRecomendacionIAInicio();
+    }
+  } catch (error) {
+    console.error("Error al eliminar recomendación IA:", error);
+    mostrarToastVitality("No se pudo conectar con el servidor.");
+  }
+}
+
+async function obtenerRecomendacionIASeleccionada(recomendacionId) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !recomendacionId) {
+    return null;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/${usuarioId}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return null;
+    }
+
+    return data.find((item) => String(item._id) === String(recomendacionId)) || null;
+  } catch (error) {
+    console.error("Error al buscar recomendación IA:", error);
+    return null;
+  }
+}
+
+function crearTarjetaRecomendacionChat(recomendacion) {
+  const tarjeta = document.createElement("div");
+  tarjeta.className = "message bot recomendacion-chat-detalle";
+
+  const estado = recomendacion.estado || "pendiente";
+  const categoria = recomendacion.categoriaBarrera || "SIN_BARRERA_CLARA";
+  const accion = recomendacion.accionSugerida || {};
+
+  tarjeta.innerHTML = `
+    <p class="recomendacion-chat-label">Recomendación IA seleccionada</p>
+    <h3>${escaparHTML(accion.titulo || "Recomendación personalizada")}</h3>
+    <p><strong>Categoría:</strong> ${escaparHTML(categoria)}</p>
+    <p><strong>Estado:</strong> ${escaparHTML(estado)}</p>
+    <p>${escaparHTML(accion.descripcion || recomendacion.mensajeIA || "Sin descripción.")}</p>
+  `;
+
+  if (estado === "pendiente") {
+    const acciones = crearAccionesRecomendacionChat(
+      recomendacion._id,
+      recomendacion
+    );
+
+    tarjeta.appendChild(acciones);
+  }
+
+  const botonEliminar = document.createElement("button");
+  botonEliminar.type = "button";
+  botonEliminar.textContent = "Eliminar recomendación";
+  botonEliminar.className = "btn-eliminar-recomendacion-chat";
+
+  botonEliminar.addEventListener("click", async () => {
+    const confirmar = confirm("¿Seguro que quieres eliminar esta recomendación IA?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(
+        `${API_URL}/api/recomendaciones-ia/${recomendacion._id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      const data = await respuesta.json();
+
+      if (!respuesta.ok) {
+        mostrarToastVitality(data.mensaje || "No se pudo eliminar la recomendación.");
+        return;
+      }
+
+      tarjeta.remove();
+      mostrarToastVitality("Recomendación eliminada correctamente.");
+    } catch (error) {
+      console.error("Error al eliminar recomendación desde chat:", error);
+      mostrarToastVitality("No se pudo conectar con el servidor.");
+    }
+  });
+
+  tarjeta.appendChild(botonEliminar);
+
+  return tarjeta;
+}
+
+async function mostrarRecomendacionSeleccionadaEnChat() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  if (window.__recomendacionChatMostrada) {
+    return;
+  }
+
+  const recomendacionId = obtenerParametroURLVitality("recomendacionId");
+
+  if (!recomendacionId) {
+    return;
+  }
+
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const recomendacion = await obtenerRecomendacionIASeleccionada(recomendacionId);
+
+  if (!recomendacion) {
+    addMessage("No pude encontrar esa recomendación IA.", "bot");
+    window.__recomendacionChatMostrada = true;
+    return;
+  }
+
+  const tarjeta = crearTarjetaRecomendacionChat(recomendacion);
+
+  chatBox.appendChild(tarjeta);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  window.__recomendacionChatMostrada = true;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(mostrarRecomendacionSeleccionadaEnChat, 1200);
+});
+/* =========================
+   ONBOARDING INICIAL DE USUARIO
+========================= */
+let pasoOnboardingVitality = 1;
+
+function obtenerDatosOnboardingVitality() {
+  return leerJSON("onboardingVitality", {
+    objetivos: [],
+    identidad: "",
+    estres: [],
+    completado: false
+  });
+}
+
+function guardarDatosOnboardingVitality(datos) {
+  guardarJSON("onboardingVitality", datos);
+}
+
+function inicializarOnboardingVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "onboarding.html") {
+    return;
+  }
+
+  const usuario = obtenerUsuario();
+
+  if (!usuario || !usuario.id) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const datos = obtenerDatosOnboardingVitality();
+
+  if (datos.completado) {
+    window.location.href = "checkin.html";
+    return;
+  }
+
+  document.querySelectorAll(".onboarding-option").forEach((boton) => {
+    boton.addEventListener("click", () => {
+      alternarOpcionOnboardingVitality(boton);
+    });
+  });
+
+  const identidadInput = document.getElementById("identidadVitalityInput");
+
+  if (identidadInput) {
+    identidadInput.addEventListener("input", actualizarContadorIdentidadVitality);
+  }
+
+  mostrarPasoOnboardingVitality(1);
+}
+
+function alternarOpcionOnboardingVitality(boton) {
+  boton.classList.toggle("seleccionada");
+}
+
+function obtenerSeleccionadosOnboardingVitality(grupo) {
+  return Array.from(
+    document.querySelectorAll(`.onboarding-option[data-grupo="${grupo}"].seleccionada`)
+  ).map((item) => item.dataset.valor);
+}
+
+function guardarPasoActualOnboardingVitality() {
+  const datos = obtenerDatosOnboardingVitality();
+
+  if (pasoOnboardingVitality === 1) {
+    datos.objetivos = obtenerSeleccionadosOnboardingVitality("objetivos");
+  }
+
+  if (pasoOnboardingVitality === 2) {
+    const identidadInput = document.getElementById("identidadVitalityInput");
+    datos.identidad = identidadInput ? identidadInput.value.trim() : "";
+  }
+
+  if (pasoOnboardingVitality === 3) {
+    datos.estres = obtenerSeleccionadosOnboardingVitality("estres");
+  }
+
+  guardarDatosOnboardingVitality(datos);
+}
+
+function mostrarPasoOnboardingVitality(paso) {
+  pasoOnboardingVitality = paso;
+
+  document.querySelectorAll(".onboarding-step").forEach((seccion) => {
+    seccion.classList.remove("activa");
+  });
+
+  const stepText = document.getElementById("onboardingStepText");
+  const backBtn = document.getElementById("onboardingBackBtn");
+  const nextBtn = document.getElementById("onboardingNextBtn");
+  const skipBtn = document.getElementById("onboardingSkipBtn");
+
+  document.querySelectorAll(".onboarding-dot").forEach((dot) => {
+    dot.classList.remove("activa");
+  });
+
+  if (paso <= 3) {
+    const seccion = document.getElementById(`onboardingStep${paso}`);
+    const dot = document.getElementById(`onboardingDot${paso}`);
+
+    if (seccion) seccion.classList.add("activa");
+    if (dot) dot.classList.add("activa");
+
+    if (stepText) stepText.textContent = `${paso} / 3`;
+    if (backBtn) backBtn.style.display = paso === 1 ? "none" : "block";
+    if (nextBtn) nextBtn.textContent = paso === 3 ? "Continuar" : "Siguiente";
+    if (skipBtn) skipBtn.style.display = paso === 2 ? "block" : "none";
+    return;
+  }
+
+  const final = document.getElementById("onboardingFinal");
+  const datos = obtenerDatosOnboardingVitality();
+  const resumen = document.getElementById("onboardingIdentidadResumen");
+
+  if (final) final.classList.add("activa");
+  if (stepText) stepText.textContent = "";
+  if (backBtn) backBtn.style.display = "none";
+  if (skipBtn) skipBtn.style.display = "none";
+
+  if (nextBtn) {
+    nextBtn.textContent = "Ver mi día →";
+  }
+
+  if (resumen) {
+    resumen.textContent = datos.identidad
+      ? `“${datos.identidad}”`
+      : "“Tu identidad”";
+  }
+}
+
+function avanzarOnboarding() {
+  guardarPasoActualOnboardingVitality();
+
+  if (pasoOnboardingVitality < 3) {
+    mostrarPasoOnboardingVitality(pasoOnboardingVitality + 1);
+    return;
+  }
+
+  if (pasoOnboardingVitality === 3) {
+    mostrarPasoOnboardingVitality(4);
+    return;
+  }
+
+  finalizarOnboardingVitality();
+}
+
+function retrocederOnboarding() {
+  if (pasoOnboardingVitality > 1) {
+    mostrarPasoOnboardingVitality(pasoOnboardingVitality - 1);
+  }
+}
+
+function saltarPreguntaOnboarding() {
+  const identidadInput = document.getElementById("identidadVitalityInput");
+
+  if (identidadInput) {
+    identidadInput.value = "";
+  }
+
+  actualizarContadorIdentidadVitality();
+  avanzarOnboarding();
+}
+
+function actualizarContadorIdentidadVitality() {
+  const identidadInput = document.getElementById("identidadVitalityInput");
+  const contador = document.getElementById("contadorIdentidadVitality");
+
+  if (!identidadInput || !contador) {
+    return;
+  }
+
+  contador.textContent = `${identidadInput.value.length} / 240`;
+}
+
+async function finalizarOnboardingVitality() {
+  const datos = obtenerDatosOnboardingVitality();
+
+  datos.completado = true;
+  datos.fecha = new Date().toISOString();
+
+  guardarDatosOnboardingVitality(datos);
+
+  const resultado = await guardarOnboardingBackendVitality(datos);
+
+  if (resultado.ok) {
+    mostrarToastVitality("Perfil inicial guardado correctamente.");
+  } else {
+    mostrarToastVitality(resultado.mensaje);
+  }
+
+  window.location.href = "checkin.html";
+}
+
+window.addEventListener("DOMContentLoaded", inicializarOnboardingVitality);
+/* =========================
+   REGISTRO - INTERACCIONES
+========================= */
+function alternarVisibilidadPassword(inputId, boton) {
+  const input = document.getElementById(inputId);
+
+  if (!input) {
+    return;
+  }
+
+  if (input.type === "password") {
+    input.type = "text";
+    if (boton) boton.textContent = "Ocultar";
+  } else {
+    input.type = "password";
+    if (boton) boton.textContent = "Ver";
+  }
+}
+
+function actualizarCampoDetalleOcupacion() {
+  const ocupacion = document.getElementById("ocupacion");
+  const grupo = document.getElementById("ocupacionDetalleGroup");
+  const label = document.getElementById("ocupacionDetalleLabel");
+  const input = document.getElementById("ocupacionDetalle");
+
+  if (!ocupacion || !grupo || !label || !input) {
+    return;
+  }
+
+  const valor = ocupacion.value;
+
+  if (valor === "Estudiante universitario") {
+    grupo.style.display = "block";
+    label.textContent = "Carrera";
+    input.placeholder = "Ej: Ingeniería civil informática";
+    input.required = true;
+    return;
+  }
+
+  if (valor === "Trabajador") {
+    grupo.style.display = "block";
+    label.textContent = "Área o cargo";
+    input.placeholder = "Ej: Atención al cliente, ventas, informática";
+    input.required = true;
+    return;
+  }
+
+  if (valor === "Otra") {
+    grupo.style.display = "block";
+    label.textContent = "Cuéntanos tu ocupación";
+    input.placeholder = "Ej: emprendedora, deportista, cuidadora";
+    input.required = true;
+    return;
+  }
+
+  grupo.style.display = "none";
+  input.value = "";
+  input.required = false;
+}
+/* =========================
+   ONBOARDING EN BACKEND
+========================= */
+async function guardarOnboardingBackendVitality(datos) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return {
+      ok: false,
+      mensaje: "No se encontró el usuario para guardar el onboarding."
+    };
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/onboarding`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        objetivos: datos.objetivos || [],
+        identidad: datos.identidad || "",
+        estres: datos.estres || [],
+        completado: true
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return {
+        ok: false,
+        mensaje: data.mensaje || "No se pudo guardar el onboarding."
+      };
+    }
+
+    return {
+      ok: true,
+      onboarding: data.onboarding
+    };
+  } catch (error) {
+    console.error("Error al guardar onboarding en backend:", error);
+
+    return {
+      ok: false,
+      mensaje: "No se pudo conectar con el servidor para guardar el onboarding."
+    };
+  }
+}
+
+async function obtenerOnboardingBackendVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return obtenerDatosOnboardingVitality();
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/onboarding/${usuarioId}`);
+
+    if (respuesta.status === 404) {
+      return obtenerDatosOnboardingVitality();
+    }
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      return obtenerDatosOnboardingVitality();
+    }
+
+    const onboarding = {
+      objetivos: data.objetivos || [],
+      identidad: data.identidad || "",
+      estres: data.estres || [],
+      completado: data.completado || false
+    };
+
+    guardarDatosOnboardingVitality(onboarding);
+
+    return onboarding;
+  } catch (error) {
+    console.error("Error al obtener onboarding desde backend:", error);
+    return obtenerDatosOnboardingVitality();
+  }
+}
+/* =========================
+   INICIO WARM REDISEÑADO
+========================= */
+function formatearFechaHomeVitality() {
+  const fecha = new Date();
+
+  return fecha.toLocaleDateString("es-CL", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long"
+  });
+}
+
+function obtenerInicialNombreHomeVitality(nombre) {
+  return String(nombre || "U").trim().charAt(0).toUpperCase() || "U";
+}
+
+async function obtenerIdentidadHomeVitality() {
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+
+      if (onboarding && onboarding.identidad) {
+        return onboarding.identidad;
+      }
+    }
+  } catch (error) {
+    console.error("Error obteniendo identidad para inicio:", error);
+  }
+
+  const local = leerJSON("onboardingVitality", null);
+
+  if (local && local.identidad) {
+    return local.identidad;
+  }
+
+  return "Construyendo tu identidad";
+}
+
+function obtenerAccionesHomeVitality() {
+  const diaHoy = obtenerNombreDiaHoy();
+  const fechaHoy = obtenerFechaHoyFormatoInput();
+
+  const fijas = obtenerActividadesFijas()
+    .filter((item) => item.dia === diaHoy)
+    .map((item) => ({
+      ...item,
+      origen: "fija",
+      tipo: "Meta",
+      titulo: item.actividad,
+      hora: item.hora,
+      horaFin: item.horaFin
+    }));
+
+  const especiales = obtenerActividadesEspeciales()
+    .filter((item) => item.fecha === fechaHoy)
+    .map((item) => ({
+      ...item,
+      origen: "especial",
+      tipo: item.tipo || "Identidad",
+      titulo: item.actividad,
+      hora: item.hora,
+      horaFin: item.horaFin
+    }));
+
+  return [...fijas, ...especiales].sort((a, b) =>
+    (a.hora || "").localeCompare(b.hora || "")
+  );
+}
+
+function obtenerProximaAccionHomeVitality(acciones) {
+  const pendientes = acciones.filter((item) => !item.completada);
+
+  if (pendientes.length === 0) {
+    return null;
+  }
+
+  return pendientes[0];
+}
+
+async function completarAccionHomeVitality(origen, id) {
+  if (origen === "fija") {
+    await alternarActividadFija(id);
+  } else {
+    await alternarActividadEspecial(id);
+  }
+
+  iniciarHomeWarmVitality();
+}
+
+function pintarAccionesHomeVitality(acciones) {
+  const lista = document.getElementById("homeAccionesLista");
+
+  if (!lista) {
+    return;
+  }
+
+  if (!acciones || acciones.length === 0) {
+    lista.innerHTML = `
+      <article class="home-action-item">
+        <div class="home-action-check"></div>
+        <div class="home-action-content">
+          <h3>No hay acciones para hoy</h3>
+          <div class="home-action-meta">
+            <span>Agrega una actividad para organizar tu día.</span>
+          </div>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  lista.innerHTML = acciones
+    .map((item) => {
+      const idSeguro = escaparHTML(item.id);
+      const origenSeguro = escaparHTML(item.origen);
+      const clase = item.completada ? "completada" : "";
+
+      return `
+        <article class="home-action-item ${clase}">
+          <button
+            type="button"
+            class="home-action-check"
+            onclick="completarAccionHomeVitality('${origenSeguro}', '${idSeguro}')"
+          >
+            ✓
+          </button>
+
+          <div class="home-action-content">
+            <h3>${escaparHTML(item.titulo)}</h3>
+
+            <div class="home-action-meta">
+              <span>${escaparHTML(obtenerRangoHora(item.hora, item.horaFin))}</span>
+              <span class="home-action-tag">${escaparHTML(item.tipo)}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+async function iniciarHomeWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "horario.html") {
+    return;
+  }
+
+  await obtenerActividadesBackend();
+
+  const usuario = obtenerUsuario();
+  const acciones = obtenerAccionesHomeVitality();
+  const completadas = acciones.filter((item) => item.completada).length;
+  const total = acciones.length;
+  const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
+  const proxima = obtenerProximaAccionHomeVitality(acciones);
+
+  const fecha = document.getElementById("homeFechaActual");
+  const saludo = document.getElementById("homeSaludoUsuario");
+  const avatar = document.querySelector(".home-avatar-btn");
+  const identidad = document.getElementById("homeIdentidadUsuario");
+  const porcentajeSemana = document.getElementById("homePorcentajeSemana");
+  const circulo = document.querySelector(".home-progress-circle");
+  const accionesNumero = document.getElementById("homeAccionesNumero");
+  const accionesResumen = document.getElementById("homeAccionesResumen");
+
+  if (fecha) {
+    fecha.textContent = formatearFechaHomeVitality();
+  }
+
+  if (saludo) {
+    const primerNombre = usuario && usuario.nombre
+      ? usuario.nombre.split(" ")[0]
+      : "Usuario";
+
+    saludo.textContent = `Hola, ${primerNombre}`;
+  }
+
+  if (avatar && usuario) {
+    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
+  }
+
+  if (identidad) {
+    identidad.textContent = await obtenerIdentidadHomeVitality();
+  }
+
+  if (porcentajeSemana) {
+    porcentajeSemana.textContent = `${porcentaje}%`;
+  }
+
+  if (circulo) {
+    circulo.style.setProperty("--avance", `${porcentaje}%`);
+  }
+
+  if (accionesNumero) {
+    accionesNumero.textContent = `${completadas}/${total}`;
+  }
+
+  if (accionesResumen) {
+    accionesResumen.textContent = `${completadas} de ${total} hechas`;
+  }
+
+  const focoHora = document.getElementById("homeFocoHora");
+  const focoTitulo = document.getElementById("homeFocoTitulo");
+  const focoDetalle = document.getElementById("homeFocoDetalle");
+  const focoBtn = document.getElementById("homeFocoCompletarBtn");
+
+  if (proxima) {
+    if (focoHora) focoHora.textContent = proxima.hora || "Sin hora";
+    if (focoTitulo) focoTitulo.textContent = proxima.titulo;
+    if (focoDetalle) {
+      focoDetalle.textContent = `Un paso pequeño hacia tu meta · ${obtenerRangoHora(
+        proxima.hora,
+        proxima.horaFin
+      )}`;
+    }
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "▶ Empezar";
+      focoBtn.onclick = () => completarAccionHomeVitality(proxima.origen, proxima.id);
+    }
+  } else {
+    if (focoHora) focoHora.textContent = "Hoy";
+    if (focoTitulo) focoTitulo.textContent = "Día organizado";
+    if (focoDetalle) focoDetalle.textContent = "No tienes acciones pendientes por ahora.";
+
+    if (focoBtn) {
+      focoBtn.disabled = true;
+      focoBtn.textContent = "Completado";
+    }
+  }
+
+  pintarAccionesHomeVitality(acciones);
+}
+
+window.addEventListener("DOMContentLoaded", iniciarHomeWarmVitality);
+/* =========================
+   HOME WARM V2 - IA, RACHA, CHECKINS Y ACCIONES
+========================= */
+function obtenerFechaSimpleHomeVitality(fecha) {
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function restarDiasHomeVitality(fechaSimple, dias) {
+  const fecha = new Date(`${fechaSimple}T00:00:00`);
+  fecha.setDate(fecha.getDate() - dias);
+
+  return obtenerFechaSimpleHomeVitality(fecha);
+}
+
+function obtenerUltimos7DiasHomeVitality() {
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+  const dias = [];
+
+  for (let i = 6; i >= 0; i--) {
+    dias.push(restarDiasHomeVitality(hoy, i));
+  }
+
+  return dias;
+}
+
+function obtenerPuntajeHomeCheckin(estado) {
+  const valores = {
+    "Muy mal": 25,
+    "Mal": 38,
+    "Normal": 52,
+    "Bien": 70,
+    "Muy bien": 88
+  };
+
+  return valores[estado] || 55;
+}
+
+async function obtenerHistorialHomeVitality() {
+  try {
+    if (typeof obtenerHistorialCheckinsBackend === "function") {
+      return await obtenerHistorialCheckinsBackend();
+    }
+  } catch (error) {
+    console.error("Error obteniendo historial para inicio:", error);
+  }
+
+  return [];
+}
+
+function calcularRachaHomeVitality(historial) {
+  if (!historial || historial.length === 0) {
+    return 0;
+  }
+
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) => obtenerFechaSimpleHomeVitality(item.createdAt || item.fecha))
+        .filter(Boolean)
+    )
+  ];
+
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+
+  if (!diasUnicos.includes(hoy)) {
+    return 0;
+  }
+
+  let racha = 0;
+  let diaEsperado = hoy;
+
+  while (diasUnicos.includes(diaEsperado)) {
+    racha += 1;
+    diaEsperado = restarDiasHomeVitality(diaEsperado, 1);
+  }
+
+  return racha;
+}
+
+function pintarRachaHomeVitality(historial) {
+  const racha = calcularRachaHomeVitality(historial);
+
+  const badge = document.getElementById("homeRachaBadge");
+  const numero = document.getElementById("homeRachaNumero");
+
+  if (!badge || !numero) {
+    return;
+  }
+
+  numero.textContent = String(racha);
+
+  badge.classList.remove("racha-activa", "racha-inactiva");
+
+  if (racha > 0) {
+    badge.classList.add("racha-activa");
+  } else {
+    badge.classList.add("racha-inactiva");
+  }
+}
+
+function pintarGraficoCheckinsHomeVitality(historial) {
+  const contenedor = document.getElementById("homeMiniBars");
+  const porcentajeTexto = document.getElementById("homePorcentajeSemana");
+
+  if (!contenedor) {
+    return;
+  }
+
+  const ultimos7Dias = obtenerUltimos7DiasHomeVitality();
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+
+  const historialPorDia = {};
+
+  historial.forEach((item) => {
+    const fechaSimple = obtenerFechaSimpleHomeVitality(item.createdAt || item.fecha);
+
+    if (fechaSimple) {
+      historialPorDia[fechaSimple] = item;
+    }
+  });
+
+  const diasConCheckin = ultimos7Dias.filter((dia) => historialPorDia[dia]).length;
+  const porcentaje = Math.round((diasConCheckin / 7) * 100);
+
+  if (porcentajeTexto) {
+    porcentajeTexto.textContent = `${porcentaje}%`;
+  }
+
+  contenedor.innerHTML = ultimos7Dias
+    .map((dia) => {
+      const checkin = historialPorDia[dia];
+
+      if (!checkin) {
+        return `<span class="sin-checkin" style="height: 18%;"></span>`;
+      }
+
+      const altura = obtenerPuntajeHomeCheckin(checkin.estadoAnimo);
+      const clase = dia === hoy ? "hoy" : "con-checkin";
+
+      return `<span class="${clase}" style="height: ${altura}%;"></span>`;
+    })
+    .join("");
+}
+
+async function obtenerUltimaRecomendacionIAHomeVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return null;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      return null;
+    }
+
+    const data = await respuesta.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      return null;
+    }
+
+    const recomendacionesValidas = data
+      .filter((item) => item.estado !== "rechazada")
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return recomendacionesValidas[0] || null;
+  } catch (error) {
+    console.error("Error obteniendo recomendación IA para inicio:", error);
+    return null;
+  }
+}
+
+async function obtenerObjetivoPendienteHomeVitality() {
+  try {
+    if (typeof obtenerObjetivosBackend !== "function") {
+      return null;
+    }
+
+    const objetivos = await obtenerObjetivosBackend();
+
+    if (!Array.isArray(objetivos)) {
+      return null;
+    }
+
+    return objetivos.find((item) => !item.completado) || null;
+  } catch (error) {
+    console.error("Error obteniendo objetivo para inicio:", error);
+    return null;
+  }
+}
+
+function obtenerAccionesHomeVitality() {
+  const diaHoy = obtenerNombreDiaHoy();
+  const fechaHoy = obtenerFechaHoyFormatoInput();
+
+  const fijas = obtenerActividadesFijas()
+    .filter((item) => item.dia === diaHoy)
+    .map((item) => ({
+      ...item,
+      origen: "fija",
+      tipo: "Rutina",
+      titulo: item.actividad,
+      hora: item.hora,
+      horaFin: item.horaFin
+    }));
+
+  const especiales = obtenerActividadesEspeciales()
+    .filter((item) => item.fecha === fechaHoy)
+    .map((item) => ({
+      ...item,
+      origen: "especial",
+      tipo: item.tipo || "Evento",
+      titulo: item.actividad,
+      hora: item.hora,
+      horaFin: item.horaFin
+    }));
+
+  return [...fijas, ...especiales].sort((a, b) =>
+    (a.hora || "").localeCompare(b.hora || "")
+  );
+}
+
+function obtenerProximaAccionHomeVitality(acciones) {
+  return acciones.find((item) => !item.completada) || null;
+}
+
+async function completarAccionHomeVitality(origen, id) {
+  if (origen === "fija") {
+    await alternarActividadFija(id);
+  } else {
+    await alternarActividadEspecial(id);
+  }
+
+  setTimeout(iniciarHomeWarmVitality, 300);
+}
+
+function pintarAccionesHomeVitality(acciones) {
+  const lista = document.getElementById("homeAccionesLista");
+
+  if (!lista) {
+    return;
+  }
+
+  if (!acciones || acciones.length === 0) {
+    lista.innerHTML = `
+      <article class="home-action-item">
+        <div class="home-action-check"></div>
+        <div class="home-action-content">
+          <h3>No hay acciones para hoy</h3>
+          <div class="home-action-meta">
+            <span>Agrega una actividad para organizar tu día.</span>
+          </div>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  lista.innerHTML = acciones
+    .map((item) => {
+      const idSeguro = escaparHTML(item.id);
+      const origenSeguro = escaparHTML(item.origen);
+      const clase = item.completada ? "completada" : "";
+
+      return `
+        <article class="home-action-item ${clase}">
+          <button
+            type="button"
+            class="home-action-check"
+            onclick="completarAccionHomeVitality('${origenSeguro}', '${idSeguro}')"
+          >
+            ✓
+          </button>
+
+          <div class="home-action-content">
+            <h3>${escaparHTML(item.titulo)}</h3>
+
+            <div class="home-action-meta">
+              <span>${escaparHTML(obtenerRangoHora(item.hora, item.horaFin))}</span>
+              <span class="home-action-tag">${escaparHTML(item.tipo)}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+async function pintarFocoHomeVitality(acciones) {
+  const focoHora = document.getElementById("homeFocoHora");
+  const focoTitulo = document.getElementById("homeFocoTitulo");
+  const focoDetalle = document.getElementById("homeFocoDetalle");
+  const focoBtn = document.getElementById("homeFocoCompletarBtn");
+
+  const recomendacion = await obtenerUltimaRecomendacionIAHomeVitality();
+
+  if (recomendacion) {
+    const accion = recomendacion.accionSugerida || {};
+
+    if (focoHora) {
+      focoHora.textContent = accion.hora || "IA";
+    }
+
+    if (focoTitulo) {
+      focoTitulo.textContent =
+        accion.titulo ||
+        accion.tipo ||
+        "Recomendación de Vitality";
+    }
+
+    if (focoDetalle) {
+      focoDetalle.textContent =
+        accion.descripcion ||
+        recomendacion.mensajeIA ||
+        "Vitality generó una recomendación personalizada según tus datos.";
+    }
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Ver recomendación";
+      focoBtn.onclick = () => {
+        window.location.href = `chat.html?recomendacionId=${recomendacion._id}`;
+      };
+    }
+
+    return;
+  }
+
+  const objetivo = await obtenerObjetivoPendienteHomeVitality();
+
+  if (objetivo) {
+    if (focoHora) focoHora.textContent = objetivo.fecha || "Meta";
+    if (focoTitulo) focoTitulo.textContent = objetivo.titulo;
+    if (focoDetalle) focoDetalle.textContent = objetivo.descripcion || "Objetivo personal pendiente.";
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Ver objetivo";
+      focoBtn.onclick = () => {
+        window.location.href = "perfil.html";
+      };
+    }
+
+    return;
+  }
+
+  const proxima = obtenerProximaAccionHomeVitality(acciones);
+
+  if (proxima) {
+    if (focoHora) focoHora.textContent = proxima.hora || "Hoy";
+    if (focoTitulo) focoTitulo.textContent = proxima.titulo;
+    if (focoDetalle) {
+      focoDetalle.textContent = `Próxima acción · ${obtenerRangoHora(
+        proxima.hora,
+        proxima.horaFin
+      )}`;
+    }
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Completar";
+      focoBtn.onclick = () => completarAccionHomeVitality(proxima.origen, proxima.id);
+    }
+
+    return;
+  }
+
+  if (focoHora) focoHora.textContent = "Hoy";
+  if (focoTitulo) focoTitulo.textContent = "Día organizado";
+  if (focoDetalle) focoDetalle.textContent = "No tienes acciones pendientes por ahora.";
+
+  if (focoBtn) {
+    focoBtn.disabled = true;
+    focoBtn.textContent = "Completado";
+  }
+}
+
+async function iniciarHomeWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "horario.html") {
+    return;
+  }
+
+  await obtenerActividadesBackend();
+
+  const usuario = obtenerUsuario();
+  const historial = await obtenerHistorialHomeVitality();
+  const acciones = obtenerAccionesHomeVitality();
+
+  const completadas = acciones.filter((item) => item.completada).length;
+  const total = acciones.length;
+  const porcentajeAcciones = total > 0 ? Math.round((completadas / total) * 100) : 0;
+
+  const fecha = document.getElementById("homeFechaActual");
+  const saludo = document.getElementById("homeSaludoUsuario");
+  const avatar = document.querySelector(".home-avatar-btn");
+  const identidad = document.getElementById("homeIdentidadUsuario");
+  const circulo = document.querySelector(".home-progress-circle");
+  const accionesNumero = document.getElementById("homeAccionesNumero");
+  const accionesResumen = document.getElementById("homeAccionesResumen");
+
+  if (fecha) {
+    fecha.textContent = formatearFechaHomeVitality();
+  }
+
+  if (saludo) {
+    const primerNombre = usuario && usuario.nombre
+      ? usuario.nombre.split(" ")[0]
+      : "Usuario";
+
+    saludo.textContent = `Hola, ${primerNombre}`;
+  }
+
+  if (avatar && usuario) {
+    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
+  }
+
+  if (identidad) {
+    identidad.textContent = await obtenerIdentidadHomeVitality();
+  }
+
+  pintarGraficoCheckinsHomeVitality(historial);
+  pintarRachaHomeVitality(historial);
+
+  if (circulo) {
+    circulo.style.setProperty("--avance", `${porcentajeAcciones}%`);
+  }
+
+  if (accionesNumero) {
+    accionesNumero.textContent = `${completadas}/${total}`;
+  }
+
+  if (accionesResumen) {
+    accionesResumen.textContent = `${completadas} de ${total} hechas`;
+  }
+
+  pintarAccionesHomeVitality(acciones);
+  await pintarFocoHomeVitality(acciones);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(iniciarHomeWarmVitality, 600);
+});
+/* =========================
+   HISTORIAL CHECK-INS PARA HOME
+========================= */
+async function obtenerHistorialCheckinsBackend() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error obteniendo historial de check-ins:", error);
+    return [];
+  }
+}
+/* =========================
+   FIX FINAL HOME - CHECKINS, RACHA Y GRAFICO
+========================= */
+async function obtenerHistorialCheckinsBackend() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    console.warn("No hay usuarioId para historial de check-ins.");
+    return [];
+  }
+
+  try {
+    const url = `${API_URL}/api/checkins/historial/${usuarioId}`;
+    console.log("Consultando historial de check-ins:", url);
+
+    const respuesta = await fetch(url);
+
+    if (!respuesta.ok) {
+      console.warn("No se pudo obtener historial:", respuesta.status);
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    console.log("Historial recibido:", data);
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error obteniendo historial de check-ins:", error);
+    return [];
+  }
+}
+
+async function obtenerHistorialHomeVitality() {
+  let historial = [];
+
+  try {
+    historial = await obtenerHistorialCheckinsBackend();
+  } catch (error) {
+    console.error("Error obteniendo historial home:", error);
+  }
+
+  if (!Array.isArray(historial)) {
+    historial = [];
+  }
+
+  const checkinLocal = obtenerCheckin();
+
+  if (checkinLocal) {
+    const fechaLocal =
+      checkinLocal.fechaISO ||
+      obtenerFechaSimpleHomeVitality(checkinLocal.fecha) ||
+      obtenerFechaSimpleHomeVitality(new Date());
+
+    const yaExiste = historial.some((item) => {
+      const fechaItem = obtenerFechaSimpleHomeVitality(
+        item.createdAt || item.fecha || item.fechaISO
+      );
+
+      return fechaItem === fechaLocal;
+    });
+
+    if (!yaExiste) {
+      historial.push({
+        ...checkinLocal,
+        fechaISO: fechaLocal,
+        fecha: fechaLocal,
+        createdAt: `${fechaLocal}T12:00:00`
+      });
+    }
+  }
+
+  console.log("Historial final usado por home:", historial);
+
+  return historial;
+}
+
+function obtenerFechaSimpleHomeVitality(fecha) {
+  if (!fecha) {
+    return null;
+  }
+
+  if (typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return fecha;
+  }
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function pintarGraficoCheckinsHomeVitality(historial) {
+  const contenedor = document.getElementById("homeMiniBars");
+  const porcentajeTexto = document.getElementById("homePorcentajeSemana");
+
+  if (!contenedor) {
+    return;
+  }
+
+  const ultimos7Dias = obtenerUltimos7DiasHomeVitality();
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+
+  const historialPorDia = {};
+
+  historial.forEach((item) => {
+    const fechaSimple = obtenerFechaSimpleHomeVitality(
+      item.createdAt || item.fecha || item.fechaISO
+    );
+
+    if (fechaSimple) {
+      historialPorDia[fechaSimple] = item;
+    }
+  });
+
+  const diasConCheckin = ultimos7Dias.filter((dia) => historialPorDia[dia]).length;
+  const porcentaje = Math.round((diasConCheckin / 7) * 100);
+
+  if (porcentajeTexto) {
+    porcentajeTexto.textContent = `${porcentaje}%`;
+  }
+
+  contenedor.innerHTML = ultimos7Dias
+    .map((dia) => {
+      const checkin = historialPorDia[dia];
+
+      if (!checkin) {
+        return `<span class="sin-checkin" style="height: 18%;"></span>`;
+      }
+
+      const altura = obtenerPuntajeHomeCheckin(checkin.estadoAnimo);
+      const clase = dia === hoy ? "hoy" : "con-checkin";
+
+      return `<span class="${clase}" style="height: ${altura}%;"></span>`;
+    })
+    .join("");
+}
+
+function calcularRachaHomeVitality(historial) {
+  if (!Array.isArray(historial) || historial.length === 0) {
+    return 0;
+  }
+
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) =>
+          obtenerFechaSimpleHomeVitality(item.createdAt || item.fecha || item.fechaISO)
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+
+  if (!diasUnicos.includes(hoy)) {
+    return 0;
+  }
+
+  let racha = 0;
+  let diaEsperado = hoy;
+
+  while (diasUnicos.includes(diaEsperado)) {
+    racha += 1;
+    diaEsperado = restarDiasHomeVitality(diaEsperado, 1);
+  }
+
+  return racha;
+}
+
+function pintarRachaHomeVitality(historial) {
+  const racha = calcularRachaHomeVitality(historial);
+
+  const badge = document.getElementById("homeRachaBadge");
+  const numero = document.getElementById("homeRachaNumero");
+
+  if (!badge || !numero) {
+    return;
+  }
+
+  numero.textContent = String(racha);
+
+  badge.classList.remove("racha-activa", "racha-inactiva");
+
+  if (racha > 0) {
+    badge.classList.add("racha-activa");
+  } else {
+    badge.classList.add("racha-inactiva");
+  }
+
+  console.log("Racha calculada:", racha);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    iniciarHomeWarmVitality();
+  }, 1000);
+});
+/* =========================
+   ORGANIZAR - LISTA ACTIVIDADES FIJAS
+========================= */
+function obtenerActividadesFijasOrganizarVitality() {
+  try {
+    if (typeof obtenerActividadesFijas === "function") {
+      return obtenerActividadesFijas();
+    }
+
+    return leerJSON("actividadesFijasVitality", []);
+  } catch (error) {
+    console.error("Error obteniendo actividades fijas:", error);
+    return [];
+  }
+}
+
+function mostrarActividadesFijasOrganizarVitality() {
+  const contenedor = document.getElementById("listaActividadesFijasOrganizar");
+
+  if (!contenedor) {
+    return;
+  }
+
+  const actividades = obtenerActividadesFijasOrganizarVitality();
+
+  if (!Array.isArray(actividades) || actividades.length === 0) {
+    contenedor.innerHTML = `
+      <div class="organizar-fija-item">
+        <h3>No hay actividades fijas guardadas</h3>
+        <p>Agrega una rutina semanal para verla luego en tu inicio.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = actividades
+    .map((actividad) => {
+      const id = escaparHTML(actividad.id || actividad._id || "");
+      const titulo = escaparHTML(actividad.actividad || actividad.titulo || "Actividad");
+      const dia = escaparHTML(actividad.dia || "Sin día");
+      const horario = escaparHTML(obtenerRangoHora(actividad.hora, actividad.horaFin));
+
+      return `
+        <article class="organizar-fija-item">
+          <h3>${titulo}</h3>
+          <p>${dia} · ${horario}</p>
+
+          <div class="organizar-fija-actions">
+            <button
+              type="button"
+              class="organizar-fija-edit"
+              onclick="editarActividadFijaOrganizarVitality('${id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="organizar-fija-delete"
+              onclick="eliminarActividadFijaOrganizarVitality('${id}')"
+            >
+              Eliminar
+            </button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function editarActividadFijaOrganizarVitality(id) {
+  const actividades = obtenerActividadesFijasOrganizarVitality();
+  const actividad = actividades.find((item) => String(item.id || item._id) === String(id));
+
+  if (!actividad) {
+    mostrarToastVitality("No se encontró la actividad.");
+    return;
+  }
+
+  const idInput = document.getElementById("editandoActividadFijaId");
+  const diaInput = document.getElementById("diaFijo");
+  const horaInput = document.getElementById("horaFija");
+  const horaFinInput = document.getElementById("horaFinFija");
+  const actividadInput = document.getElementById("actividadFija");
+  const titulo = document.getElementById("tituloActividadFija");
+  const botonGuardar = document.getElementById("btnGuardarActividadFija");
+  const botonCancelar = document.getElementById("btnCancelarEdicionFija");
+
+  if (idInput) idInput.value = actividad.id || actividad._id || "";
+  if (diaInput) diaInput.value = actividad.dia || "";
+  if (horaInput) horaInput.value = actividad.hora || "";
+  if (horaFinInput) horaFinInput.value = actividad.horaFin || "";
+  if (actividadInput) actividadInput.value = actividad.actividad || actividad.titulo || "";
+
+  if (titulo) titulo.textContent = "Editar actividad fija";
+  if (botonGuardar) botonGuardar.textContent = "Guardar cambios";
+  if (botonCancelar) botonCancelar.style.display = "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+async function eliminarActividadFijaOrganizarVitality(id) {
+  const confirmar = confirm("¿Quieres eliminar esta actividad fija?");
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    if (typeof eliminarActividadFija === "function") {
+      await eliminarActividadFija(id);
+    } else {
+      const actividades = obtenerActividadesFijasOrganizarVitality();
+      const nuevasActividades = actividades.filter(
+        (item) => String(item.id || item._id) !== String(id)
+      );
+
+      guardarJSON("actividadesFijasVitality", nuevasActividades);
+    }
+
+    mostrarToastVitality("Actividad eliminada.");
+    mostrarActividadesFijasOrganizarVitality();
+  } catch (error) {
+    console.error("Error eliminando actividad fija:", error);
+    mostrarToastVitality("No se pudo eliminar la actividad.");
+  }
+}
+
+function reiniciarFormularioFijaOrganizarVitality() {
+  const form = document.getElementById("actividadFijaForm");
+  const idInput = document.getElementById("editandoActividadFijaId");
+  const titulo = document.getElementById("tituloActividadFija");
+  const botonGuardar = document.getElementById("btnGuardarActividadFija");
+  const botonCancelar = document.getElementById("btnCancelarEdicionFija");
+
+  if (form) form.reset();
+  if (idInput) idInput.value = "";
+  if (titulo) titulo.textContent = "Agregar actividad fija";
+  if (botonGuardar) botonGuardar.textContent = "Guardar actividad fija";
+  if (botonCancelar) botonCancelar.style.display = "none";
+}
+
+const cancelarEdicionActividadFijaOriginalVitality = window.cancelarEdicionActividadFija;
+
+window.cancelarEdicionActividadFija = function () {
+  if (typeof cancelarEdicionActividadFijaOriginalVitality === "function") {
+    cancelarEdicionActividadFijaOriginalVitality();
+  }
+
+  reiniciarFormularioFijaOrganizarVitality();
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "organizar_horario.html") {
+    return;
+  }
+
+  setTimeout(mostrarActividadesFijasOrganizarVitality, 700);
+
+  const form = document.getElementById("actividadFijaForm");
+
+  if (form) {
+    form.addEventListener("submit", () => {
+      setTimeout(() => {
+        reiniciarFormularioFijaOrganizarVitality();
+        mostrarActividadesFijasOrganizarVitality();
+      }, 900);
+    });
+  }
+});
+
+/* =========================
+   CHAT UX WARM - INPUT, TECLADO Y AUTO SCROLL
+========================= */
+function bajarChatAlUltimoMensajeVitality() {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+function iniciarChatUXWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  document.body.classList.add("chat-warm-page");
+
+  const input = document.getElementById("userInput");
+  const chatBox = document.getElementById("chatBox");
+
+  if (input) {
+    input.addEventListener("focus", () => {
+      document.body.classList.add("chat-input-focused");
+      setTimeout(bajarChatAlUltimoMensajeVitality, 350);
+    });
+
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("chat-input-focused");
+      }, 250);
+    });
+
+    input.addEventListener("input", () => {
+      setTimeout(bajarChatAlUltimoMensajeVitality, 80);
+    });
+  }
+
+  if (window.visualViewport) {
+    const alturaInicial = window.visualViewport.height;
+
+    window.visualViewport.addEventListener("resize", () => {
+      const diferencia = alturaInicial - window.visualViewport.height;
+
+      if (diferencia > 120) {
+        document.body.classList.add("chat-keyboard-open");
+      } else {
+        document.body.classList.remove("chat-keyboard-open");
+      }
+
+      setTimeout(bajarChatAlUltimoMensajeVitality, 120);
+    });
+  }
+
+  if (chatBox) {
+    const observador = new MutationObserver(() => {
+      bajarChatAlUltimoMensajeVitality();
+    });
+
+    observador.observe(chatBox, {
+      childList: true,
+      subtree: true
+    });
+
+    setTimeout(bajarChatAlUltimoMensajeVitality, 400);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", iniciarChatUXWarmVitality);
+/* =========================
+   PERFIL WARM VISUAL
+========================= */
+function obtenerFechaSimplePerfilVitality(fecha) {
+  if (!fecha) return null;
+
+  if (typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return fecha;
+  }
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function restarDiasPerfilVitality(fechaSimple, dias) {
+  const fecha = new Date(`${fechaSimple}T00:00:00`);
+  fecha.setDate(fecha.getDate() - dias);
+  return obtenerFechaSimplePerfilVitality(fecha);
+}
+
+function obtenerUltimos7DiasPerfilVitality() {
+  const hoy = obtenerFechaSimplePerfilVitality(new Date());
+  const dias = [];
+
+  for (let i = 6; i >= 0; i--) {
+    dias.push(restarDiasPerfilVitality(hoy, i));
+  }
+
+  return dias;
+}
+
+function obtenerPuntajePerfilCheckin(estado) {
+  const valores = {
+    "Muy mal": 25,
+    "Mal": 38,
+    "Normal": 52,
+    "Bien": 70,
+    "Muy bien": 88
+  };
+
+  return valores[estado] || 55;
+}
+
+async function obtenerHistorialPerfilVitality() {
+  try {
+    if (typeof obtenerHistorialCheckinsBackend === "function") {
+      const historial = await obtenerHistorialCheckinsBackend();
+      return Array.isArray(historial) ? historial : [];
+    }
+  } catch (error) {
+    console.error("Error obteniendo historial para perfil:", error);
+  }
+
+  return [];
+}
+
+function calcularRachaPerfilVitality(historial) {
+  if (!Array.isArray(historial) || historial.length === 0) {
+    return 0;
+  }
+
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) =>
+          obtenerFechaSimplePerfilVitality(item.createdAt || item.fecha || item.fechaISO)
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  const hoy = obtenerFechaSimplePerfilVitality(new Date());
+
+  if (!diasUnicos.includes(hoy)) {
+    return 0;
+  }
+
+  let racha = 0;
+  let diaEsperado = hoy;
+
+  while (diasUnicos.includes(diaEsperado)) {
+    racha += 1;
+    diaEsperado = restarDiasPerfilVitality(diaEsperado, 1);
+  }
+
+  return racha;
+}
+
+async function obtenerOnboardingPerfilVitality() {
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+
+      if (onboarding) {
+        return onboarding;
+      }
+    }
+  } catch (error) {
+    console.error("Error obteniendo onboarding para perfil:", error);
+  }
+
+  try {
+    return leerJSON("onboardingVitality", {});
+  } catch (error) {
+    return {};
+  }
+}
+
+function obtenerAccionesHoyPerfilVitality() {
+  try {
+    const diaHoy = obtenerNombreDiaHoy();
+    const fechaHoy = obtenerFechaHoyFormatoInput();
+
+    const fijas = obtenerActividadesFijas()
+      .filter((item) => item.dia === diaHoy);
+
+    const especiales = obtenerActividadesEspeciales()
+      .filter((item) => item.fecha === fechaHoy);
+
+    return [...fijas, ...especiales];
+  } catch (error) {
+    console.error("Error obteniendo acciones para perfil:", error);
+    return [];
+  }
+}
+
+function pintarPerfilWarmChips(contenedorId, items, icono) {
+  const contenedor = document.getElementById(contenedorId);
+
+  if (!contenedor) return;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    contenedor.innerHTML = `
+      <div class="perfil-empty-state">
+        <p>Aún no hay datos registrados.</p>
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = items
+    .map((item) => `
+      <div class="perfil-chip">
+        <div class="perfil-chip-icon">${icono}</div>
+        <strong>${escaparHTML(String(item))}</strong>
+      </div>
+    `)
+    .join("");
+}
+
+function pintarGraficoPerfilCheckins(historial) {
+  const barras = document.getElementById("perfilWarmBarrasCheckin");
+  const porcentajeTexto = document.getElementById("perfilWarmCheckinPorcentaje");
+  const numero = document.getElementById("perfilWarmCheckinNumero");
+  const circle = document.getElementById("perfilWarmCircleCheckin");
+
+  if (!barras) return;
+
+  const ultimos7 = obtenerUltimos7DiasPerfilVitality();
+  const hoy = obtenerFechaSimplePerfilVitality(new Date());
+
+  const historialPorDia = {};
+
+  historial.forEach((item) => {
+    const fechaSimple = obtenerFechaSimplePerfilVitality(
+      item.createdAt || item.fecha || item.fechaISO
+    );
+
+    if (fechaSimple) {
+      historialPorDia[fechaSimple] = item;
+    }
+  });
+
+  const diasConCheckin = ultimos7.filter((dia) => historialPorDia[dia]).length;
+  const porcentaje = Math.round((diasConCheckin / 7) * 100);
+
+  if (porcentajeTexto) porcentajeTexto.textContent = `${porcentaje}%`;
+  if (numero) numero.textContent = `${diasConCheckin}/7`;
+  if (circle) circle.style.setProperty("--avance", `${porcentaje}%`);
+
+  barras.innerHTML = ultimos7
+    .map((dia) => {
+      const checkin = historialPorDia[dia];
+
+      if (!checkin) {
+        return `<span style="height: 18%;"></span>`;
+      }
+
+      const altura = obtenerPuntajePerfilCheckin(checkin.estadoAnimo);
+      const clase = dia === hoy ? "hoy" : "con-checkin";
+
+      return `<span class="${clase}" style="height: ${altura}%;"></span>`;
+    })
+    .join("");
+}
+
+function pintarAccionesPerfilVitality() {
+  const acciones = obtenerAccionesHoyPerfilVitality();
+  const total = acciones.length;
+  const completadas = acciones.filter((item) => item.completada).length;
+  const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
+
+  const numero = document.getElementById("perfilWarmAccionesNumero");
+  const circle = document.getElementById("perfilWarmCircleAcciones");
+
+  if (numero) numero.textContent = `${completadas}/${total}`;
+  if (circle) circle.style.setProperty("--avance", `${porcentaje}%`);
+}
+
+function pintarRachaPerfilVitality(historial) {
+  const racha = calcularRachaPerfilVitality(historial);
+  const numero = document.getElementById("perfilWarmRachaNumero");
+  const card = document.querySelector(".perfil-racha-card");
+
+  if (numero) numero.textContent = String(racha);
+
+  if (card) {
+    if (racha > 0) {
+      card.classList.remove("racha-inactiva");
+    } else {
+      card.classList.add("racha-inactiva");
+    }
+  }
+}
+
+async function iniciarPerfilWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "perfil.html") {
+    return;
+  }
+
+  try {
+    if (typeof obtenerActividadesBackend === "function") {
+      await obtenerActividadesBackend();
+    }
+  } catch (error) {
+    console.error("Error cargando actividades en perfil:", error);
+  }
+
+  const usuario = obtenerUsuario ? obtenerUsuario() : null;
+  const onboarding = await obtenerOnboardingPerfilVitality();
+  const historial = await obtenerHistorialPerfilVitality();
+
+  const nombre = usuario && usuario.nombre ? usuario.nombre : "Usuario";
+  const primerNombre = nombre.split(" ")[0];
+  const inicial = primerNombre.charAt(0).toUpperCase() || "U";
+
+  const titulo = document.getElementById("perfilWarmNombre");
+  const nombreCard = document.getElementById("perfilWarmNombreCard");
+  const correo = document.getElementById("perfilWarmCorreo");
+  const avatar = document.getElementById("perfilWarmAvatar");
+  const identidad = document.getElementById("perfilWarmIdentidad");
+
+  if (titulo) titulo.textContent = `Hola, ${primerNombre}`;
+  if (nombreCard) nombreCard.textContent = nombre;
+  if (correo) correo.textContent = usuario && usuario.correo ? usuario.correo : "Sin correo registrado";
+  if (avatar) avatar.textContent = inicial;
+
+  if (identidad) {
+    identidad.textContent = onboarding.identidad || "Construyendo tu identidad";
+  }
+
+  pintarGraficoPerfilCheckins(historial);
+  pintarAccionesPerfilVitality();
+  pintarRachaPerfilVitality(historial);
+
+  pintarPerfilWarmChips(
+    "perfilWarmObjetivos",
+    onboarding.objetivos || [],
+    "✓"
+  );
+
+  pintarPerfilWarmChips(
+    "perfilWarmEstres",
+    onboarding.estres || [],
+    "!"
+  );
+}
+
+window.addEventListener("DOMContentLoaded", iniciarPerfilWarmVitality);
+
+/* =========================
+   PERFIL VISUAL - IDENTIDAD Y PORCENTAJES
+========================= */
+function escaparPerfilVisualVitality(texto) {
+  const div = document.createElement("div");
+  div.textContent = texto;
+  return div.innerHTML;
+}
+
+function fechaSimplePerfilVisualVitality(fecha) {
+  if (!fecha) return null;
+
+  if (typeof fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return fecha;
+  }
+
+  const fechaObjeto = new Date(fecha);
+
+  if (Number.isNaN(fechaObjeto.getTime())) {
+    return null;
+  }
+
+  const anio = fechaObjeto.getFullYear();
+  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, "0");
+  const dia = String(fechaObjeto.getDate()).padStart(2, "0");
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function restarDiasPerfilVisualVitality(fechaSimple, dias) {
+  const fecha = new Date(`${fechaSimple}T00:00:00`);
+  fecha.setDate(fecha.getDate() - dias);
+  return fechaSimplePerfilVisualVitality(fecha);
+}
+
+function ultimos7DiasPerfilVisualVitality() {
+  const hoy = fechaSimplePerfilVisualVitality(new Date());
+  const dias = [];
+
+  for (let i = 6; i >= 0; i--) {
+    dias.push(restarDiasPerfilVisualVitality(hoy, i));
+  }
+
+  return dias;
+}
+
+function valorAnimoPerfilVisual(estado) {
+  const mapa = {
+    "Muy mal": 20,
+    "Mal": 40,
+    "Normal": 60,
+    "Bien": 80,
+    "Muy bien": 95
+  };
+
+  return mapa[estado] || 55;
+}
+
+function valorEstresPerfilVisual(estres) {
+  const mapa = {
+    "Alto": 30,
+    "Medio": 60,
+    "Bajo": 90
+  };
+
+  return mapa[estres] || 55;
+}
+
+function valorSuenoPerfilVisual(sueno) {
+  const mapa = {
+    "Mal": 30,
+    "Regular": 60,
+    "Bien": 90
+  };
+
+  return mapa[sueno] || 55;
+}
+
+function valorEnergiaPerfilVisual(energia) {
+  const mapa = {
+    "Baja": 30,
+    "Media": 60,
+    "Alta": 90
+  };
+
+  return mapa[energia] || 55;
+}
+
+async function historialPerfilVisualVitality() {
+  try {
+    if (typeof obtenerHistorialCheckinsBackend === "function") {
+      const historial = await obtenerHistorialCheckinsBackend();
+      return Array.isArray(historial) ? historial : [];
+    }
+  } catch (error) {
+    console.error("Error obteniendo historial perfil visual:", error);
+  }
+
+  return [];
+}
+
+async function onboardingPerfilVisualVitality() {
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+      return onboarding || {};
+    }
+  } catch (error) {
+    console.error("Error obteniendo onboarding perfil visual:", error);
+  }
+
+  try {
+    return leerJSON("onboardingVitality", {});
+  } catch (error) {
+    return {};
+  }
+}
+
+function accionesHoyPerfilVisualVitality() {
+  try {
+    const diaHoy = obtenerNombreDiaHoy();
+    const fechaHoy = obtenerFechaHoyFormatoInput();
+
+    const fijas = obtenerActividadesFijas().filter((item) => item.dia === diaHoy);
+    const especiales = obtenerActividadesEspeciales().filter((item) => item.fecha === fechaHoy);
+
+    return [...fijas, ...especiales];
+  } catch (error) {
+    console.error("Error obteniendo acciones perfil visual:", error);
+    return [];
+  }
+}
+
+function calcularRachaPerfilVisualVitality(historial) {
+  const diasUnicos = [
+    ...new Set(
+      historial
+        .map((item) => fechaSimplePerfilVisualVitality(item.createdAt || item.fecha || item.fechaISO))
+        .filter(Boolean)
+    )
+  ];
+
+  const hoy = fechaSimplePerfilVisualVitality(new Date());
+
+  if (!diasUnicos.includes(hoy)) {
+    return 0;
+  }
+
+  let racha = 0;
+  let dia = hoy;
+
+  while (diasUnicos.includes(dia)) {
+    racha += 1;
+    dia = restarDiasPerfilVisualVitality(dia, 1);
+  }
+
+  return racha;
+}
+
+function pintarRingPerfilVisual(id, porcentaje) {
+  const elemento = document.getElementById(id);
+
+  if (elemento) {
+    elemento.style.setProperty("--avance", `${porcentaje}%`);
+  }
+}
+
+function pintarBarraPerfilVisual(idBarra, idTexto, porcentaje) {
+  const barra = document.getElementById(idBarra);
+  const texto = document.getElementById(idTexto);
+
+  if (barra) barra.style.width = `${porcentaje}%`;
+  if (texto) texto.textContent = `${porcentaje}%`;
+}
+
+function pintarSemanaPerfilVisual(historial) {
+  const contenedor = document.getElementById("perfilVisualSemana");
+  const texto = document.getElementById("perfilVisualSemanaTexto");
+
+  if (!contenedor) return;
+
+  const dias = ultimos7DiasPerfilVisualVitality();
+  const hoy = fechaSimplePerfilVisualVitality(new Date());
+
+  const diasHistorial = [
+    ...new Set(
+      historial
+        .map((item) => fechaSimplePerfilVisualVitality(item.createdAt || item.fecha || item.fechaISO))
+        .filter(Boolean)
+    )
+  ];
+
+  const letras = ["L", "M", "Mi", "J", "V", "S", "D"];
+  const diasConCheckin = dias.filter((dia) => diasHistorial.includes(dia)).length;
+
+  contenedor.innerHTML = dias
+    .map((dia, index) => {
+      let clase = "";
+
+      if (diasHistorial.includes(dia)) {
+        clase = "con-checkin";
+      }
+
+      if (dia === hoy && diasHistorial.includes(dia)) {
+        clase = "hoy";
+      }
+
+      return `
+        <div class="${clase}">
+          <span></span>
+          <small>${letras[index]}</small>
+        </div>
+      `;
+    })
+    .join("");
+
+  if (texto) {
+    texto.textContent = `${diasConCheckin} de 7 días con check-in.`;
+  }
+
+  return diasConCheckin;
+}
+
+function pintarTagsPerfilVisual(id, items, icono) {
+  const contenedor = document.getElementById(id);
+
+  if (!contenedor) return;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    contenedor.innerHTML = "<p>Aún no hay datos registrados.</p>";
+    return;
+  }
+
+  contenedor.innerHTML = items
+    .map((item) => `
+      <div class="perfil-tag">
+        <span>${icono}</span>
+        ${escaparPerfilVisualVitality(String(item))}
+      </div>
+    `)
+    .join("");
+}
+
+async function iniciarPerfilVisualVitality() {
+  if (obtenerPaginaActual() !== "perfil.html") {
+    return;
+  }
+
+  try {
+    if (typeof obtenerActividadesBackend === "function") {
+      await obtenerActividadesBackend();
+    }
+  } catch (error) {
+    console.error("Error cargando actividades perfil visual:", error);
+  }
+
+  const usuario = typeof obtenerUsuario === "function" ? obtenerUsuario() : null;
+  const onboarding = await onboardingPerfilVisualVitality();
+  const historial = await historialPerfilVisualVitality();
+
+  const nombre = usuario && usuario.nombre ? usuario.nombre : "Usuario";
+  const primerNombre = nombre.split(" ")[0];
+  const inicial = primerNombre.charAt(0).toUpperCase() || "U";
+
+  const titulo = document.getElementById("perfilVisualTitulo");
+  const avatar = document.getElementById("perfilVisualAvatar");
+  const identidad = document.getElementById("perfilVisualIdentidad");
+  const usuarioTexto = document.getElementById("perfilVisualUsuario");
+
+  if (titulo) titulo.textContent = `Hola, ${primerNombre}`;
+  if (avatar) avatar.textContent = inicial;
+  if (identidad) identidad.textContent = onboarding.identidad || "Construyendo tu identidad";
+  if (usuarioTexto) usuarioTexto.textContent = usuario && usuario.correo ? usuario.correo : "Usuario Vitality";
+
+  const ultimoCheckin = historial.length > 0
+    ? historial[0]
+    : null;
+
+  const animo = ultimoCheckin ? valorAnimoPerfilVisual(ultimoCheckin.estadoAnimo) : 0;
+  const calma = ultimoCheckin ? valorEstresPerfilVisual(ultimoCheckin.nivelEstres) : 0;
+  const sueno = ultimoCheckin ? valorSuenoPerfilVisual(ultimoCheckin.sueno) : 0;
+  const energia = ultimoCheckin ? valorEnergiaPerfilVisual(ultimoCheckin.energia) : 0;
+
+  const bienestar = ultimoCheckin
+    ? Math.round((animo + calma + sueno + energia) / 4)
+    : 0;
+
+  pintarBarraPerfilVisual("perfilBarraAnimo", "perfilValorAnimo", animo);
+  pintarBarraPerfilVisual("perfilBarraEstres", "perfilValorEstres", calma);
+  pintarBarraPerfilVisual("perfilBarraSueno", "perfilValorSueno", sueno);
+  pintarBarraPerfilVisual("perfilBarraEnergia", "perfilValorEnergia", energia);
+
+  const diasConCheckin = pintarSemanaPerfilVisual(historial) || 0;
+  const constancia = Math.round((diasConCheckin / 7) * 100);
+
+  const acciones = accionesHoyPerfilVisualVitality();
+  const totalAcciones = acciones.length;
+  const completadas = acciones.filter((item) => item.completada).length;
+  const organizacion = totalAcciones > 0
+    ? Math.round((completadas / totalAcciones) * 100)
+    : 0;
+
+  const bienestarText = document.getElementById("perfilPorcentajeBienestar");
+  const constanciaText = document.getElementById("perfilPorcentajeConstancia");
+  const organizacionText = document.getElementById("perfilPorcentajeOrganizacion");
+
+  if (bienestarText) bienestarText.textContent = `${bienestar}%`;
+  if (constanciaText) constanciaText.textContent = `${constancia}%`;
+  if (organizacionText) organizacionText.textContent = `${organizacion}%`;
+
+  pintarRingPerfilVisual("perfilRingBienestar", bienestar);
+  pintarRingPerfilVisual("perfilRingConstancia", constancia);
+  pintarRingPerfilVisual("perfilRingOrganizacion", organizacion);
+
+  const racha = calcularRachaPerfilVisualVitality(historial);
+  const rachaNumero = document.getElementById("perfilVisualRacha");
+  const rachaTexto = document.getElementById("perfilVisualRachaTexto");
+  const rachaCard = document.querySelector(".perfil-streak-card");
+
+  if (rachaNumero) rachaNumero.textContent = String(racha);
+
+  if (rachaTexto) {
+    rachaTexto.textContent = racha > 0
+      ? "Tu racha está activa hoy."
+      : "Haz tu check-in para activar tu racha.";
+  }
+
+  if (rachaCard) {
+    if (racha > 0) {
+      rachaCard.classList.remove("inactiva");
+    } else {
+      rachaCard.classList.add("inactiva");
+    }
+  }
+
+  pintarTagsPerfilVisual("perfilVisualObjetivos", onboarding.objetivos || [], "🎯");
+  pintarTagsPerfilVisual("perfilVisualEstres", onboarding.estres || [], "⚠️");
+}
+
+window.addEventListener("DOMContentLoaded", iniciarPerfilVisualVitality);
+
+/* =========================
+   HOME - FOCO IA + CARRUSEL + DIAS CORRECTOS
+========================= */
+function obtenerEmojiFocoHomeVitality(texto = "") {
+  const t = String(texto).toLowerCase();
+
+  if (t.includes("agua") || t.includes("hidrata")) return "💧";
+  if (t.includes("respira") || t.includes("respiración")) return "🌬️";
+  if (t.includes("camina") || t.includes("ejercicio") || t.includes("mover")) return "🚶";
+  if (t.includes("dormir") || t.includes("sueño") || t.includes("descanso")) return "🌙";
+  if (t.includes("estudi") || t.includes("tarea") || t.includes("foco")) return "📚";
+  if (t.includes("pausa") || t.includes("descanso")) return "☕";
+  if (t.includes("digital") || t.includes("instagram") || t.includes("tiktok") || t.includes("celular")) return "📱";
+  if (t.includes("medita") || t.includes("calma") || t.includes("ansiedad")) return "🧘";
+
+  return "✨";
+}
+
+function obtenerDescripcionCortaHomeVitality(texto = "") {
+  const limpio = String(texto)
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!limpio) {
+    return "Vitality preparó una sugerencia breve para ayudarte a avanzar con calma.";
+  }
+
+  if (limpio.length <= 105) {
+    return limpio;
+  }
+
+  return `${limpio.slice(0, 105).trim()}...`;
+}
+
+function obtenerTituloCortoRecomendacionHomeVitality(recomendacion) {
+  const accion = recomendacion?.accionSugerida || {};
+
+  return (
+    accion.titulo ||
+    accion.tipo ||
+    recomendacion?.categoria ||
+    "Recomendación personalizada"
+  );
+}
+
+function obtenerTextoRecomendacionHomeVitality(recomendacion) {
+  const accion = recomendacion?.accionSugerida || {};
+
+  return (
+    accion.descripcion ||
+    accion.detalle ||
+    recomendacion?.resumen ||
+    recomendacion?.mensajeIA ||
+    recomendacion?.mensaje ||
+    "Vitality generó una recomendación personalizada según tu estado y tus datos."
+  );
+}
+
+async function pintarFocoHomeVitality(acciones) {
+  const focoHora = document.getElementById("homeFocoHora");
+  const focoTitulo = document.getElementById("homeFocoTitulo");
+  const focoDetalle = document.getElementById("homeFocoDetalle");
+  const focoEmoji = document.getElementById("homeFocoEmoji");
+  const focoBtn = document.getElementById("homeFocoCompletarBtn");
+
+  const recomendacion = await obtenerUltimaRecomendacionIAHomeVitality();
+
+  if (recomendacion) {
+    const accion = recomendacion.accionSugerida || {};
+    const titulo = obtenerTituloCortoRecomendacionHomeVitality(recomendacion);
+    const texto = obtenerTextoRecomendacionHomeVitality(recomendacion);
+    const emoji = obtenerEmojiFocoHomeVitality(`${titulo} ${texto}`);
+
+    if (focoHora) focoHora.textContent = accion.hora || "IA";
+    if (focoTitulo) focoTitulo.textContent = titulo;
+    if (focoDetalle) focoDetalle.textContent = obtenerDescripcionCortaHomeVitality(texto);
+    if (focoEmoji) focoEmoji.textContent = emoji;
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Ver recomendación";
+      focoBtn.onclick = () => {
+        window.location.href = `chat.html?recomendacionId=${recomendacion._id}`;
+      };
+    }
+
+    return;
+  }
+
+  const objetivo = await obtenerObjetivoPendienteHomeVitality();
+
+  if (objetivo) {
+    const titulo = objetivo.titulo || "Objetivo pendiente";
+    const texto = objetivo.descripcion || "Tienes un objetivo personal pendiente para avanzar hoy.";
+
+    if (focoHora) focoHora.textContent = "Meta";
+    if (focoTitulo) focoTitulo.textContent = titulo;
+    if (focoDetalle) focoDetalle.textContent = obtenerDescripcionCortaHomeVitality(texto);
+    if (focoEmoji) focoEmoji.textContent = obtenerEmojiFocoHomeVitality(`${titulo} ${texto}`);
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Ver perfil";
+      focoBtn.onclick = () => {
+        window.location.href = "perfil.html";
+      };
+    }
+
+    return;
+  }
+
+  const proxima = obtenerProximaAccionHomeVitality(acciones);
+
+  if (proxima) {
+    const titulo = proxima.titulo || "Próxima acción";
+    const texto = `Próxima acción de tu día · ${obtenerRangoHora(proxima.hora, proxima.horaFin)}`;
+
+    if (focoHora) focoHora.textContent = proxima.hora || "Hoy";
+    if (focoTitulo) focoTitulo.textContent = titulo;
+    if (focoDetalle) focoDetalle.textContent = texto;
+    if (focoEmoji) focoEmoji.textContent = obtenerEmojiFocoHomeVitality(titulo);
+
+    if (focoBtn) {
+      focoBtn.disabled = false;
+      focoBtn.textContent = "Completar";
+      focoBtn.onclick = () => completarAccionHomeVitality(proxima.origen, proxima.id);
+    }
+
+    return;
+  }
+
+  if (focoHora) focoHora.textContent = "Hoy";
+  if (focoTitulo) focoTitulo.textContent = "Día organizado";
+  if (focoDetalle) focoDetalle.textContent = "No tienes acciones pendientes por ahora.";
+  if (focoEmoji) focoEmoji.textContent = "✅";
+
+  if (focoBtn) {
+    focoBtn.disabled = true;
+    focoBtn.textContent = "Completado";
+  }
+}
+
+/* =========================
+   HOME - CARRUSEL DE RECOMENDACIONES CORTAS
+========================= */
+function crearTipsHomeVitality(historial = [], onboarding = {}) {
+  const tips = [
+    {
+      emoji: "💧",
+      titulo: "Toma agua",
+      descripcion: "Haz una pausa breve y toma un vaso de agua."
+    },
+    {
+      emoji: "🌬️",
+      titulo: "Respira 1 minuto",
+      descripcion: "Inhala lento, exhala suave y vuelve a tu día con calma."
+    },
+    {
+      emoji: "🚶",
+      titulo: "Muévete un poco",
+      descripcion: "Camina unos minutos para despejar la mente."
+    },
+    {
+      emoji: "📚",
+      titulo: "Bloque corto",
+      descripcion: "Elige una tarea pequeña y avanza solo 15 minutos."
+    },
+    {
+      emoji: "📱",
+      titulo: "Pausa digital",
+      descripcion: "Deja el celular unos minutos y vuelve a tu foco."
+    },
+    {
+      emoji: "🧘",
+      titulo: "Baja la tensión",
+      descripcion: "Haz una pausa tranquila antes de seguir."
+    }
+  ];
+
+  const ultimo = Array.isArray(historial) && historial.length > 0 ? historial[0] : null;
+
+  if (ultimo?.nivelEstres === "Alto") {
+    tips.unshift({
+      emoji: "🌿",
+      titulo: "Baja el estrés",
+      descripcion: "Respira lento por un minuto antes de continuar."
+    });
+  }
+
+  if (ultimo?.sueno === "Mal") {
+    tips.unshift({
+      emoji: "🌙",
+      titulo: "Cuida tu descanso",
+      descripcion: "Hoy intenta bajar el ritmo y evitar sobrecargarte."
+    });
+  }
+
+  if (Array.isArray(onboarding.objetivos) && onboarding.objetivos.includes("Estudiar con foco")) {
+    tips.unshift({
+      emoji: "📚",
+      titulo: "Estudia con foco",
+      descripcion: "Parte por una tarea mínima para evitar bloquearte."
+    });
+  }
+
+  return tips.slice(0, 6);
+}
+
+function pintarTipsHomeVitality(historial = [], onboarding = {}) {
+  const titulo = document.getElementById("homeTipTitulo");
+  const descripcion = document.getElementById("homeTipDescripcion");
+  const emoji = document.getElementById("homeTipEmoji");
+  const dots = document.getElementById("homeTipDots");
+
+  if (!titulo || !descripcion || !emoji) return;
+
+  const tips = crearTipsHomeVitality(historial, onboarding);
+  let indice = 0;
+
+  function renderTip() {
+    const tip = tips[indice];
+
+    titulo.textContent = tip.titulo;
+    descripcion.textContent = tip.descripcion;
+    emoji.textContent = tip.emoji;
+
+    if (dots) {
+      dots.innerHTML = tips
+        .slice(0, 3)
+        .map((_, i) => `<span class="${i === indice % 3 ? "active" : ""}"></span>`)
+        .join("");
+    }
+
+    indice = (indice + 1) % tips.length;
+  }
+
+  renderTip();
+
+  if (window.homeTipsIntervalVitality) {
+    clearInterval(window.homeTipsIntervalVitality);
+  }
+
+  window.homeTipsIntervalVitality = setInterval(renderTip, 4500);
+}
+
+/* =========================
+   HOME - GRAFICO CHECKINS CON DIAS CORRECTOS
+========================= */
+function obtenerEtiquetaDiaHomeVitality(fechaSimple) {
+  const fecha = new Date(`${fechaSimple}T12:00:00`);
+  const etiquetas = ["D", "L", "M", "Mi", "J", "V", "S"];
+
+  return etiquetas[fecha.getDay()];
+}
+
+function pintarGraficoCheckinsHomeVitality(historial) {
+  const contenedor = document.getElementById("homeMiniBars");
+  const labels = document.getElementById("homeDaysLabels");
+  const porcentajeTexto = document.getElementById("homePorcentajeSemana");
+
+  if (!contenedor) return;
+
+  const ultimos7Dias = obtenerUltimos7DiasHomeVitality();
+  const hoy = obtenerFechaSimpleHomeVitality(new Date());
+
+  const historialPorDia = {};
+
+  historial.forEach((item) => {
+    const fechaSimple = obtenerFechaSimpleHomeVitality(
+      item.createdAt || item.fecha || item.fechaISO
+    );
+
+    if (fechaSimple) {
+      historialPorDia[fechaSimple] = item;
+    }
+  });
+
+  const diasConCheckin = ultimos7Dias.filter((dia) => historialPorDia[dia]).length;
+  const porcentaje = Math.round((diasConCheckin / 7) * 100);
+
+  if (porcentajeTexto) {
+    porcentajeTexto.textContent = `${porcentaje}%`;
+  }
+
+  contenedor.innerHTML = ultimos7Dias
+    .map((dia) => {
+      const checkin = historialPorDia[dia];
+
+      if (!checkin) {
+        return `<span class="sin-checkin" style="height: 18%;"></span>`;
+      }
+
+      const altura = obtenerPuntajeHomeCheckin(checkin.estadoAnimo);
+      const clase = dia === hoy ? "hoy" : "con-checkin";
+
+      return `<span class="${clase}" style="height: ${altura}%;"></span>`;
+    })
+    .join("");
+
+  if (labels) {
+    labels.innerHTML = ultimos7Dias
+      .map((dia) => `<small>${obtenerEtiquetaDiaHomeVitality(dia)}</small>`)
+      .join("");
+  }
+}
+
+/* =========================
+   HOME - INICIO ACTUALIZADO
+========================= */
+async function iniciarHomeWarmVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "horario.html") {
+    return;
+  }
+
+  await obtenerActividadesBackend();
+
+  const usuario = obtenerUsuario();
+  const historial = await obtenerHistorialHomeVitality();
+  const onboarding = typeof obtenerOnboardingBackendVitality === "function"
+    ? await obtenerOnboardingBackendVitality()
+    : {};
+  const acciones = obtenerAccionesHomeVitality();
+
+  const completadas = acciones.filter((item) => item.completada).length;
+  const total = acciones.length;
+  const porcentajeAcciones = total > 0 ? Math.round((completadas / total) * 100) : 0;
+
+  const fecha = document.getElementById("homeFechaActual");
+  const saludo = document.getElementById("homeSaludoUsuario");
+  const avatar = document.querySelector(".home-avatar-btn");
+  const circulo = document.querySelector(".home-progress-circle");
+  const accionesNumero = document.getElementById("homeAccionesNumero");
+  const accionesResumen = document.getElementById("homeAccionesResumen");
+
+  if (fecha) {
+    fecha.textContent = formatearFechaHomeVitality();
+  }
+
+  if (saludo) {
+    const primerNombre = usuario && usuario.nombre
+      ? usuario.nombre.split(" ")[0]
+      : "Usuario";
+
+    saludo.textContent = `Hola, ${primerNombre}`;
+  }
+
+  if (avatar && usuario) {
+    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
+  }
+
+  pintarGraficoCheckinsHomeVitality(historial);
+  pintarRachaHomeVitality(historial);
+  pintarTipsHomeVitality(historial, onboarding);
+
+  if (circulo) {
+    circulo.style.setProperty("--avance", `${porcentajeAcciones}%`);
+  }
+
+  if (accionesNumero) {
+    accionesNumero.textContent = `${completadas}/${total}`;
+  }
+
+  if (accionesResumen) {
+    accionesResumen.textContent = `${completadas} de ${total} hechas`;
+  }
+
+  pintarAccionesHomeVitality(acciones);
+  await pintarFocoHomeVitality(acciones);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(iniciarHomeWarmVitality, 600);
+});
+/* =========================
+   CHAT - HISTORIAL MONGODB FIX FINAL
+========================= */
+async function guardarMensajeChatMongoVitality(sender, texto, recomendacionId = null, recomendacion = null) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !texto) {
+    return;
+  }
+
+  try {
+    await fetch(`${API_URL}/api/chat-historial`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        sender,
+        texto,
+        recomendacionId,
+        recomendacion
+      })
+    });
+  } catch (error) {
+    console.error("Error guardando mensaje del chat en MongoDB:", error);
+  }
+}
+
+async function obtenerHistorialChatMongoVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/chat-historial/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      console.warn("No se pudo cargar historial del chat:", respuesta.status);
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error obteniendo historial del chat:", error);
+    return [];
+  }
+}
+
+function renderizarMensajeChatMongoVitality(mensaje) {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox || !mensaje || !mensaje.texto) {
+    return;
+  }
+
+  const clase = mensaje.sender === "user" ? "user" : "bot";
+
+  const div = document.createElement("div");
+  div.className = `message ${clase}`;
+
+  const p = document.createElement("p");
+
+  if (typeof formatearTextoChat === "function") {
+    p.innerHTML = formatearTextoChat(mensaje.texto);
+  } else {
+    p.textContent = mensaje.texto;
+  }
+
+  div.appendChild(p);
+
+  if (
+    mensaje.sender === "bot" &&
+    mensaje.recomendacionId &&
+    typeof crearAccionesRecomendacionChat === "function"
+  ) {
+    const acciones = crearAccionesRecomendacionChat(
+      mensaje.recomendacionId,
+      mensaje.recomendacion || null
+    );
+
+    div.appendChild(acciones);
+  }
+
+  chatBox.appendChild(div);
+}
+
+async function cargarHistorialChatMongoVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const historial = await obtenerHistorialChatMongoVitality();
+
+  if (!historial || historial.length === 0) {
+    return;
+  }
+
+  chatBox.innerHTML = "";
+
+  historial.forEach((mensaje) => {
+    renderizarMensajeChatMongoVitality(mensaje);
+  });
+
+  if (typeof bajarChatAlUltimoMensajeVitality === "function") {
+    bajarChatAlUltimoMensajeVitality();
+  } else {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+}
+
+/*
+  Este fix carga el historial después de que todas las otras funciones del chat
+  terminaron de pintar mensajes iniciales. Así MongoDB gana y no se borra.
+*/
+function iniciarHistorialChatMongoFixVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  setTimeout(cargarHistorialChatMongoVitality, 300);
+  setTimeout(cargarHistorialChatMongoVitality, 900);
+  setTimeout(cargarHistorialChatMongoVitality, 1600);
+}
+
+window.addEventListener("DOMContentLoaded", iniciarHistorialChatMongoFixVitality);
+window.addEventListener("pageshow", iniciarHistorialChatMongoFixVitality);
+/* =========================
+   CHAT MONGODB - CONTROLADOR UNICO FINAL
+========================= */
+function limpiarMensajesDuplicadosChatVitality(mensajes) {
+  const vistos = new Set();
+
+  return mensajes.filter((mensaje) => {
+    const texto = String(mensaje.texto || "").trim();
+    const sender = mensaje.sender || "bot";
+    const clave = `${sender}-${texto}`;
+
+    if (!texto) {
+      return false;
+    }
+
+    if (vistos.has(clave)) {
+      return false;
+    }
+
+    vistos.add(clave);
+    return true;
+  });
+}
+
+async function guardarMensajeChatMongoVitality(sender, texto, recomendacionId = null, recomendacion = null) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId || !texto) {
+    return;
+  }
+
+  try {
+    await fetch(`${API_URL}/api/chat-historial`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        sender,
+        texto,
+        recomendacionId,
+        recomendacion
+      })
+    });
+  } catch (error) {
+    console.error("Error guardando mensaje del chat en MongoDB:", error);
+  }
+}
+
+async function obtenerHistorialChatMongoVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return [];
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/chat-historial/${usuarioId}`);
+
+    if (!respuesta.ok) {
+      console.warn("No se pudo cargar historial del chat:", respuesta.status);
+      return [];
+    }
+
+    const data = await respuesta.json();
+
+    return Array.isArray(data) ? limpiarMensajesDuplicadosChatVitality(data) : [];
+  } catch (error) {
+    console.error("Error obteniendo historial del chat:", error);
+    return [];
+  }
+}
+
+function crearMensajeChatVitality(texto, sender = "bot", recomendacionId = null, recomendacion = null) {
+  const message = document.createElement("div");
+  message.classList.add("message", sender);
+
+  const paragraph = document.createElement("p");
+
+  if (typeof formatearTextoChat === "function") {
+    paragraph.innerHTML = formatearTextoChat(texto);
+  } else {
+    paragraph.textContent = texto;
+  }
+
+  message.appendChild(paragraph);
+
+  if (
+    sender === "bot" &&
+    recomendacionId &&
+    typeof crearAccionesRecomendacionChat === "function"
+  ) {
+    const acciones = crearAccionesRecomendacionChat(recomendacionId, recomendacion);
+    message.appendChild(acciones);
+  }
+
+  return message;
+}
+
+function bajarChatAlUltimoMensajeVitality() {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+function addMessage(text, sender, recomendacionId = null, recomendacion = null, guardarMongo = true) {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox || !text) {
+    return;
+  }
+
+  const message = crearMensajeChatVitality(text, sender, recomendacionId, recomendacion);
+  chatBox.appendChild(message);
+
+  bajarChatAlUltimoMensajeVitality();
+
+  if (guardarMongo) {
+    guardarMensajeChatMongoVitality(sender, text, recomendacionId, recomendacion);
+  }
+}
+
+async function cargarHistorialChatMongoVitality() {
+  const chatBox = document.getElementById("chatBox");
+
+  if (!chatBox) {
+    return;
+  }
+
+  const historial = await obtenerHistorialChatMongoVitality();
+
+  chatBox.innerHTML = "";
+
+  if (!historial || historial.length === 0) {
+    addMessage("Hola, soy Vitality 💚", "bot", null, null, false);
+    addMessage("Cuéntame cómo te sientes hoy o qué necesitas organizar.", "bot", null, null, false);
+    return;
+  }
+
+  historial.forEach((mensaje) => {
+    const texto = mensaje.texto || "";
+    const sender = mensaje.sender === "user" ? "user" : "bot";
+
+    const elemento = crearMensajeChatVitality(
+      texto,
+      sender,
+      mensaje.recomendacionId || null,
+      mensaje.recomendacion || null
+    );
+
+    chatBox.appendChild(elemento);
+  });
+
+  bajarChatAlUltimoMensajeVitality();
+}
+
+async function generarRespuestaChatVitalityMongo(textoUsuario) {
+  const usuarioId = obtenerUsuarioIdVitality();
+
+  if (!usuarioId) {
+    return {
+      texto: "No pude identificar tu usuario. Vuelve a iniciar sesión para darte una recomendación personalizada.",
+      recomendacionId: null,
+      recomendacion: null
+    };
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/recomendaciones-ia/generar-chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usuarioId,
+        mensajeUsuario: textoUsuario,
+        origen: "chat"
+      })
+    });
+
+    if (!respuesta.ok) {
+      const errorTexto = await respuesta.text();
+      console.error("Error respuesta IA chat:", respuesta.status, errorTexto);
+
+      return {
+        texto: "No pude generar una recomendación ahora. Revisa que el backend esté funcionando correctamente.",
+        recomendacionId: null,
+        recomendacion: null
+      };
+    }
+
+    const data = await respuesta.json();
+
+    const recomendacion =
+      data.recomendacion ||
+      data.recomendacionIA ||
+      data.nuevaRecomendacion ||
+      null;
+
+    return {
+      texto:
+        data.mensajeIA ||
+        recomendacion?.mensajeIA ||
+        "Vitality generó una recomendación personalizada para ti.",
+      recomendacionId:
+        recomendacion?._id ||
+        data.recomendacionId ||
+        null,
+      recomendacion
+    };
+  } catch (error) {
+    console.error("Error conectando con IA del chat:", error);
+
+    return {
+      texto: "No pude conectar con la IA. Revisa que el servidor esté encendido y que la app esté usando la IP correcta.",
+      recomendacionId: null,
+      recomendacion: null
+    };
+  }
+}
+async function manejarEnvioChatVitality(event) {
+  event.preventDefault();
+
+  const input = document.getElementById("userInput");
+
+  if (!input) {
+    return;
+  }
+
+  const texto = input.value.trim();
+
+  if (!texto) {
+    return;
+  }
+
+  input.value = "";
+
+  addMessage(texto, "user", null, null, true);
+
+  const respuestaIA = await generarRespuestaChatVitalityMongo(texto);
+
+setTimeout(() => {
+  addMessage(
+    respuestaIA.texto,
+    "bot",
+    respuestaIA.recomendacionId,
+    respuestaIA.recomendacion,
+    true
+  );
+}, 350);
+}
+
+function iniciarChatMongoControladorUnicoVitality() {
+  const pagina = obtenerPaginaActual();
+
+  if (pagina !== "chat.html") {
+    return;
+  }
+
+  const formOriginal = document.getElementById("chatForm");
+
+  if (!formOriginal) {
+    return;
+  }
+
+  /*
+    Reemplaza el formulario por una copia para eliminar listeners antiguos.
+    Así evitamos que otro bloque del script borre o duplique los mensajes.
+  */
+  const formNuevo = formOriginal.cloneNode(true);
+  formOriginal.parentNode.replaceChild(formNuevo, formOriginal);
+
+  formNuevo.addEventListener("submit", manejarEnvioChatVitality);
+
+  const input = document.getElementById("userInput");
+
+  if (input) {
+    input.addEventListener("focus", () => {
+      document.body.classList.add("chat-input-focused");
+      setTimeout(bajarChatAlUltimoMensajeVitality, 300);
+    });
+
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        document.body.classList.remove("chat-input-focused");
+      }, 250);
+    });
+  }
+
+  if (window.visualViewport) {
+    const alturaInicial = window.visualViewport.height;
+
+    window.visualViewport.addEventListener("resize", () => {
+      const diferencia = alturaInicial - window.visualViewport.height;
+
+      if (diferencia > 120) {
+        document.body.classList.add("chat-keyboard-open");
+      } else {
+        document.body.classList.remove("chat-keyboard-open");
+      }
+
+      setTimeout(bajarChatAlUltimoMensajeVitality, 120);
+    });
+  }
+
+  setTimeout(cargarHistorialChatMongoVitality, 400);
+}
+
+window.addEventListener("DOMContentLoaded", iniciarChatMongoControladorUnicoVitality);
+window.addEventListener("pageshow", iniciarChatMongoControladorUnicoVitality);
+/* =========================
+   CONFIGURACION VITALITY
+========================= */
+function aplicarModoOscuroVitality() {
+  const modo = localStorage.getItem("vitalityModoOscuro") === "true";
+  const boton = document.getElementById("configThemeToggle");
+
+  document.documentElement.classList.toggle("vitality-dark-mode", modo);
+
+  if (boton) {
+    boton.classList.toggle("activo", modo);
+  }
+}
+
+function toggleModoOscuroVitality() {
+  const modoActual = localStorage.getItem("vitalityModoOscuro") === "true";
+  localStorage.setItem("vitalityModoOscuro", String(!modoActual));
+  aplicarModoOscuroVitality();
+}
+
+function actualizarUsuarioLocalConfiguracionVitality(usuarioActualizado) {
+  if (!usuarioActualizado) return;
+
+  const posiblesClaves = [
+    "usuarioVitality",
+    "usuario",
+    "usuarioActual",
+    "vitalityUsuario"
+  ];
+
+  posiblesClaves.forEach((clave) => {
+    const valor = localStorage.getItem(clave);
+
+    if (!valor) return;
+
+    try {
+      const usuario = JSON.parse(valor);
+
+      if (usuario && (usuario._id || usuario.id)) {
+        localStorage.setItem(
+          clave,
+          JSON.stringify({
+            ...usuario,
+            ...usuarioActualizado
+          })
+        );
+      }
+    } catch (error) {
+      // Ignorar claves que no sean JSON
+    }
+  });
+}
+
+async function cargarConfiguracionVitality() {
+  if (obtenerPaginaActual() !== "configuracion.html") {
+    return;
+  }
+
+  aplicarModoOscuroVitality();
+
+  const usuario = typeof obtenerUsuario === "function" ? obtenerUsuario() : null;
+  const nombreInput = document.getElementById("configNombreUsuario");
+  const identidadInput = document.getElementById("configIdentidadUsuario");
+  const contador = document.getElementById("configIdentidadContador");
+
+  if (nombreInput && usuario?.nombre) {
+    nombreInput.value = usuario.nombre;
+  }
+
+  try {
+    if (typeof obtenerOnboardingBackendVitality === "function") {
+      const onboarding = await obtenerOnboardingBackendVitality();
+
+      if (identidadInput && onboarding?.identidad) {
+        identidadInput.value = onboarding.identidad;
+      }
+    }
+  } catch (error) {
+    console.error("Error cargando identidad en configuración:", error);
+  }
+
+  function actualizarContador() {
+    if (!identidadInput || !contador) return;
+    contador.textContent = `${identidadInput.value.length}/240`;
+  }
+
+  if (identidadInput) {
+    identidadInput.addEventListener("input", actualizarContador);
+    actualizarContador();
+  }
+
+  if (typeof actualizarEstadoPermisoUsoAppsVitality === "function") {
+    actualizarEstadoPermisoUsoAppsVitality();
+  }
+}
+
+async function guardarConfiguracionPerfilVitality(event) {
+  event.preventDefault();
+
+  const usuarioId = obtenerUsuarioIdVitality();
+  const nombreInput = document.getElementById("configNombreUsuario");
+  const identidadInput = document.getElementById("configIdentidadUsuario");
+
+  const nombre = nombreInput ? nombreInput.value.trim() : "";
+  const identidad = identidadInput ? identidadInput.value.trim() : "";
+
+  if (!usuarioId) {
+    mostrarToastVitality("No se encontró el usuario.");
+    return;
+  }
+
+  if (!nombre || !identidad) {
+    mostrarToastVitality("Completa nombre e identidad.");
+    return;
+  }
+
+  try {
+    const respuestaUsuario = await fetch(`${API_URL}/api/configuracion/usuario/${usuarioId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ nombre })
+    });
+
+    if (!respuestaUsuario.ok) {
+      throw new Error("No se pudo actualizar el nombre.");
+    }
+
+    const dataUsuario = await respuestaUsuario.json();
+
+    if (dataUsuario.usuario) {
+      actualizarUsuarioLocalConfiguracionVitality(dataUsuario.usuario);
+    }
+
+    const respuestaOnboarding = await fetch(`${API_URL}/api/configuracion/onboarding/${usuarioId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ identidad })
+    });
+
+    if (!respuestaOnboarding.ok) {
+      throw new Error("No se pudo actualizar la identidad.");
+    }
+
+    mostrarToastVitality("Configuración guardada.");
+  } catch (error) {
+    console.error("Error guardando configuración:", error);
+    mostrarToastVitality("No se pudo guardar la configuración.");
+  }
+}
+
+function abrirAjustesPermisosVitality() {
+  if (window.AndroidUsageStats && typeof window.AndroidUsageStats.openAppSettings === "function") {
+    window.AndroidUsageStats.openAppSettings();
+    return;
+  }
+
+  if (window.AndroidUsagePlugin && typeof window.AndroidUsagePlugin.openAppSettings === "function") {
+    window.AndroidUsagePlugin.openAppSettings();
+    return;
+  }
+
+  mostrarToastVitality("Abre Ajustes > Apps > Vitality > Permisos para desactivarlos.");
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  aplicarModoOscuroVitality();
+
+  if (obtenerPaginaActual() === "configuracion.html") {
+    cargarConfiguracionVitality();
+
+    const form = document.getElementById("configPerfilForm");
+
+    if (form) {
+      form.addEventListener("submit", guardarConfiguracionPerfilVitality);
+    }
+  }
+});
+
+function probarComoInvitado() {
+  limpiarDatosLocalesUsuario();
+  localStorage.setItem("usuarioVitality", JSON.stringify({
+    id: "invitado",
+    nombre: "Invitado",
+    correo: "invitado@example.com",
+    edad: 25,
+    ocupacion: "Trabajador",
+    actividadesFavoritas: "General"
+  }));
+  localStorage.setItem("onboardingVitality", JSON.stringify({
+    objetivos: ["Conocerme mejor"],
+    identidad: "Invitado",
+    estres: [],
+    completado: true
+  }));
+  localStorage.setItem("checkinVitality", JSON.stringify({
+    estadoAnimo: "Feliz",
+    nivelEstres: "Bajo",
+    sueno: "Bueno",
+    energia: "Alta",
+    fecha: new Date().toLocaleDateString(),
+    fechaISO: new Date().toISOString().slice(0, 10)
+  }));
+  mostrarToastVitality("Ingresando en modo Invitado...");
+  setTimeout(() => {
+    window.location.href = "horario.html";
+  }, 1000);
+}
+
+/* ==========================================================================
+   ESPACIO DE BIENESTAR: DIARIO ESTOICO, TEMP, SONIDOS Y AUXILIO
+   ========================================================================== */
+
+const FRASES_ESTOICAS = [
+  { frase: "La felicidad de tu vida depende de la calidad de tus pensamientos.", autor: "Marco Aurelio" },
+  { frase: "No nos atrevemos a muchas cosas porque son difíciles, pero son difíciles porque no nos atrevemos a hacerlas.", autor: "Séneca" },
+  { frase: "El hombre no está preocupado tanto por problemas reales como por sus ansiedades imaginadas sobre los problemas reales.", autor: "Epicteto" },
+  { frase: "El control es la primera regla del estoico: saber qué puedes cambiar y qué debes aceptar.", autor: "Epicteto" },
+  { frase: "Te conviertes en aquello a lo que le prestas atención.", autor: "Epicteto" },
+  { frase: "Sufriremos más a menudo en la imaginación que en la realidad.", autor: "Séneca" }
+];
+
+let animoDiarioSeleccionado = "Excellent";
+
+function seleccionarAnimoDiario(elemento) {
+  const btns = document.querySelectorAll(".diario-mood-btn");
+  btns.forEach(btn => btn.classList.remove("active"));
+  elemento.classList.add("active");
+  animoDiarioSeleccionado = elemento.dataset.animo;
+}
+
+function actualizarPromptPregunta() {
+  const selector = document.getElementById("diarioPromptSelector");
+  const preguntaDiv = document.getElementById("diarioPregunta");
+  if (!selector || !preguntaDiv) return;
+
+  const prompts = {
+    mañana: "¿Qué harás hoy para actuar de forma virtuosa y tranquila?",
+    tarde: "¿Qué hiciste bien hoy? ¿Qué pudiste haber hecho mejor?",
+    gratitud: "¿De qué 3 cosas estás agradecido en este momento?"
+  };
+
+  preguntaDiv.textContent = prompts[selector.value] || prompts.mañana;
+}
+
+async function guardarReflexionDiario() {
+  const usuarioId = obtenerUsuarioIdVitality();
+  const selector = document.getElementById("diarioPromptSelector");
+  const preguntaDiv = document.getElementById("diarioPregunta");
+  const textoInput = document.getElementById("diarioTexto");
+
+  if (!usuarioId) {
+    mostrarToastVitality("Inicia sesión para usar la bitácora.");
+    return;
+  }
+
+  const texto = textoInput ? textoInput.value.trim() : "";
+  if (!texto) {
+    mostrarToastVitality("Por favor escribe tu reflexión antes de guardar.");
+    return;
+  }
+
+  const tipo = selector ? selector.value : "mañana";
+  const pregunta = preguntaDiv ? preguntaDiv.textContent : "";
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/reflexiones`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuarioId,
+        tipo,
+        pregunta,
+        texto,
+        animo: animoDiarioSeleccionado
+      })
+    });
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo guardar la reflexión.");
+    }
+
+    mostrarToastVitality("Reflexión estoica guardada en tu bitácora.");
+    if (textoInput) textoInput.value = "";
+    cargarReflexionesDiario();
+  } catch (error) {
+    console.error("Error al guardar reflexión:", error);
+    mostrarToastVitality("Error al conectar con el servidor.");
+  }
+}
+
+async function cargarReflexionesDiario() {
+  const usuarioId = obtenerUsuarioIdVitality();
+  const contenedor = document.getElementById("diarioHistorialLista");
+  if (!contenedor) return;
+
+  if (!usuarioId) {
+    contenedor.innerHTML = "<p>Inicia sesión para ver tu bitácora.</p>";
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/reflexiones/${usuarioId}`);
+    if (!respuesta.ok) {
+      throw new Error("Error cargando reflexiones.");
+    }
+
+    const reflexiones = await respuesta.json();
+    if (reflexiones.length === 0) {
+      contenedor.innerHTML = "<p>No hay reflexiones guardadas todavía.</p>";
+      return;
+    }
+
+    contenedor.innerHTML = reflexiones.map(r => {
+      const fecha = new Date(r.createdAt || r.fecha).toLocaleString();
+      const emojiAnimo = {
+        Excellent: "😊",
+        Bien: "🙂",
+        Normal: "😐",
+        Ansioso: "🙁",
+        Agotado: "😫"
+      }[r.animo] || "😐";
+
+      const tipoFormateado = {
+        mañana: "🌅 Mañana",
+        tarde: "🌇 Tarde",
+        gratitud: "💖 Gratitud"
+      }[r.tipo] || "Reflexión";
+
+      return `
+        <div class="diario-history-item">
+          <div class="diario-history-header">
+            <span class="diario-history-type">${tipoFormateado}</span>
+            <span>${fecha}</span>
+          </div>
+          <div class="diario-history-question">${escaparHTML(r.pregunta)}</div>
+          <p class="diario-history-text">${escaparHTML(r.texto)}</p>
+          <div class="diario-history-footer">
+            <span class="diario-history-mood">Ánimo: ${emojiAnimo}</span>
+            <button class="diario-delete-btn" onclick="eliminarReflexionDiario('${r._id}')">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  } catch (error) {
+    console.error("Error cargando reflexiones:", error);
+    contenedor.innerHTML = "<p>Error al cargar reflexiones del servidor.</p>";
+  }
+}
+
+async function eliminarReflexionDiario(id) {
+  if (!confirm("¿Seguro que deseas eliminar esta reflexión estoica?")) return;
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/reflexiones/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo eliminar.");
+    }
+
+    mostrarToastVitality("Reflexión eliminada.");
+    cargarReflexionesDiario();
+  } catch (error) {
+    console.error("Error al eliminar reflexión:", error);
+    mostrarToastVitality("Error al eliminar del servidor.");
+  }
+}
+
+/* ==========================================================================
+   ESPACIO DE CALMA: RESPIRACIÓN, POMODORO Y SÍNTESIS DE AUDIO (WEB AUDIO API)
+   ========================================================================== */
+
+let audioCtx = null;
+let soundNodes = {
+  lluvia: null,
+  mar: null,
+  viento: null
+};
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function createNoiseBuffer(ctx, duration = 2) {
+  const bufferSize = ctx.sampleRate * duration;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  return buffer;
+}
+
+function startRain(ctx) {
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = createNoiseBuffer(ctx, 3);
+  noiseSource.loop = true;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 1000;
+
+  const gain = ctx.createGain();
+  gain.gain.value = 0.35;
+
+  noiseSource.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  noiseSource.start();
+  return { source: noiseSource, gain: gain };
+}
+
+function startOcean(ctx) {
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = createNoiseBuffer(ctx, 4);
+  noiseSource.loop = true;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 400;
+
+  const gain = ctx.createGain();
+  gain.gain.value = 0.05;
+
+  const lfo = ctx.createOscillator();
+  lfo.frequency.value = 0.15; // Onda lenta de ~6 segundos
+
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.15;
+
+  lfo.connect(lfoGain);
+  lfoGain.connect(gain.gain);
+
+  noiseSource.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  lfo.start();
+  noiseSource.start();
+
+  return { source: noiseSource, lfo: lfo, gain: gain };
+}
+
+function startWind(ctx) {
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = createNoiseBuffer(ctx, 3);
+  noiseSource.loop = true;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.Q.value = 5.0;
+  filter.frequency.value = 300;
+
+  const gain = ctx.createGain();
+  gain.gain.value = 0.15;
+
+  const lfo = ctx.createOscillator();
+  lfo.frequency.value = 0.08;
+
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 250;
+
+  lfo.connect(lfoGain);
+  lfoGain.connect(filter.frequency);
+
+  noiseSource.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  lfo.start();
+  noiseSource.start();
+
+  return { source: noiseSource, lfo: lfo, gain: gain };
+}
+
+function playPomodoroChime() {
+  try {
+    const ctx = getAudioContext();
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // Do5
+    osc1.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.3); // Sol5
+
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // Mi5
+    osc2.frequency.exponentialRampToValueAtTime(987.77, ctx.currentTime + 0.3); // Si5
+
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc1.stop(ctx.currentTime + 1.2);
+    osc2.stop(ctx.currentTime + 1.2);
+  } catch (error) {
+    console.error("Error reproduciendo chime:", error);
+  }
+}
+
+function toggleSonidoAmbiente(tipo, elemento) {
+  try {
+    const ctx = getAudioContext();
+
+    if (elemento.classList.contains("active")) {
+      elemento.classList.remove("active");
+      const node = soundNodes[tipo];
+      if (node) {
+        if (node.source) {
+          try { node.source.stop(); } catch(e){}
+        }
+        if (node.lfo) {
+          try { node.lfo.stop(); } catch(e){}
+        }
+        soundNodes[tipo] = null;
+      }
+      mostrarToastVitality(`Sonido de ${tipo} desactivado.`);
+    } else {
+      elemento.classList.add("active");
+      if (tipo === "lluvia") {
+        soundNodes.lluvia = startRain(ctx);
+      } else if (tipo === "mar") {
+        soundNodes.mar = startOcean(ctx);
+      } else if (tipo === "viento") {
+        soundNodes.viento = startWind(ctx);
+      }
+      mostrarToastVitality(`Sonido de ${tipo} activado.`);
+    }
+  } catch (error) {
+    console.error("Error al reproducir sonido ambiental:", error);
+    mostrarToastVitality("No se pudo iniciar el audio en este dispositivo.");
+  }
+}
+
+// RESPIRACIÓN GUIADA
+let respiradorInterval = null;
+let respiradorPausa = true;
+let respiradorSegundos = 4;
+let respiradorFaseIndice = 0;
+let respiradorFases = [];
+
+const TECNICAS_RESPIRACION = {
+  box: [
+    { texto: "Inhalar", segundos: 4, escala: 1.4 },
+    { texto: "Mantener", segundos: 4, escala: 1.4 },
+    { texto: "Exhalar", segundos: 4, escala: 1.0 },
+    { texto: "Mantener", segundos: 4, escala: 1.0 }
+  ],
+  relax: [
+    { texto: "Inhalar", segundos: 4, escala: 1.4 },
+    { texto: "Mantener", segundos: 7, escala: 1.4 },
+    { texto: "Exhalar", segundos: 8, escala: 1.0 }
+  ],
+  coherente: [
+    { texto: "Inhalar", segundos: 5, escala: 1.4 },
+    { texto: "Exhalar", segundos: 5, escala: 1.0 }
+  ]
+};
+
+function cambiarTecnicaRespiratoria() {
+  const selector = document.getElementById("calmaTecnicaSelector");
+  if (!selector) return;
+  const tecnica = selector.value;
+  respiradorFases = TECNICAS_RESPIRACION[tecnica] || TECNICAS_RESPIRACION.box;
+  respiradorFaseIndice = 0;
+  respiradorSegundos = respiradorFases[0].segundos;
+  
+  actualizarUIRespirador();
+}
+
+function actualizarUIRespirador() {
+  const accionTexto = document.getElementById("calmaAccionTexto");
+  const segundosTexto = document.getElementById("calmaSegundosTexto");
+  const circulo = document.getElementById("calmaCirculo");
+
+  if (!accionTexto || !segundosTexto || !circulo) return;
+
+  const faseActual = respiradorFases[respiradorFaseIndice];
+  accionTexto.textContent = faseActual.texto;
+  segundosTexto.textContent = `${respiradorSegundos}s`;
+
+  circulo.style.transition = `transform ${faseActual.segundos}s linear`;
+  circulo.style.transform = `scale(${faseActual.escala})`;
+}
+
+function toggleRespirador() {
+  const btn = document.getElementById("calmaStartBtn");
+  if (!btn) return;
+
+  if (respiradorPausa) {
+    respiradorPausa = false;
+    btn.textContent = "Pausar";
+    btn.classList.remove("active");
+    
+    if (respiradorFases.length === 0) {
+      cambiarTecnicaRespiratoria();
+    }
+
+    actualizarUIRespirador();
+
+    respiradorInterval = setInterval(() => {
+      respiradorSegundos--;
+      if (respiradorSegundos <= 0) {
+        respiradorFaseIndice = (respiradorFaseIndice + 1) % respiradorFases.length;
+        const nuevaFase = respiradorFases[respiradorFaseIndice];
+        respiradorSegundos = nuevaFase.segundos;
+        actualizarUIRespirador();
+      } else {
+        const segundosTexto = document.getElementById("calmaSegundosTexto");
+        if (segundosTexto) segundosTexto.textContent = `${respiradorSegundos}s`;
+      }
+    }, 1000);
+  } else {
+    respiradorPausa = true;
+    btn.textContent = "Iniciar";
+    btn.classList.add("active");
+    clearInterval(respiradorInterval);
+  }
+}
+
+// Temporizador Pomodoro
+let pomodoroInterval = null;
+let pomodoroMinutos = 25;
+let pomodoroSegundos = 0;
+let pomodoroEnPausa = true;
+let pomodoroFaseActual = "trabajo";
+
+function togglePomodoro() {
+  const btn = document.getElementById("pomodoroStartBtn");
+  if (!btn) return;
+
+  if (pomodoroEnPausa) {
+    pomodoroEnPausa = false;
+    btn.textContent = "Pausar";
+    btn.classList.remove("active");
+
+    pomodoroInterval = setInterval(() => {
+      if (pomodoroSegundos === 0) {
+        if (pomodoroMinutos === 0) {
+          playPomodoroChime();
+          if (pomodoroFaseActual === "trabajo") {
+            pomodoroFaseActual = "descanso";
+            pomodoroMinutos = 5;
+            mostrarToastVitality("¡Sesión completada! Descansa 5 minutos.");
+          } else {
+            pomodoroFaseActual = "trabajo";
+            pomodoroMinutos = 25;
+            mostrarToastVitality("¡Hora de enfocarse! Sesión de 25 minutos.");
+          }
+          pomodoroSegundos = 0;
+          actualizarUIPomodoro();
+        } else {
+          pomodoroMinutos--;
+          pomodoroSegundos = 59;
+        }
+      } else {
+        pomodoroSegundos--;
+      }
+      actualizarUIPomodoro();
+    }, 1000);
+  } else {
+    pomodoroEnPausa = true;
+    btn.textContent = "Iniciar";
+    btn.classList.add("active");
+    clearInterval(pomodoroInterval);
+  }
+}
+
+function resetearPomodoro() {
+  clearInterval(pomodoroInterval);
+  pomodoroEnPausa = true;
+  pomodoroFaseActual = "trabajo";
+  pomodoroMinutos = 25;
+  pomodoroSegundos = 0;
+  
+  const btn = document.getElementById("pomodoroStartBtn");
+  if (btn) {
+    btn.textContent = "Iniciar";
+    btn.classList.add("active");
+  }
+
+  actualizarUIPomodoro();
+}
+
+function actualizarUIPomodoro() {
+  const faseTexto = document.getElementById("pomodoroFase");
+  const tiempoTexto = document.getElementById("pomodoroTiempo");
+
+  if (faseTexto) {
+    faseTexto.textContent = pomodoroFaseActual === "trabajo" ? "Sesión de Enfoque" : "Descanso";
+  }
+
+  if (tiempoTexto) {
+    const minStr = String(pomodoroMinutos).padStart(2, "0");
+    const segStr = String(pomodoroSegundos).padStart(2, "0");
+    tiempoTexto.textContent = `${minStr}:${segStr}`;
+  }
+}
+
+/* ==========================================================================
+   ESPACIO DE BIENESTAR: AUXILIO Y PANIC OVERLAY (GROUNDING SENSORIAL 5-4-3-2-1)
+   ========================================================================== */
+
+let panicPaso = 5;
+
+function activarModoPanico() {
+  const overlay = document.getElementById("panicOverlay");
+  if (!overlay) return;
+
+  panicPaso = 5;
+  overlay.style.display = "flex";
+  actualizarUIPanico();
+}
+
+function desactivarModoPanico() {
+  const overlay = document.getElementById("panicOverlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+}
+
+function avanzarPasoPanico() {
+  if (panicPaso > 1) {
+    panicPaso--;
+    actualizarUIPanico();
+  } else if (panicPaso === 1) {
+    panicPaso = 0;
+    actualizarUIPanico();
+  } else {
+    desactivarModoPanico();
+  }
+}
+
+function actualizarUIPanico() {
+  const instruccion = document.getElementById("panicInstruccion");
+  const btn = document.querySelector("#panicOverlay .calma-controls-row button");
+
+  if (!instruccion || !btn) return;
+
+  const pasos = {
+    5: "5. Nombra 5 cosas que puedas VER a tu alrededor en esta habitación.",
+    4: "4. Nombra 4 cosas que puedas TOCAR en tu entorno directo (ej: tu ropa, el suelo).",
+    3: "3. Nombra 3 sonidos que puedas ESCUCHAR en este momento (lejanos o cercanos).",
+    2: "2. Nombra 2 cosas que puedas OLER a tu porción de aire (ej: comida, perfume, madera).",
+    1: "1. Nombra 1 cosa positiva o agradable que puedas SABOREAR o sentir agradecimiento.",
+    0: "¡Bien hecho! Tu ritmo cardíaco está volviendo a la normalidad. Estás a salvo. 💚"
+  };
+
+  instruccion.textContent = pasos[panicPaso];
+  btn.textContent = panicPaso === 0 ? "Finalizar" : "Siguiente";
+}
+
+function toggleAccordionLeccion(elemento) {
+  const isActive = elemento.classList.contains("active");
+  const allLessons = document.querySelectorAll(".lesson-item");
+  allLessons.forEach(l => l.classList.remove("active"));
+
+  if (!isActive) {
+    elemento.classList.add("active");
+  }
+}
+
+/* ==========================================================================
+   ESPACIO DE BIENESTAR: HABIT TRACKER CON RACHAS Y GRID ESTILO GITHUB
+   ========================================================================== */
+
+async function crearNuevoHabito() {
+  const usuarioId = obtenerUsuarioIdVitality();
+  const nombreInput = document.getElementById("habitNombre");
+  const categoriaInput = document.getElementById("habitCategoria");
+
+  if (!usuarioId) {
+    mostrarToastVitality("Inicia sesión para crear hábitos.");
+    return;
+  }
+
+  const nombre = nombreInput ? nombreInput.value.trim() : "";
+  const categoria = categoriaInput ? categoriaInput.value : "Salud";
+
+  if (!nombre) {
+    mostrarToastVitality("Escribe el nombre del hábito.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/habitos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuarioId, nombre, categoria })
+    });
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo crear el hábito.");
+    }
+
+    mostrarToastVitality("Hábito creado correctamente.");
+    if (nombreInput) nombreInput.value = "";
+    cargarHabitos();
+  } catch (error) {
+    console.error("Error al crear hábito:", error);
+    mostrarToastVitality("Error al conectar con el servidor.");
+  }
+}
+
+async function cargarHabitos() {
+  const usuarioId = obtenerUsuarioIdVitality();
+  const contenedor = document.getElementById("habitosListaContainer");
+  if (!contenedor) return;
+
+  if (!usuarioId) {
+    contenedor.innerHTML = "<p>Inicia sesión para ver tus hábitos.</p>";
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/habitos/usuario/${usuarioId}`);
+    if (!respuesta.ok) {
+      throw new Error("No se pudieron cargar los hábitos.");
+    }
+
+    const habitos = await respuesta.json();
+    
+    renderGridHabitos(habitos);
+
+    if (habitos.length === 0) {
+      contenedor.innerHTML = "<p>No has creado hábitos todavía. Escribe uno arriba para comenzar.</p>";
+      return;
+    }
+
+    const hoyISO = new Date().toISOString().slice(0, 10);
+
+    contenedor.innerHTML = habitos.map(h => {
+      const checked = h.completadoFechas && h.completadoFechas.includes(hoyISO);
+      const checkedClase = checked ? "checked" : "";
+      const checkMark = checked ? "✓" : "";
+
+      return `
+        <div class="habit-item">
+          <div class="habit-info">
+            <span class="habit-name">${escaparHTML(h.nombre)}</span>
+            <div class="habit-meta">
+              <span>${escaparHTML(h.categoria)}</span>
+              <span>Racha Max: ${h.maxRacha || 0}d</span>
+            </div>
+          </div>
+          <div class="habit-actions-right">
+            <span class="habit-streak">🔥 ${h.racha || 0}d</span>
+            <button type="button" class="habit-check-btn ${checkedClase}" onclick="toggleCheckHabito('${h._id}')">${checkMark}</button>
+            <button type="button" class="diario-delete-btn" style="margin-left: 5px;" onclick="eliminarHabito('${h._id}')">🗑️</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  } catch (error) {
+    console.error("Error al cargar hábitos:", error);
+    contenedor.innerHTML = "<p>Error al obtener tus hábitos del servidor.</p>";
+  }
+}
+
+function renderGridHabitos(habitos) {
+  const celdas = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const fechaISO = d.toISOString().slice(0, 10);
+    const nombreDia = d.toLocaleDateString("es-ES", { weekday: "short" });
+    
+    let completadosEseDia = 0;
+    habitos.forEach(h => {
+      if (h.completadoFechas && h.completadoFechas.includes(fechaISO)) {
+        completadosEseDia++;
+      }
+    });
+
+    let level = 0;
+    if (completadosEseDia === 1) level = 1;
+    else if (completadosEseDia === 2) level = 2;
+    else if (completadosEseDia === 3) level = 3;
+    else if (completadosEseDia >= 4) level = 4;
+
+    celdas.push(`
+      <div class="habit-grid-day">
+        <div class="habit-grid-cell grid-level-${level}" title="${completadosEseDia} hábitos completados el ${fechaISO}"></div>
+        <small>${nombreDia.charAt(0).toUpperCase() + nombreDia.slice(1)}</small>
+      </div>
+    `);
+  }
+  const gridContainer = document.getElementById("habitosGridContainer");
+  if (gridContainer) {
+    gridContainer.innerHTML = celdas.join("");
+  }
+}
+
+async function toggleCheckHabito(id) {
+  const hoyISO = new Date().toISOString().slice(0, 10);
+  try {
+    const respuesta = await fetch(`${API_URL}/api/habitos/${id}/toggle`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fecha: hoyISO })
+    });
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo marcar el hábito.");
+    }
+
+    cargarHabitos();
+  } catch (error) {
+    console.error("Error al alternar hábito:", error);
+    mostrarToastVitality("Error al conectar con el servidor.");
+  }
+}
+
+async function eliminarHabito(id) {
+  if (!confirm("¿Seguro que deseas eliminar este hábito?")) return;
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/habitos/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo eliminar.");
+    }
+
+    mostrarToastVitality("Hábito eliminado.");
+    cargarHabitos();
+  } catch (error) {
+    console.error("Error al eliminar hábito:", error);
+    mostrarToastVitality("Error al conectar con el servidor.");
+  }
+}
+
+/* ==========================================================================
+   ESPACIO DE BIENESTAR: GESTIÓN DE PESTAÑAS (TABS)
+   ========================================================================== */
+
+function mostrarPestañaBienestar(tabName) {
+  const contents = document.querySelectorAll(".bienestar-tab-content");
+  contents.forEach(c => c.classList.remove("active"));
+
+  const btns = document.querySelectorAll(".bienestar-tab-btn");
+  btns.forEach(b => b.classList.remove("active"));
+
+  const idTabMap = {
+    diario: { contentId: "tabDiario", btnIndex: 0 },
+    calma: { contentId: "tabCalma", btnIndex: 1 },
+    auxilio: { contentId: "tabAuxilio", btnIndex: 2 },
+    habitos: { contentId: "tabHabitos", btnIndex: 3 }
+  };
+
+  const selected = idTabMap[tabName];
+  if (selected) {
+    const content = document.getElementById(selected.contentId);
+    if (content) content.classList.add("active");
+
+    const btn = btns[selected.btnIndex];
+    if (btn) btn.classList.add("active");
+  }
+
+  if (tabName === "diario") {
+    cargarReflexionesDiario();
+  } else if (tabName === "habitos") {
+    cargarHabitos();
+  }
+}
+
+function inicializarEspacioBienestar() {
+  if (obtenerPaginaActual() !== "bienestar.html") return;
+
+  const fraseTextDiv = document.getElementById("diarioFraseText");
+  if (fraseTextDiv) {
+    const fraseElegida = FRASES_ESTOICAS[Math.floor(Math.random() * FRASES_ESTOICAS.length)];
+    fraseTextDiv.innerHTML = `"${fraseElegida.frase}" <strong>— ${fraseElegida.autor}</strong>`;
+  }
+
+  actualizarPromptPregunta();
+  cargarReflexionesDiario();
+
+  const params = new URLSearchParams(window.location.search);
+  const tabParam = params.get("tab");
+  if (tabParam) {
+    mostrarPestañaBienestar(tabParam);
+  } else {
+    mostrarPestañaBienestar("diario");
+  }
+
+  cambiarTecnicaRespiratoria();
+}
+
+/* ==========================================================================
+   ESTADÍSTICAS DASHBOARD: AVERAGES Y GRAFICOS CHART.JS
+   ========================================================================== */
+
+async function inicializarEstadisticasVitality() {
+  const usuarioId = obtenerUsuarioIdVitality();
+  if (!usuarioId) {
+    mostrarToastVitality("Inicia sesión para ver tus estadísticas.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/checkins/historial/${usuarioId}`);
+    if (!respuesta.ok) {
+      throw new Error("No se pudo obtener el historial de check-ins.");
+    }
+
+    let checkins = await respuesta.json();
+    if (!Array.isArray(checkins)) checkins = [];
+
+    if (checkins.length === 0) {
+      mostrarToastVitality("Aún no tienes check-ins registrados para graficar.");
+      return;
+    }
+
+    calcularAverages(checkins);
+    renderTendenciaChart(checkins);
+    renderDonaChart(checkins);
+
+  } catch (error) {
+    console.error("Error al inicializar estadísticas:", error);
+    mostrarToastVitality("Error al conectar con el servidor.");
+  }
+}
+
+function calcularAverages(checkins) {
+  let sumaEstres = 0;
+  let sumaSueno = 0;
+  let sumaEnergia = 0;
+  let totalConValor = 0;
+
+  checkins.forEach(c => {
+    if (c.estresVal !== undefined && c.suenoVal !== undefined && c.energiaVal !== undefined) {
+      sumaEstres += c.estresVal;
+      sumaSueno += c.suenoVal;
+      sumaEnergia += c.energiaVal;
+      totalConValor++;
+    }
+  });
+
+  const avgEstres = totalConValor > 0 ? (sumaEstres / totalConValor).toFixed(1) : "-";
+  const avgSueno = totalConValor > 0 ? (sumaSueno / totalConValor).toFixed(1) : "-";
+  const avgEnergia = totalConValor > 0 ? (sumaEnergia / totalConValor).toFixed(1) : "-";
+
+  const avgEstresDiv = document.getElementById("avgEstres");
+  const avgSuenoDiv = document.getElementById("avgSueno");
+  const avgEnergiaDiv = document.getElementById("avgEnergia");
+
+  if (avgEstresDiv) avgEstresDiv.textContent = avgEstres;
+  if (avgSuenoDiv) avgSuenoDiv.textContent = avgSueno;
+  if (avgEnergiaDiv) avgEnergiaDiv.textContent = avgEnergia;
+}
+
+function renderTendenciaChart(checkins) {
+  const ctx = document.getElementById("tendenciaChart");
+  if (!ctx) return;
+
+  const checkinsCronologicos = [...checkins].reverse();
+
+  const labels = checkinsCronologicos.map(c => new Date(c.createdAt || c.fecha).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit" }));
+  const estresData = checkinsCronologicos.map(c => c.estresVal !== undefined ? c.estresVal : 5);
+  const suenoData = checkinsCronologicos.map(c => c.suenoVal !== undefined ? c.suenoVal : 5);
+  const energiaData = checkinsCronologicos.map(c => c.energiaVal !== undefined ? c.energiaVal : 5);
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Estrés',
+          data: estresData,
+          borderColor: '#e74c3c',
+          backgroundColor: 'rgba(231, 76, 60, 0.08)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: 'Descanso',
+          data: suenoData,
+          borderColor: '#ffa000',
+          backgroundColor: 'rgba(255, 160, 0, 0.08)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: 'Energía',
+          data: energiaData,
+          borderColor: '#f05e13',
+          backgroundColor: 'rgba(240, 94, 19, 0.08)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          min: 1,
+          max: 10,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            font: { family: 'inherit', weight: 'bold' }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderDonaChart(checkins) {
+  const ctx = document.getElementById("donaChart");
+  if (!ctx) return;
+
+  const conteo = {
+    "Muy bien": 0,
+    "Bien": 0,
+    "Normal": 0,
+    "Mal": 0,
+    "Muy mal": 0
+  };
+
+  checkins.forEach(c => {
+    const mood = c.estadoAnimo;
+    if (conteo[mood] !== undefined) {
+      conteo[mood]++;
+    } else {
+      if (mood === "Excelente") conteo["Muy bien"]++;
+      else if (mood === "Buena") conteo["Bien"]++;
+      else if (mood === "Mala") conteo["Mal"]++;
+      else if (mood === "Horrible") conteo["Muy mal"]++;
+      else conteo["Normal"]++;
+    }
+  });
+
+  const labels = Object.keys(conteo);
+  const data = Object.values(conteo);
+  const colors = [
+    '#3a875a',
+    '#8bbca2',
+    '#eadfce',
+    '#e67e22',
+    '#c0392b'
+  ];
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: colors,
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: { family: 'inherit', weight: 'bold' }
+          }
+        }
+      }
+    }
+  });
+}
+
+// INICIALIZADORES AL CARGAR EL DOM
+window.addEventListener("DOMContentLoaded", () => {
+  if (obtenerPaginaActual() === "bienestar.html") {
+    inicializarEspacioBienestar();
+  }
+});

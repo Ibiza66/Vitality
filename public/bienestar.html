@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Espacio de Bienestar</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ==========================================================================
+       ESTILOS PREMIUM ESPACIO DE BIENESTAR (CONSISTENTES CON EL RESTO DE LA APP)
+       ========================================================================== */
+    .bienestar-screen {
+      --bg-main: transparent;
+      --bg-card: #ffffff;
+      --text-main: #261d16;
+      --text-secondary: #8b7b6b;
+      --primary: #ff681c;
+      --primary-light: #fff0e5;
+      --primary-dark: #261d16;
+      --secondary: #ff681c;
+      --secondary-light: #ff7a1a;
+      --border: #e4d7c8;
+      --shadow: rgba(38, 29, 22, 0.08);
+      --btn-bg: linear-gradient(135deg, #ff7a1a, #f05e13);
+      --btn-text: #ffffff;
+      --input-bg: #ffffff;
+      --input-text: #261d16;
+      --line-soft: #eadfce;
+
+      padding-bottom: 90px;
+      background: transparent;
+      min-height: 100vh;
+      color: var(--text-main);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode .bienestar-screen {
+      --bg-main: transparent;
+      --bg-card: #1d1712;
+      --text-main: #f5eae1;
+      --text-secondary: #baa490;
+      --primary: #ff7a1a;
+      --primary-light: #442a17;
+      --primary-dark: #f5eae1;
+      --secondary: #ff7a1a;
+      --secondary-light: #ff681c;
+      --border: #443224;
+      --shadow: rgba(0, 0, 0, 0.4);
+      --btn-bg: linear-gradient(135deg, #ff7a1a, #f05e13);
+      --btn-text: #ffffff;
+      --input-bg: #120c08;
+      --input-text: #f5eae1;
+      --line-soft: #443224;
+    }
+
+    /* Cabecera */
+    .bienestar-header-card {
+      background: linear-gradient(135deg, #a34820, #783416);
+      color: #fff;
+      padding: 30px 20px;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      box-shadow: 0 8px 20px var(--shadow);
+      margin-bottom: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .bienestar-header-card h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 5px 0;
+      letter-spacing: -0.5px;
+      color: #fff !important;
+    }
+
+    .bienestar-header-card p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 0;
+      color: #fff !important;
+    }
+
+    /* Pestañas (Tabs) */
+    .bienestar-tabs-nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: var(--bg-card);
+      margin: 0 15px 20px 15px;
+      padding: 5px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: inset 0 2px 5px var(--shadow);
+    }
+
+    .bienestar-tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 12px 5px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bienestar-tab-btn span {
+      font-size: 18px;
+    }
+
+    .bienestar-tab-btn.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      box-shadow: 0 4px 10px rgba(255, 104, 28, 0.08);
+    }
+
+    /* Secciones de Contenido */
+    .bienestar-tab-content {
+      display: none;
+      margin: 0 15px;
+      animation: fadeInTab 0.4s ease;
+    }
+
+    .bienestar-tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tarjetas Generales */
+    .bienestar-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 15px var(--shadow);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .bienestar-card-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .bienestar-card h2 {
+      font-size: 20px;
+      color: var(--primary-dark);
+      margin: 0 0 15px 0;
+      font-weight: 800;
+    }
+
+    /* PESTAÑA 1: DIARIO ESTOICO */
+    .diario-frase-box {
+      background-color: var(--bg-main);
+      border-left: 5px solid var(--secondary);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-style: italic;
+      color: var(--text-main);
+    }
+
+    .diario-frase-box strong {
+      display: block;
+      font-style: normal;
+      margin-top: 8px;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .diario-select-group {
+      margin-bottom: 15px;
+    }
+
+    .diario-select-group label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .diario-select-group select, .diario-textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background-color: var(--input-bg);
+      font-family: inherit;
+      color: var(--input-text);
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .diario-textarea {
+      height: 120px;
+      resize: none;
+      margin-bottom: 15px;
+    }
+
+    .diario-question-prompt {
+      font-weight: 600;
+      color: var(--text-secondary);
+      background-color: var(--bg-main);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      border: 1px dashed var(--primary);
+    }
+
+    .diario-mood-selector {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .diario-mood-btn {
+      flex: 1;
+      background-color: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 4px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+      color: var(--text-main);
+    }
+
+    .diario-mood-btn span {
+      font-size: 20px;
+    }
+
+    .diario-mood-btn small {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .diario-mood-btn.active {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      box-shadow: 0 4px 10px rgba(255, 104, 28, 0.1);
+    }
+
+    .diario-mood-btn.active small {
+      color: var(--primary);
+    }
+
+    .diario-submit-btn {
+      width: 100%;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      padding: 15px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(240, 94, 19, 0.24);
+      transition: all 0.2s;
+    }
+
+    .diario-submit-btn:active {
+      opacity: 0.9;
+    }
+
+    /* Historial Diario */
+    .diario-history-item {
+      background-color: var(--bg-card);
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .diario-history-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .diario-history-type {
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .diario-history-question {
+      font-weight: bold;
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .diario-history-text {
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .diario-history-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .diario-history-mood {
+      background-color: var(--bg-main);
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--text-main);
+    }
+
+    .diario-delete-btn {
+      background: none;
+      border: none;
+      color: #c94a4a;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+    }
+
+    /* PESTAÑA 2: ESPACIO DE CALMA */
+    .calma-select-tecnica {
+      margin-bottom: 20px;
+    }
+
+    .calma-circle-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 30px 0;
+      height: 240px;
+      position: relative;
+    }
+
+    .calma-breathing-circle {
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, var(--bg-card) 0%, var(--primary-light) 100%);
+      border-radius: 50%;
+      border: 6px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 4s linear;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .calma-breathing-text {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .calma-breathing-subtext {
+      font-size: 11px;
+      color: var(--text-main);
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .calma-controls-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .calma-btn {
+      background-color: var(--bg-card);
+      border: 1.5px solid var(--border);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .calma-btn.active {
+      background: var(--primary);
+      color: var(--btn-text);
+      border-color: var(--primary);
+    }
+
+    /* Pomodoro */
+    .pomodoro-box {
+      text-align: center;
+    }
+
+    .pomodoro-timer {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 15px 0;
+      letter-spacing: -1px;
+    }
+
+    .pomodoro-phase {
+      font-weight: bold;
+      color: var(--primary);
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 1.5px;
+    }
+
+    /* Sonidos */
+    .sound-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      background-color: var(--bg-card);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .sound-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sound-emoji {
+      font-size: 24px;
+    }
+
+    .sound-name {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .sound-switch {
+      width: 50px;
+      height: 28px;
+      background-color: var(--border);
+      border-radius: 14px;
+      border: none;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .sound-switch span {
+      width: 22px;
+      height: 22px;
+      background-color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: left 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .sound-switch.active {
+      background-color: #22c55e;
+    }
+
+    .sound-switch.active span {
+      left: 25px;
+    }
+
+    /* PESTAÑA 3: AUXILIO (PANIC BUTTON) */
+    .auxilio-panic-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .auxilio-panic-btn {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff6b6b 0%, #ee5253 100%);
+      color: #fff;
+      border: 8px solid rgba(238, 82, 83, 0.2);
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(238, 82, 83, 0.4);
+      animation: pulsePanic 2s infinite;
+      outline: none;
+      margin-bottom: 15px;
+    }
+
+    @keyframes pulsePanic {
+      0% { box-shadow: 0 0 0 0 rgba(238, 82, 83, 0.4); }
+      70% { box-shadow: 0 0 0 20px rgba(238, 82, 83, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(238, 82, 83, 0); }
+    }
+
+    /* Overlay Emergencia */
+    .panic-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, var(--secondary-light) 0%, var(--secondary) 100%);
+      color: #fff;
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .panic-overlay-card {
+      max-width: 450px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .panic-overlay h2 {
+      font-size: 26px;
+      margin: 0;
+      font-weight: 800;
+      color: #e0f2f1;
+    }
+
+    .panic-overlay p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0;
+      opacity: 0.95;
+    }
+
+    .panic-sensor-instruction {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffeb3b;
+      margin: 15px 0;
+    }
+
+    .panic-close-btn {
+      background-color: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    /* Accordion Lecciones */
+    .lesson-item {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .lesson-title {
+      padding: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-main);
+    }
+
+    .lesson-content {
+      padding: 0 15px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .lesson-item.active .lesson-content {
+      padding: 15px;
+      max-height: 250px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* PESTAÑA 4: HABIT TRACKER */
+    .habit-input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .habit-input-row select, .habit-input-row input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background-color: var(--input-bg);
+      color: var(--input-text);
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .habit-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-card);
+      padding: 14px 15px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 5px var(--shadow);
+      transition: all 0.3s;
+    }
+
+    .habit-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .habit-name {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 15px;
+    }
+
+    .habit-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      display: flex;
+      gap: 8px;
+    }
+
+    .habit-meta span {
+      background-color: var(--bg-main);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: var(--text-main);
+    }
+
+    .habit-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .habit-streak {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .habit-check-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      background-color: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: transparent;
+      transition: all 0.2s;
+    }
+
+    .habit-check-btn.checked {
+      background-color: var(--primary);
+      color: #fff;
+    }
+
+    .habit-grid-title {
+      font-weight: bold;
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .habit-grid-github {
+      display: flex;
+      gap: 4px;
+      justify-content: space-between;
+      margin-top: 10px;
+      background-color: var(--bg-card);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .habit-grid-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .habit-grid-cell {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background-color: var(--border);
+      transition: background-color 0.3s;
+    }
+
+    .habit-grid-day small {
+      font-size: 10px;
+      color: var(--text-main);
+      font-weight: bold;
+    }
+
+    /* Grados de naranja en la grilla */
+    .grid-level-0 { background-color: var(--border); }
+    .grid-level-1 { background-color: var(--primary-light); }
+    .grid-level-2 { background-color: #ffa366; }
+    .grid-level-3 { background-color: #ff7a1a; }
+    .grid-level-4 { background-color: #e0530b; }
+  </style>
+</head>
+
+<body class="home-warm-page">
+
+  <main class="bienestar-screen">
+
+    <section class="bienestar-header-card">
+      <p>Salud mental y emocional</p>
+      <h1>Espacio de Bienestar</h1>
+      <p>Herramientas de relajación, hábitos y diario guiado.</p>
+    </section>
+
+    <!-- Pestañas -->
+    <nav class="bienestar-tabs-nav">
+      <button class="bienestar-tab-btn active" onclick="mostrarPestañaBienestar('diario')">
+        <span>📖</span>
+        Diario
+      </button>
+
+      <button class="bienestar-tab-btn" onclick="mostrarPestañaBienestar('calma')">
+        <span>🧘</span>
+        Calma
+      </button>
+
+      <button class="bienestar-tab-btn" onclick="mostrarPestañaBienestar('auxilio')">
+        <span>🚨</span>
+        Auxilio
+      </button>
+
+      <button class="bienestar-tab-btn" onclick="mostrarPestañaBienestar('habitos')">
+        <span>✅</span>
+        Hábitos
+      </button>
+    </nav>
+
+    <!-- PESTAÑA 1: DIARIO ESTOICO -->
+    <section class="bienestar-tab-content active" id="tabDiario">
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Estoicismo</span>
+        <h2>Frase del día</h2>
+        <div id="diarioFraseText" class="diario-frase-box">
+          "La felicidad de tu vida depende de la calidad de tus pensamientos."
+          <strong>— Marco Aurelio</strong>
+        </div>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Nueva Entrada</span>
+        <h2>Escribe tu reflexión</h2>
+
+        <div class="diario-select-group">
+          <label for="diarioPromptSelector">Momento del día</label>
+          <select id="diarioPromptSelector" onchange="actualizarPromptPregunta()">
+            <option value="mañana">Reflexión de la mañana</option>
+            <option value="tarde">Reflexión de la tarde</option>
+            <option value="gratitud">Diario de gratitud</option>
+          </select>
+        </div>
+
+        <div id="diarioPregunta" class="diario-question-prompt">
+          ¿Qué harás hoy para actuar de forma virtuosa y tranquila?
+        </div>
+
+        <textarea id="diarioTexto" class="diario-textarea" placeholder="Escribe aquí tu reflexión estoica..."></textarea>
+
+        <span class="bienestar-card-title">¿Cómo está tu ánimo?</span>
+        <div class="diario-mood-selector">
+          <button type="button" class="diario-mood-btn active" data-animo="Excellent" onclick="seleccionarAnimoDiario(this)">
+            <span>😊</span>
+            <small>Excelente</small>
+          </button>
+          <button type="button" class="diario-mood-btn" data-animo="Bien" onclick="seleccionarAnimoDiario(this)">
+            <span>🙂</span>
+            <small>Bien</small>
+          </button>
+          <button type="button" class="diario-mood-btn" data-animo="Normal" onclick="seleccionarAnimoDiario(this)">
+            <span>😐</span>
+            <small>Normal</small>
+          </button>
+          <button type="button" class="diario-mood-btn" data-animo="Ansioso" onclick="seleccionarAnimoDiario(this)">
+            <span>🙁</span>
+            <small>Ansioso</small>
+          </button>
+          <button type="button" class="diario-mood-btn" data-animo="Agotado" onclick="seleccionarAnimoDiario(this)">
+            <span>😫</span>
+            <small>Agotado</small>
+          </button>
+        </div>
+
+        <button type="button" class="diario-submit-btn" onclick="guardarReflexionDiario()">
+          Guardar Reflexión
+        </button>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Tu Bitácora</span>
+        <h2>Reflexiones guardadas</h2>
+        <div id="diarioHistorialLista">
+          <p>No hay reflexiones guardadas todavía.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- PESTAÑA 2: ESPACIO DE CALMA -->
+    <section class="bienestar-tab-content" id="tabCalma">
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Respiración guiada</span>
+        <h2>Técnicas de respiración</h2>
+
+        <div class="calma-select-tecnica">
+          <select id="calmaTecnicaSelector" onchange="cambiarTecnicaRespiratoria()">
+            <option value="box">Box Breathing (Caja - 4s)</option>
+            <option value="relax">Técnica 4-7-8 (Sueño/Relajar)</option>
+            <option value="coherente">Respiración Coherente (5s)</option>
+          </select>
+        </div>
+
+        <div class="calma-circle-container">
+          <div id="calmaCirculo" class="calma-breathing-circle">
+            <span id="calmaAccionTexto" class="calma-breathing-text">Inhalar</span>
+            <span id="calmaSegundosTexto" class="calma-breathing-subtext">4s</span>
+          </div>
+
+          <div class="calma-controls-row">
+            <button type="button" id="calmaStartBtn" class="calma-btn active" onclick="toggleRespirador()">Iniciar</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Enfoque Pomodoro</span>
+        <h2>Temporizador de concentración</h2>
+        <div class="pomodoro-box">
+          <div id="pomodoroFase" class="pomodoro-phase">Sesión de Enfoque</div>
+          <div id="pomodoroTiempo" class="pomodoro-timer">25:00</div>
+          
+          <div class="calma-controls-row">
+            <button type="button" id="pomodoroStartBtn" class="calma-btn active" onclick="togglePomodoro()">Iniciar</button>
+            <button type="button" class="calma-btn" onclick="resetearPomodoro()">Reiniciar</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Sonidos binaurales</span>
+        <h2>Sonidos de ambiente</h2>
+
+        <div class="sound-item">
+          <div class="sound-info">
+            <span class="sound-emoji">🌧️</span>
+            <span class="sound-name">Lluvia de otoño</span>
+          </div>
+          <button type="button" class="sound-switch" id="switchLluvia" onclick="toggleSonidoAmbiente('lluvia', this)">
+            <span></span>
+          </button>
+        </div>
+
+        <div class="sound-item">
+          <div class="sound-info">
+            <span class="sound-emoji">🌊</span>
+            <span class="sound-name">Olas de mar</span>
+          </div>
+          <button type="button" class="sound-switch" id="switchMar" onclick="toggleSonidoAmbiente('mar', this)">
+            <span></span>
+          </button>
+        </div>
+
+        <div class="sound-item">
+          <div class="sound-info">
+            <span class="sound-emoji">🍃</span>
+            <span class="sound-name">Viento de paz</span>
+          </div>
+          <button type="button" class="sound-switch" id="switchViento" onclick="toggleSonidoAmbiente('viento', this)">
+            <span></span>
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- PESTAÑA 3: AUXILIO (PANIC BUTTON) -->
+    <section class="bienestar-tab-content" id="tabAuxilio">
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Botón de pánico</span>
+        <h2>¿Estás sintiendo pánico?</h2>
+        <p>Presiona el botón de auxilio para iniciar una guía sensorial y reconectarte con el presente.</p>
+        
+        <div class="auxilio-panic-box">
+          <button type="button" class="auxilio-panic-btn" onclick="activarModoPanico()">
+            AUXILIO
+          </button>
+        </div>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Lecciones de apoyo</span>
+        <h2>Herramientas informativas</h2>
+
+        <div class="lesson-item" onclick="toggleAccordionLeccion(this)">
+          <div class="lesson-title">
+            <span>¿Qué es un ataque de pánico?</span>
+            <strong>+</strong>
+          </div>
+          <div class="lesson-content">
+            Un ataque de pánico es una ola repentina de miedo intenso o incomodidad que alcanza su punto máximo en minutos. Aunque se siente aterrador y físico, no es peligroso y pasará pronto. El cerebro activa una falsa alarma de peligro, pero estás a salvo.
+          </div>
+        </div>
+
+        <div class="lesson-item" onclick="toggleAccordionLeccion(this)">
+          <div class="lesson-title">
+            <span>¿Cómo manejar la hiperventilación?</span>
+            <strong>+</strong>
+          </div>
+          <div class="lesson-content">
+            Cuando sentimos pánico, respiramos rápido. Esto altera los niveles de oxígeno. La solución es exhalar por más tiempo del que inhalas (por ejemplo: inhala 4 segundos, exhala 6). Esto activa el sistema nervioso parasimpático y reduce los latidos del corazón de forma natural.
+          </div>
+        </div>
+
+        <div class="lesson-item" onclick="toggleAccordionLeccion(this)">
+          <div class="lesson-title">
+            <span>La importancia de la aceptación</span>
+            <strong>+</strong>
+          </div>
+          <div class="lesson-content">
+            Tratar de luchar con el pánico genera más adrenalina y prolonga la crisis. En cambio, acepta la sensación. Di mentalmente: "Acepto esto, sé que pasará, no me hará daño". Dejar de luchar rompe el ciclo de miedo a la sensación.
+          </div>
+        </div>
+      </article>
+
+      <!-- OVERLAY DE EMERGENCIA -->
+      <div id="panicOverlay" class="panic-overlay">
+        <div class="panic-overlay-card">
+          <h2>Respira, estás a salvo 💚</h2>
+          <p>Esta sensación va a pasar. No estás en peligro. Conéctate con el presente respondiendo a la técnica sensorial 5-4-3-2-1.</p>
+          
+          <div id="panicInstruccion" class="panic-sensor-instruction">
+            5. Nombra 5 cosas que puedas VER a tu alrededor.
+          </div>
+
+          <div class="calma-controls-row">
+            <button type="button" class="calma-btn active" onclick="avanzarPasoPanico()">Siguiente</button>
+          </div>
+
+          <button type="button" class="panic-close-btn" onclick="desactivarModoPanico()">
+            Cerrar Auxilio
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: HABIT TRACKER -->
+    <section class="bienestar-tab-content" id="tabHabitos">
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Rutinas diarias</span>
+        <h2>Crear hábito</h2>
+
+        <div class="habit-input-row">
+          <input type="text" id="habitNombre" placeholder="Ej: Meditar 10 minutos, Leer">
+          <select id="habitCategoria">
+            <option value="Salud">Salud (Agua, comida, sueño)</option>
+            <option value="Mente">Mente (Meditación, diario)</option>
+            <option value="Rutina">Rutina (Orden, estudio)</option>
+            <option value="Deporte">Deporte (Ejercicio, estirar)</option>
+          </select>
+          <button type="button" class="diario-submit-btn" onclick="crearNuevoHabito()">
+            Añadir Hábito
+          </button>
+        </div>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Seguimiento</span>
+        <h2>Lista de hábitos</h2>
+        <div id="habitosListaContainer">
+          <p>Cargando tus hábitos...</p>
+        </div>
+      </article>
+
+      <article class="bienestar-card">
+        <span class="bienestar-card-title">Constancia semanal</span>
+        <h2>Cumplimiento de hábitos</h2>
+        <span class="habit-grid-title">Historial de los últimos 7 días:</span>
+        <div id="habitosGridContainer" class="habit-grid-github">
+          <!-- Celdas autogeneradas -->
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="bienestar.html" class="active">
+      <span>🌸</span>
+      <small>Bienestar</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

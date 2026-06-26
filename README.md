@@ -77,6 +77,32 @@ La aplicación permite que una persona pueda:
 * Racha de check-ins.
 * Objetivos personales.
 
+### Espacio de Bienestar (Espacio 🌸)
+
+* **Diario Estoico:** Registro de reflexiones guiadas (mañana, tarde y diario de gratitud) con frases rotativas de filósofos estoicos (Séneca, Marco Aurelio, Epicteto) y almacenamiento persistente en MongoDB con opción de eliminar entradas.
+* **Técnicas de Respiración:** Guías visuales interactivas para Box Breathing, Relajación (4-7-8) y Respiración Coherente con animación circular de escala fluida.
+* **Pomodoro de Concentración:** Temporizador para enfoque (25 min) y descanso (5 min) con timbre sonoro sintetizado nativamente mediante Web Audio API al completar la sesión.
+* **Sintetizador de Sonidos Ambientales:** Generador de audio de relajación en tiempo real (Lluvia de otoño, Olas del mar, Viento de paz) utilizando Web Audio API (filtros biquad, ruido blanco y moduladores LFO) sin requerir archivos multimedia externos.
+* **Auxilio (Botón de Pánico):** Overlay de emergencia de pantalla completa interactivo basado en la técnica de grounding sensorial de 5-4-3-2-1 y acordeón de lecciones psicoeducativas.
+* **Habit Tracker:** Creación y seguimiento de hábitos diarios por categorías, cálculo de rachas consecutivas actuales y máximas, y una grilla visual de constancia semanal inspirada en el formato de contribuciones de GitHub.
+
+### Tarjeta Adaptativa de Bienestar (Personalización Dinámica)
+
+* Ubicada en la pantalla de inicio (`horario.html`), lee en tiempo real el último check-in del usuario y adapta dinámicamente sus mensajes, consejos, colores y acciones:
+  * **Sin Check-in:** Sugiere realizar el registro con enlace directo a `checkin.html`.
+  * **Estrés Alto (>=8 o "Alto"):** Alerta roja (🚨) con recomendación de respiración guiada (enlace directo a `bienestar.html?tab=calma`).
+  * **Descanso Bajo (<=3 o "Mal"):** Sugiere activar sonidos de lluvia relajante para dormir (enlace directo a `bienestar.html?tab=calma`).
+  * **Energía Baja (<=3 o "Baja"):** Sugiere escribir en el diario estoico de gratitud (enlace directo a `bienestar.html?tab=diario`).
+  * **Estado Positivo:** Felicita al usuario y lo invita a leer una reflexión estoica (enlace directo a `bienestar.html?tab=diario`).
+
+### Estadísticas y Tendencias
+
+* Acceso directo desde el perfil (`perfil.html`) al dashboard (`estadisticas.html`).
+* Renderiza gráficos dinámicos e interactivos usando la biblioteca Chart.js:
+  * **Línea de Tendencia:** Evolución del estrés, descanso y energía en los últimos 10 check-ins.
+  * **Distribución de Emociones:** Gráfico de tipo dona con el porcentaje y conteo de los estados de ánimo.
+  * **Tarjetas de Promedio:** Resumen histórico de promedios de estrés, sueño y energía.
+
 ### Check-in emocional
 
 * Registro de estado emocional.
@@ -251,7 +277,9 @@ Vitality/
 │   ├── Checkin.js
 │   ├── Actividad.js
 │   ├── Objetivo.js
-│   └── UsoApp.js
+│   ├── UsoApp.js
+│   ├── Reflexion.js
+│   └── Habito.js
 │
 ├── routes/
 │   ├── usuarios.js
@@ -260,7 +288,9 @@ Vitality/
 │   ├── actividades.js
 │   ├── objetivos.js
 │   ├── usoApps.js
-│   └── ia.js
+│   ├── ia.js
+│   ├── reflexiones.js
+│   └── habitos.js
 │
 ├── public/
 │   ├── index.html
@@ -272,6 +302,8 @@ Vitality/
 │   ├── alertas.html
 │   ├── chat.html
 │   ├── uso_apps.html
+│   ├── bienestar.html
+│   ├── estadisticas.html
 │   ├── styles.css
 │   ├── script.js
 │   ├── nav.js

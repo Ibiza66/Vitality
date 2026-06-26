@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitality - Estadísticas y Análisis</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ==========================================================================
+       ESTILOS PREMIUM DASHBOARD DE ESTADÍSTICAS (WARM THEME)
+       ========================================================================== */
+    .stats-screen {
+      --bg-main: transparent;
+      --bg-card: #ffffff;
+      --text-main: #261d16;
+      --text-secondary: #8b7b6b;
+      --primary: #ff681c;
+      --primary-light: #fff0e5;
+      --primary-dark: #261d16;
+      --secondary: #ff681c;
+      --secondary-light: #ff7a1a;
+      --border: rgba(228, 215, 200, 0.65);
+      --shadow: rgba(38, 29, 22, 0.08);
+      --btn-bg: linear-gradient(135deg, #ff7a1a, #f05e13);
+      --btn-text: #ffffff;
+
+      padding-bottom: 95px;
+      background: transparent;
+      min-height: 100vh;
+      color: var(--text-main);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode .stats-screen {
+      --bg-main: transparent;
+      --bg-card: #1d1712;
+      --text-main: #f5eae1;
+      --text-secondary: #baa490;
+      --primary: #ff7a1a;
+      --primary-light: #442a17;
+      --primary-dark: #f5eae1;
+      --secondary: #ff7a1a;
+      --secondary-light: #ff681c;
+      --border: #443224;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+
+    .stats-header-card {
+      background: linear-gradient(135deg, #a34820, #783416);
+      color: #fff;
+      padding: 30px 20px;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      box-shadow: 0 8px 20px var(--shadow);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .stats-header-card button {
+      background: #ffffff;
+      border: none;
+      color: #261d16;
+      font-size: 1.5rem;
+      font-weight: 900;
+      border-radius: 16px;
+      width: 46px;
+      height: 46px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(38, 29, 22, 0.08);
+      transition: all 0.2s;
+    }
+
+    .stats-header-card button:active {
+      transform: scale(0.95);
+    }
+
+    .stats-header-card h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0;
+      color: #fff !important;
+    }
+
+    .stats-header-card p {
+      font-size: 12px;
+      opacity: 0.9;
+      margin: 4px 0 0 0;
+      color: #fff !important;
+    }
+
+    .stats-container {
+      margin: 0 15px;
+    }
+
+    .stats-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 28px var(--shadow);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .stats-card-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary);
+      font-weight: 900;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .stats-card h2 {
+      font-size: 18px;
+      color: var(--text-main);
+      margin: 0 0 15px 0;
+      font-weight: 800;
+    }
+
+    /* Promedios Cards */
+    .averages-grid {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .average-item {
+      flex: 1;
+      background-color: var(--bg-card);
+      border-radius: 24px;
+      padding: 18px 10px;
+      text-align: center;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      box-shadow: 0 12px 28px var(--shadow);
+    }
+
+    .average-item span {
+      font-size: 24px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .average-item h3 {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 0;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .average-item strong {
+      font-size: 22px;
+      color: var(--primary);
+      display: block;
+      margin-top: 4px;
+      font-weight: 900;
+    }
+
+    /* Canvas de Gráficos */
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .chart-wrapper-doughnut {
+      height: 200px;
+    }
+  </style>
+</head>
+
+<body class="home-warm-page">
+
+  <main class="stats-screen">
+
+    <section class="stats-header-card">
+      <button type="button" onclick="window.location.href='perfil.html'">←</button>
+      <div>
+        <h1>Estadísticas y Análisis</h1>
+        <p>Tus patrones de sueño, energía y estrés acumulados.</p>
+      </div>
+    </section>
+
+    <div class="stats-container">
+
+      <!-- Promedios Semanales -->
+      <section class="averages-grid">
+        <article class="average-item">
+          <span>🌿</span>
+          <h3>Estrés Promedio</h3>
+          <strong id="avgEstres">-</strong>
+        </article>
+
+        <article class="average-item">
+          <span>🌙</span>
+          <h3>Sueño Promedio</h3>
+          <strong id="avgSueno">-</strong>
+        </article>
+
+        <article class="average-item">
+          <span>⚡</span>
+          <h3>Energía Promedio</h3>
+          <strong id="avgEnergia">-</strong>
+        </article>
+      </section>
+
+      <!-- Gráfico de Tendencias -->
+      <article class="stats-card">
+        <span class="stats-card-title">Historial</span>
+        <h2>Línea de Tendencia (Últimos 10 Check-ins)</h2>
+        <div class="chart-wrapper">
+          <canvas id="tendenciaChart"></canvas>
+        </div>
+      </article>
+
+      <!-- Gráfico de Dona de Estados de Ánimo -->
+      <article class="stats-card">
+        <span class="stats-card-title">Emociones</span>
+        <h2>Distribución de Estados de Ánimo</h2>
+        <div class="chart-wrapper chart-wrapper-doughnut">
+          <canvas id="donaChart"></canvas>
+        </div>
+      </article>
+
+    </div>
+
+  </main>
+
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
+      <span>🏠</span>
+      <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="bienestar.html">
+      <span>🌸</span>
+      <small>Bienestar</small>
+    </a>
+
+    <a href="checkin.html">
+      <span>📝</span>
+      <small>Check-in</small>
+    </a>
+
+    <a href="chat.html">
+      <span>💬</span>
+      <small>Chat</small>
+    </a>
+
+    <a href="perfil.html" class="active">
+      <span>👤</span>
+      <small>Perfil</small>
+    </a>
+  </nav>
+
+  <script src="nav.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Inicialización del Dashboard de Estadísticas al cargar
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof inicializarEstadisticasVitality === "function") {
+        inicializarEstadisticasVitality();
+      }
+    });
+  </script>
+</body>
+</html>

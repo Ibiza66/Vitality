@@ -1,4 +1,4 @@
-﻿/* =========================
+/* =========================
    FUNCIONES BASE DE NAVEGACIÓN VITALITY
 ========================= */
 
@@ -114,7 +114,9 @@ function paginaRequiereSesionNav(pagina) {
     "organizar_horario.html",
     "alertas.html",
     "chat.html",
-    "uso_apps.html"
+    "uso_apps.html",
+    "bienestar.html",
+    "estadisticas.html"
   ];
 
   return paginasProtegidas.includes(pagina);

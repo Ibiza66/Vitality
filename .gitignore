@@ -1,19 +1,9 @@
 node_modules
 .env
-
-# ---- Agregado por cleanup_vitality.sh ----
-# Archivos sensibles
-*token*
-*github_token*
-token de github
-# Archivos temporales y copias
-*copy.js
-*_copy.js
-*.OLD
-*.OLD_ROOT
-# Carpeta de archivos archivados
-_archive/
-# Notas locales
-docs/notas
-docs/proyecto_vitality.txt
-.env
+# Android build artifacts and local configuration
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/app/src/main/assets/public/
+.idea/

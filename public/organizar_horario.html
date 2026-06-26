@@ -1,191 +1,238 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitality - Organizar horario</title>
+  <title>Vitality - Agregar</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="app-mobile-page organizar-app-page">
 
-  <header class="app-mobile-header">
-    <button class="app-icon-btn menu-btn" onclick="toggleMenu()">☰</button>
+<body class="organizar-warm-page">
 
-    <a href="horario.html" class="app-header-logo">
-      <img src="logo.jpg" alt="Logo Vitality">
-    </a>
+  <main class="organizar-warm-screen">
 
-    <button class="app-icon-btn profile-btn" onclick="toggleProfileMenu()">👤</button>
+    <section class="organizar-warm-header organizar-warm-header-simple">
+      <button
+        type="button"
+        class="organizar-warm-back"
+        onclick="window.location.href='horario.html'"
+      >
+        ←
+      </button>
+    </section>
 
-    <ul class="menu app-dropdown-menu" id="menu">
-      <li><a href="horario.html">Horario</a></li>
-      <li><a href="perfil.html">Perfil</a></li>
-      <li><a href="checkin.html">Check-in</a></li>
-      <li><a href="alertas.html">Alertas</a></li>
-      <li><a href="chat.html">Chat de apoyo</a></li>
-      <li><a href="uso_apps.html">Uso de apps</a></li>
-    </ul>
+    <section class="organizar-question-header">
+      <div class="organizar-warm-logo">
+        <img src="logo.jpg" alt="Logo Vitality">
+      </div>
 
-    <ul class="profile-menu app-profile-menu" id="profileMenu">
-      <li><a href="perfil.html">Mi perfil</a></li>
-      <li><a href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
-    </ul>
-  </header>
-
-  <main class="organizar-app-screen">
-
-    <section class="organizar-hero-card">
-      <div class="organizar-icon">🗓️</div>
-      <div>
+      <div class="organizar-warm-hero">
         <span>Organización</span>
-        <h1>Agregar actividades</h1>
-        <p>Registra rutinas semanales o eventos especiales para mantener tu día ordenado.</p>
+        <h1>Agrega acciones a tu día</h1>
+        <p>
+          Registra rutinas y configura límites digitales para mantener tu foco.
+        </p>
       </div>
     </section>
 
-    <section class="organizar-tabs">
-      <button type="button" class="organizar-tab active" onclick="mostrarFormularioOrganizar('fija')">
-        Actividad fija
+    <section class="organizar-shortcuts organizar-switch-tabs">
+      <button
+        type="button"
+        class="organizar-switch-btn active"
+        id="btnPanelActividadFija"
+        onclick="mostrarPanelOrganizarWarm('fija')"
+      >
+        <span>＋</span>
+        <strong>Actividad fija</strong>
       </button>
 
-      <button type="button" class="organizar-tab" onclick="mostrarFormularioOrganizar('especial')">
-        Actividad especial
+      <button
+        type="button"
+        class="organizar-switch-btn"
+        id="btnPanelUsoApps"
+        onclick="mostrarPanelOrganizarWarm('apps')"
+      >
+        <span>📱</span>
+        <strong>Uso de apps</strong>
       </button>
     </section>
 
-    <section class="organizar-mobile-card organizar-form-section active" id="formularioFijoMobile">
-      <div class="organizar-section-title">
-        <span>Rutina semanal</span>
-        <h2 id="tituloActividadFija">Agregar actividad fija</h2>
-      </div>
+    <!-- PANEL ACTIVIDAD FIJA -->
+    <section class="organizar-panel active" id="panelActividadFija">
 
-      <form id="actividadFijaForm" class="organizar-app-form">
-        <input type="hidden" id="editandoActividadFijaId">
-
-        <label for="diaFijo">Día</label>
-        <select id="diaFijo" required>
-          <option value="">Selecciona un día</option>
-          <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miércoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-          <option value="Sábado">Sábado</option>
-          <option value="Domingo">Domingo</option>
-        </select>
-
-        <div class="organizar-time-grid">
-          <div>
-            <label for="horaFija">Inicio</label>
-            <input type="time" id="horaFija" required>
-          </div>
-
-          <div>
-            <label for="horaFinFija">Término</label>
-            <input type="time" id="horaFinFija" required>
-          </div>
+      <section class="organizar-warm-card" id="seccionActividadFija">
+        <div class="organizar-warm-title">
+          <span>Rutina semanal</span>
+          <h2 id="tituloActividadFija">Agregar actividad fija</h2>
         </div>
 
-        <label for="actividadFija">Actividad</label>
-        <input
-          type="text"
-          id="actividadFija"
-          placeholder="Ej: Clases, trabajo, estudiar"
-          required
-        >
+        <form id="actividadFijaForm" class="organizar-warm-form">
+          <input type="hidden" id="editandoActividadFijaId">
 
-        <button type="submit" id="btnGuardarActividadFija">
-          Guardar actividad fija
-        </button>
+          <label for="diaFijo">Día</label>
+          <select id="diaFijo" required>
+            <option value="">Selecciona un día</option>
+            <option value="Lunes">Lunes</option>
+            <option value="Martes">Martes</option>
+            <option value="Miércoles">Miércoles</option>
+            <option value="Jueves">Jueves</option>
+            <option value="Viernes">Viernes</option>
+            <option value="Sábado">Sábado</option>
+            <option value="Domingo">Domingo</option>
+          </select>
+
+          <div class="organizar-warm-time-grid">
+            <div>
+              <label for="horaFija">Inicio</label>
+              <input type="time" id="horaFija" required>
+            </div>
+
+            <div>
+              <label for="horaFinFija">Término</label>
+              <input type="time" id="horaFinFija" required>
+            </div>
+          </div>
+
+          <label for="actividadFija">Actividad</label>
+          <input
+            type="text"
+            id="actividadFija"
+            placeholder="Ej: estudiar, clases, trabajo"
+            required
+          >
+
+          <button type="submit" id="btnGuardarActividadFija" class="organizar-warm-primary">
+            Guardar actividad fija
+          </button>
+
+          <button
+            type="button"
+            id="btnCancelarEdicionFija"
+            onclick="cancelarEdicionActividadFija()"
+            class="organizar-warm-secondary"
+            style="display: none;"
+          >
+            Cancelar edición
+          </button>
+        </form>
+      </section>
+
+      <section class="organizar-warm-card">
+        <div class="organizar-warm-title">
+          <span>Guardadas</span>
+          <h2>Actividades fijas</h2>
+        </div>
+
+        <div id="listaActividadesFijasOrganizar" class="organizar-fijas-lista">
+          <p>Cargando actividades fijas...</p>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- PANEL USO DE APPS -->
+    <section class="organizar-panel" id="panelUsoApps">
+
+      <section class="organizar-warm-card organizar-uso-apps-card">
+        <div class="organizar-warm-title">
+          <span>Bienestar digital</span>
+          <h2>Uso de apps</h2>
+        </div>
+
+        <p>
+          Define límites diarios para apps como Instagram, TikTok o YouTube.
+          Vitality revisará el uso real desde Android y te avisará si superas tu límite.
+        </p>
+      </section>
+
+      <section class="organizar-warm-card">
+        <div class="organizar-warm-title">
+          <span>Permiso Android</span>
+          <h2>Lectura de uso real</h2>
+        </div>
 
         <button
           type="button"
-          id="btnCancelarEdicionFija"
-          onclick="cancelarEdicionActividadFija()"
-          class="organizar-secondary-btn"
-          style="display: none;"
+          class="organizar-warm-primary"
+          onclick="abrirPermisoUsoAppsVitality()"
         >
-          Cancelar edición
+          Activar permiso de uso de apps
         </button>
-      </form>
-    </section>
 
-    <section class="organizar-mobile-card organizar-form-section" id="formularioEspecialMobile">
-      <div class="organizar-section-title">
-        <span>Evento puntual</span>
-        <h2 id="tituloActividadEspecial">Agregar actividad especial</h2>
-      </div>
+        <p id="estadoPermisoUsoApps" class="uso-apps-permiso-texto">
+          Revisa si Vitality tiene permiso para leer el uso real del celular.
+        </p>
+      </section>
 
-      <form id="actividadEspecialForm" class="organizar-app-form">
-        <input type="hidden" id="editandoActividadEspecialId">
-
-        <label for="tipoEspecial">Tipo</label>
-        <select id="tipoEspecial" required>
-          <option value="">Selecciona un tipo</option>
-          <option value="Evento único">Evento único</option>
-          <option value="Semana de solemnes">Semana de solemnes</option>
-          <option value="Semana de vacaciones">Semana de vacaciones</option>
-          <option value="Semana especial">Semana especial</option>
-        </select>
-
-        <label for="fechaEspecial">Fecha</label>
-        <input type="date" id="fechaEspecial" required>
-
-        <div class="organizar-time-grid">
-          <div>
-            <label for="horaEspecial">Inicio</label>
-            <input type="time" id="horaEspecial" required>
-          </div>
-
-          <div>
-            <label for="horaFinEspecial">Término</label>
-            <input type="time" id="horaFinEspecial" required>
-          </div>
+      <section class="organizar-warm-card">
+        <div class="organizar-warm-title">
+          <span>Monitoreo</span>
+          <h2>Configurar app</h2>
         </div>
 
-        <label for="actividadEspecial">Actividad</label>
-        <input
-          type="text"
-          id="actividadEspecial"
-          placeholder="Ej: Solemne de Economía"
-          required
-        >
+        <form id="usoAppForm" class="organizar-warm-form">
 
-        <button type="submit" id="btnGuardarActividadEspecial">
-          Guardar actividad especial
-        </button>
+          <label for="usoAppNombre">App monitoreada</label>
+          <select id="usoAppNombre" required>
+            <option value="">Selecciona una app</option>
+            <option value="Instagram">Instagram</option>
+            <option value="TikTok">TikTok</option>
+            <option value="YouTube">YouTube</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Spotify">Spotify</option>
+            <option value="Chrome">Chrome</option>
+            <option value="Gmail">Gmail</option>
+            <option value="Facebook">Facebook</option>
+            <option value="Messenger">Messenger</option>
+            <option value="Netflix">Netflix</option>
+            <option value="X">X / Twitter</option>
+          </select>
 
-        <button
-          type="button"
-          id="btnCancelarEdicionEspecial"
-          onclick="cancelarEdicionActividadEspecial()"
-          class="organizar-secondary-btn"
-          style="display: none;"
-        >
-          Cancelar edición
-        </button>
-      </form>
-    </section>
+          <label for="usoAppLimite">Límite diario en minutos</label>
+          <input
+            type="number"
+            id="usoAppLimite"
+            min="1"
+            placeholder="Ej: 60"
+            required
+          >
 
-    <section class="organizar-mobile-card organizar-tip-card">
-      <div class="organizar-section-title">
-        <span>Consejo</span>
-        <h2>Organiza con calma</h2>
-      </div>
+          <button type="submit" class="organizar-warm-primary">
+            Guardar monitoreo
+          </button>
 
-      <p>
-        Agrega primero tus actividades fijas y luego los eventos especiales. Así Vitality puede ayudarte a ordenar mejor tu día.
-      </p>
+        </form>
+      </section>
 
-      <a href="horario.html" class="organizar-back-link">Volver al horario</a>
+      <section class="organizar-warm-card">
+        <div class="organizar-warm-title">
+          <span>Seguimiento</span>
+          <h2>Apps monitoreadas</h2>
+        </div>
+
+        <div id="listaUsoApps" class="uso-apps-lista uso-apps-lista-mobile">
+          <p>Cargando apps monitoreadas...</p>
+        </div>
+      </section>
+
     </section>
 
   </main>
 
-  <nav class="bottom-app-nav">
-    <a href="horario.html" class="active">
+  <nav class="bottom-app-nav home-bottom-nav">
+    <a href="horario.html">
       <span>🏠</span>
       <small>Inicio</small>
+    </a>
+
+    <a href="organizar_horario.html" class="active">
+      <span>＋</span>
+      <small>Agregar</small>
+    </a>
+
+    <a href="bienestar.html">
+      <span>🌸</span>
+      <small>Bienestar</small>
     </a>
 
     <a href="checkin.html">
@@ -204,26 +251,45 @@
     </a>
   </nav>
 
-  <!-- <script src="nav.js"></script> -->
-  <script src="ui.js"></script>
+  <script src="nav.js"></script>
   <script src="script.js"></script>
 
   <script>
-    function mostrarFormularioOrganizar(tipo) {
-      const fijo = document.getElementById("formularioFijoMobile");
-      const especial = document.getElementById("formularioEspecialMobile");
-      const tabs = document.querySelectorAll(".organizar-tab");
+    function mostrarPanelOrganizarWarm(tipo) {
+      const panelFija = document.getElementById("panelActividadFija");
+      const panelApps = document.getElementById("panelUsoApps");
+      const btnFija = document.getElementById("btnPanelActividadFija");
+      const btnApps = document.getElementById("btnPanelUsoApps");
 
-      tabs.forEach((tab) => tab.classList.remove("active"));
+      if (!panelFija || !panelApps || !btnFija || !btnApps) {
+        return;
+      }
 
-      if (tipo === "fija") {
-        fijo.classList.add("active");
-        especial.classList.remove("active");
-        tabs[0].classList.add("active");
-      } else {
-        especial.classList.add("active");
-        fijo.classList.remove("active");
-        tabs[1].classList.add("active");
+      panelFija.classList.remove("active");
+      panelApps.classList.remove("active");
+      btnFija.classList.remove("active");
+      btnApps.classList.remove("active");
+
+      if (tipo === "apps") {
+        panelApps.classList.add("active");
+        btnApps.classList.add("active");
+
+        if (typeof actualizarEstadoPermisoUsoAppsVitality === "function") {
+          actualizarEstadoPermisoUsoAppsVitality();
+        }
+
+        if (typeof mostrarUsoApps === "function") {
+          mostrarUsoApps();
+        }
+
+        return;
+      }
+
+      panelFija.classList.add("active");
+      btnFija.classList.add("active");
+
+      if (typeof mostrarActividadesFijasOrganizarVitality === "function") {
+        mostrarActividadesFijasOrganizarVitality();
       }
     }
   </script>
