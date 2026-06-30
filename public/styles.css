@@ -9927,3 +9927,248 @@ body.chat-keyboard-open #chatBox {
     --vt-radius-btn:18px;
 
 }
+/* ==========================================
+   MODAL CICLO DE BARRERA
+========================================== */
+
+.barrera-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+
+    background:rgba(58,36,24,.30);
+    backdrop-filter:blur(8px);
+
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.barrera-modal{
+    background: var(--vt-card);
+
+    width: 100%;
+    max-width: 520px;
+
+    border-radius: 28px 28px 0 0;
+
+    padding: 1.75rem 1.4rem 2rem;
+
+    border-top: 1px solid var(--vt-border);
+
+    box-shadow: 0 -12px 32px rgba(0,0,0,.12);
+
+    margin-bottom: 85px;   /* <-- agregar */
+}
+
+.barrera-modal-scroll{
+    max-height:85vh;
+    overflow-y:auto;
+}
+
+.barrera-handle{
+    width:60px;
+    height:6px;
+
+    background:#E5CDB9;
+
+    border-radius:999px;
+
+    margin:0 auto 1.5rem;
+}
+
+.barrera-emoji{
+    font-size:42px;
+    text-align:center;
+    margin-bottom:.8rem;
+}
+
+.barrera-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+
+    color:var(--vt-primary);
+
+    margin:0 0 .5rem;
+}
+
+.barrera-title{
+    font-size:20px;
+    font-weight:700;
+
+    color:var(--vt-text);
+
+    margin:0 0 .8rem;
+}
+
+.barrera-message{
+    font-size:15px;
+    line-height:1.7;
+
+    color:var(--vt-text-soft);
+
+    margin:0 0 1.5rem;
+}
+
+.barrera-action-card{
+    background:var(--vt-bg-soft);
+
+    border:2px solid var(--vt-border);
+
+    border-radius:18px;
+
+    padding:1rem;
+
+    margin-bottom:1.5rem;
+}
+
+.barrera-action-label{
+    font-size:11px;
+    font-weight:700;
+
+    color:var(--vt-primary);
+
+    text-transform:uppercase;
+
+    letter-spacing:.08em;
+
+    margin:0 0 .35rem;
+}
+
+.barrera-action-title{
+    font-size:15px;
+    font-weight:700;
+
+    color:var(--vt-text);
+
+    margin:0 0 .3rem;
+}
+
+.barrera-action-description{
+    font-size:14px;
+    line-height:1.6;
+
+    color:var(--vt-text-soft);
+
+    margin:0;
+}
+
+.barrera-btn-primary{
+    width:100%;
+
+    padding:15px;
+
+    background:linear-gradient(
+        135deg,
+        var(--vt-primary),
+        #FF8D35
+    );
+
+    border:none;
+
+    border-radius:18px;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    box-shadow:var(--vt-shadow);
+
+    transition:.25s;
+}
+
+.barrera-btn-primary:hover{
+    transform:translateY(-2px);
+}
+
+.barrera-btn-secondary{
+    width:100%;
+
+    margin-top:18px;
+
+    padding:14px;
+
+    background:var(--vt-bg-soft);
+
+    border:2px solid var(--vt-border);
+
+    border-radius:18px;
+
+    color:var(--vt-text-soft);
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.barrera-btn-secondary:hover{
+    background:#FFF2E8;
+}
+/* Opciones del ciclo de barrera */
+
+.barrera-option{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    width:100%;
+
+    padding:16px;
+
+    background:var(--vt-card);
+
+    border:2px solid var(--vt-border);
+
+    border-radius:18px;
+
+    color:var(--vt-text);
+
+    font-size:15px;
+
+    font-weight:600;
+
+    text-align:left;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    margin-bottom:12px;
+}
+
+.barrera-option:hover{
+
+    background:var(--vt-bg-soft);
+
+    border-color:var(--vt-primary);
+
+    transform:translateY(-2px);
+
+}
+
+.barrera-option-emoji{
+
+    font-size:24px;
+
+    flex-shrink:0;
+
+}
+
+.barrera-option-text{
+
+    flex:1;
+
+    color:var(--vt-text);
+
+}

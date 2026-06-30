@@ -9619,22 +9619,16 @@ function mostrarModalBarreraVitality(actividadId, actividadNombre, origen) {
   const contenedor = document.getElementById("barreraOpciones");
   if (!contenedor) return;
 
-  contenedor.innerHTML = Object.entries(BARRERAS_VITALITY).map(([key, b]) => `
+contenedor.innerHTML = Object.entries(BARRERAS_VITALITY).map(([key, b]) => `
     <button
       type="button"
+      class="barrera-option"
       onclick="seleccionarBarreraVitality('${key}')"
-      style="
-        display:flex; align-items:center; gap:12px; width:100%;
-        padding:12px 14px; background:rgba(255,255,255,.04);
-        border:1px solid rgba(255,255,255,.08); border-radius:10px;
-        color:#f0f0f0; font-size:14px; text-align:left; cursor:pointer;
-        transition:background .15s;
-      "
     >
-      <span style="font-size:20px;">${b.emoji}</span>
-      <span>${b.label}</span>
+      <span class="barrera-option-emoji">${b.emoji}</span>
+      <span class="barrera-option-text">${b.label}</span>
     </button>
-  `).join("");
+`).join("");
 
   /* Mostrar overlay */
   const overlay = document.getElementById("barreraOverlay");

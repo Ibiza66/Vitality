@@ -173,230 +173,85 @@
   </nav>
 
  <!-- ══════════════ MODAL CICLO DE BARRERA ══════════════ -->
-<div id="barreraOverlay" style="
-display:none;
-position:fixed;
-inset:0;
-z-index:9999;
-background:rgba(58,36,24,.30);
-backdrop-filter:blur(8px);
-align-items:flex-end;
-justify-content:center;
-">
+<div id="barreraOverlay" class="barrera-overlay">
+  <div class="barrera-modal">
 
-<div style="
-background:var(--vt-card);
-border-radius:28px 28px 0 0;
-width:100%;
-max-width:520px;
-padding:1.75rem 1.4rem 2rem;
-border-top:1px solid var(--vt-border);
-box-shadow:0 -12px 32px rgba(0,0,0,.12);
-">
+    <div class="barrera-handle"></div>
 
-<div style="
-width:60px;
-height:6px;
-background:#E5CDB9;
-border-radius:999px;
-margin:0 auto 1.5rem;
-"></div>
+    <p class="barrera-label">
+      VITALITY · CICLO DE BARRERA
+    </p>
 
-<p style="
-font-size:11px;
-font-weight:700;
-letter-spacing:.12em;
-text-transform:uppercase;
-color:var(--vt-primary);
-margin:0 0 .45rem;
-">
-VITALITY · CICLO DE BARRERA
-</p>
+    <h2 id="barreraTitle" class="barrera-title"></h2>
 
-<h2 id="barreraTitle" style="
-font-size:20px;
-font-weight:700;
-color:var(--vt-text);
-margin:0 0 .45rem;
-line-height:1.4;
-"></h2>
+    <p class="barrera-subtitle">
+      ¿Qué te impidió completarla?
+    </p>
 
-<p style="
-font-size:14px;
-line-height:1.6;
-color:var(--vt-text-soft);
-margin:0 0 1.4rem;
-">
-¿Qué te impidió completarla? Vitality ajustará tu plan para ayudarte mejor.
-</p>
-
-<div
-id="barreraOpciones"
-style="
-display:flex;
-flex-direction:column;
-gap:12px;
-"></div>
+    <div id="barreraOpciones"></div>
 
 <button
-onclick="cerrarModalBarreraVitality()"
-style="
-width:100%;
-margin-top:18px;
-padding:14px;
-background:var(--vt-bg-soft);
-border:2px solid var(--vt-border);
-border-radius:18px;
-color:var(--vt-text-soft);
-font-size:15px;
-font-weight:600;
-cursor:pointer;
-transition:.2s;
-">
-Cancelar
+    onclick="cerrarModalBarreraVitality()"
+    class="barrera-btn-secondary">
+    Cancelar
 </button>
 
 </div>
 </div>
-
  <!-- ══════════════ MODAL RESULTADO BARRERA ══════════════ -->
 
-<div id="barreraResultado" style="
-display:none;
-position:fixed;
-inset:0;
-z-index:9999;
-background:rgba(58,36,24,.30);
-backdrop-filter:blur(8px);
-align-items:flex-end;
-justify-content:center;
-">
+<div id="barreraResultado" class="barrera-overlay">
 
-<div style="
-background:var(--vt-card);
-border-radius:28px 28px 0 0;
-width:100%;
-max-width:520px;
-padding:1.75rem 1.4rem 2rem;
-border-top:1px solid var(--vt-border);
-box-shadow:0 -12px 32px rgba(0,0,0,.12);
-max-height:85vh;
-overflow-y:auto;
-">
+  <div class="barrera-modal barrera-modal-scroll">
 
-<div style="
-width:60px;
-height:6px;
-background:#E5CDB9;
-border-radius:999px;
-margin:0 auto 1.5rem;
-"></div>
+    <div class="barrera-handle"></div>
 
-<div
-id="barreraResultadoEmoji"
-style="
-font-size:42px;
-text-align:center;
-margin-bottom:.8rem;
-">
-✅
-</div>
+    <div
+      id="barreraResultadoEmoji"
+      class="barrera-emoji">
+      ✅
+    </div>
 
-<p style="
-font-size:11px;
-font-weight:700;
-letter-spacing:.12em;
-text-transform:uppercase;
-color:var(--vt-primary);
-margin:0 0 .5rem;
-">
-VITALITY RESPONDE
-</p>
+    <p class="barrera-label">
+      VITALITY RESPONDE
+    </p>
 
-<h2
-id="barreraResultadoTitulo"
-style="
-font-size:20px;
-font-weight:700;
-color:var(--vt-text);
-margin:0 0 .8rem;
-">
-</h2>
+    <h2
+      id="barreraResultadoTitulo"
+      class="barrera-title">
+    </h2>
 
-<p
-id="barreraResultadoMensaje"
-style="
-font-size:15px;
-line-height:1.7;
-color:var(--vt-text-soft);
-margin:0 0 1.5rem;
-">
-</p>
+    <p
+      id="barreraResultadoMensaje"
+      class="barrera-message">
+    </p>
 
-<div style="
-background:var(--vt-bg-soft);
-border:2px solid var(--vt-border);
-border-radius:18px;
-padding:1rem;
-margin-bottom:1.5rem;
-">
+    <div class="barrera-action-card">
 
-<p style="
-font-size:11px;
-font-weight:700;
-color:var(--vt-primary);
-text-transform:uppercase;
-letter-spacing:.08em;
-margin:0 0 .35rem;
-">
-Acción sugerida
-</p>
+      <p class="barrera-action-label">
+        Acción sugerida
+      </p>
 
-<p
-id="barreraAccionTitulo"
-style="
-font-size:15px;
-font-weight:700;
-color:var(--vt-text);
-margin:0 0 .3rem;
-">
-</p>
+      <p
+        id="barreraAccionTitulo"
+        class="barrera-action-title">
+      </p>
 
-<p
-id="barreraAccionDesc"
-style="
-font-size:14px;
-line-height:1.6;
-color:var(--vt-text-soft);
-margin:0;
-">
-</p>
+      <p
+        id="barreraAccionDesc"
+        class="barrera-action-description">
+      </p>
 
-</div>
+    </div>
 
-<button
-onclick="cerrarResultadoBarreraVitality()"
-style="
-width:100%;
-padding:15px;
-background:linear-gradient(
-135deg,
-var(--vt-primary),
-#FF8D35
-);
-border:none;
-border-radius:18px;
-color:white;
-font-size:15px;
-font-weight:700;
-cursor:pointer;
-box-shadow:var(--vt-shadow);
-transition:.2s;
-">
-Entendido →
-</button>
+    <button
+      onclick="cerrarResultadoBarreraVitality()"
+      class="barrera-btn-primary">
+      Entendido →
+    </button>
 
-</div>
+  </div>
+
 </div>
 
   <script src="nav.js"></script>
