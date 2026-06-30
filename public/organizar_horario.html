@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitality - Agregar</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .dias-checkbox-grid {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .dia-check {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+    .dia-check input[type="checkbox"] { display: none; }
+    .dia-check span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #e4d7c8;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      color: #8b7b6b;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .dia-check input[type="checkbox"]:checked + span {
+      background: #ff681c;
+      border-color: #ff681c;
+      color: #fff;
+    }
+  </style>
 </head>
 
 <body class="organizar-warm-page">
@@ -69,17 +104,17 @@
         <form id="actividadFijaForm" class="organizar-warm-form">
           <input type="hidden" id="editandoActividadFijaId">
 
-          <label for="diaFijo">Día</label>
-          <select id="diaFijo" required>
-            <option value="">Selecciona un día</option>
-            <option value="Lunes">Lunes</option>
-            <option value="Martes">Martes</option>
-            <option value="Miércoles">Miércoles</option>
-            <option value="Jueves">Jueves</option>
-            <option value="Viernes">Viernes</option>
-            <option value="Sábado">Sábado</option>
-            <option value="Domingo">Domingo</option>
-          </select>
+          <label>Días</label>
+          <div class="dias-checkbox-grid" id="diasFijoGroup">
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Lunes"><span>Lu</span></label>
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Martes"><span>Ma</span></label>
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Miércoles"><span>Mi</span></label>
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Jueves"><span>Ju</span></label>
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Viernes"><span>Vi</span></label>
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Sábado"><span>Sá</span></label>
+            <label class="dia-check"><input type="checkbox" name="diaFijo" value="Domingo"><span>Do</span></label>
+          </div>
+          <input type="hidden" id="diaFijo" value="">
 
           <div class="organizar-warm-time-grid">
             <div>
@@ -292,6 +327,35 @@
         mostrarActividadesFijasOrganizarVitality();
       }
     }
+
+    /* ── Sincronizar checkboxes de días con el hidden input ── */
+    document.addEventListener("DOMContentLoaded", function () {
+      const checkboxes = document.querySelectorAll('input[name="diaFijo"]');
+      const hiddenDia  = document.getElementById("diaFijo");
+
+      checkboxes.forEach(function (cb) {
+        cb.addEventListener("change", function () {
+          const seleccionados = Array.from(checkboxes)
+            .filter(function (c) { return c.checked; })
+            .map(function (c) { return c.value; });
+          hiddenDia.value = seleccionados.join(",");
+        });
+      });
+
+      /* Al guardar el form, si no hay ningún día marcado, alertar */
+      const form = document.getElementById("actividadFijaForm");
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          const seleccionados = Array.from(checkboxes).filter(function (c) { return c.checked; });
+          if (seleccionados.length === 0) {
+            e.preventDefault();
+            if (typeof mostrarToastVitality === "function") {
+              mostrarToastVitality("Selecciona al menos un día para la actividad.");
+            }
+          }
+        }, true); /* capture=true para ejecutar ANTES que el handler de script.js */
+      }
+    });
   </script>
 </body>
 </html>

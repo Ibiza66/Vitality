@@ -1,16 +1,13 @@
 const express = require("express");
-const OpenAI = require("openai");
 const mongoose = require("mongoose");
+const Anthropic = require("@anthropic-ai/sdk");
 
-const RecomendacionIA = require("../models/RecomendacionIA");
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY
+});const RecomendacionIA = require("../models/RecomendacionIA");
 
 const router = express.Router();
 
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    })
-  : null;
 
 /* =========================
    FUNCIONES AUXILIARES
@@ -52,7 +49,7 @@ function construirContexto(checkin, actividadesHoy, objetivos) {
 
 /* =========================
    CLASIFICACIÓN ADAPTATIVA LOCAL
-   Esto permite guardar recomendación aunque OpenAI responda texto normal.
+   Esto permite guardar recomendación aunque la IA responda texto normal.
 ========================= */
 function clasificarRecomendacion(mensajeUsuario, respuestaIA, checkin) {
   const texto = String(mensajeUsuario || "").toLowerCase();
@@ -245,80 +242,134 @@ router.post("/chat", async (req, res) => {
     const {
       usuarioId,
       mensaje,
+      historialChat,
       checkin,
       actividadesHoy,
-      objetivos
+      objetivos,
+      onboarding
     } = req.body;
 
     const mensajeLimpio = String(mensaje || "").trim();
 
     if (!mensajeLimpio) {
-      return res.status(400).json({
-        mensaje: "Debes enviar un mensaje."
-      });
+      return res.status(400).json({ mensaje: "Debes enviar un mensaje." });
     }
 
     const contexto = construirContexto(checkin, actividadesHoy, objetivos);
 
+    const estadoHoy = checkin
+      ? `Estado emocional: ${checkin.estadoAnimo || "?"}, Estrés: ${checkin.nivelEstres || "?"}, Descanso: ${checkin.sueno || "?"}`
+      : "El usuario no ha hecho check-in hoy.";
+
+    const fichaClinica = onboarding?.fichaClinica
+      ? String(onboarding.fichaClinica).slice(0, 400)
+      : null;
+
+    const objetivosTexto = Array.isArray(objetivos) && objetivos.length > 0
+      ? objetivos.slice(0, 2).map(o => o.descripcion || o.titulo || "").filter(Boolean).join("; ")
+      : "Sin objetivos registrados";
+
+    const msgLower = mensajeLimpio.toLowerCase().trim();
+    const palabrasMsg = mensajeLimpio.split(/\s+/).length;
+
+    const quiereConversar =
+      msgLower.includes("conversar") ||
+      msgLower.includes("hablar") ||
+      msgLower.includes("escucharme") ||
+      msgLower.includes("desahogar") ||
+      msgLower.includes("me siento") ||
+      msgLower.includes("estoy") ||
+      msgLower.includes("tengo miedo") ||
+      msgLower === "hola" ||
+      msgLower === "necesito ayuda" ||
+      msgLower === "necesito apoyo" ||
+      msgLower === "ayuda" ||
+      palabrasMsg <= 2;
+
+    const contextoPersonal = [
+      estadoHoy,
+      fichaClinica ? `Perfil del usuario: ${fichaClinica}` : "",
+      `Objetivos: ${objetivosTexto}`
+    ].filter(Boolean).join("\n");
+
+    const systemPrompt = quiereConversar
+      ? `Eres Vitality, acompañante empático de bienestar para universitarios.
+MODO ESCUCHA: el usuario necesita ser escuchado, no instrucciones todavía.
+
+${contextoPersonal}
+
+Haz UNA sola pregunta abierta, personalizada con el contexto real del usuario. No preguntes algo genérico.
+Ejemplo bueno: "Vi que hoy estás con estrés alto y tu meta es arreglar tu app. ¿Qué parte de eso te está bloqueando más?"
+Máximo 2 oraciones: empatía breve + pregunta específica. Sin Markdown. En español.`
+      : `Eres Vitality, acompañante de bienestar para universitarios.
+MODO AYUDA: el usuario pide ayuda concreta.
+
+${contextoPersonal}
+
+Responde con:
+1. Una frase corta que valide cómo se siente, usando su perfil real (no genérico).
+2. Una recomendación específica para lo que pidió, conectada a sus objetivos.
+3. Una pregunta de seguimiento concreta.
+Sin Markdown, sin guiones como listas, sin negritas. Máximo 4 oraciones. En español.`;
+
     let textoIA = "";
+    try {
+      const historialValido = (Array.isArray(historialChat) ? historialChat : [])
+        .filter(m => m &&
+          (m.role === "user" || m.role === "assistant") &&
+          typeof m.content === "string" &&
+          m.content.trim().length > 2)
+        .slice(-6);
 
-    if (!openai) {
-      textoIA = respuestaLocalFallback(mensajeLimpio, checkin);
-    } else {
-      const respuesta = await openai.responses.create({
-        model: process.env.OPENAI_MODEL || "gpt-5.2",
-        instructions: `
-Eres Vitality, un asistente amable de bienestar emocional, organización diaria y bienestar digital.
+      while (historialValido.length > 0 && historialValido[0].role !== "user") {
+        historialValido.shift();
+      }
 
-Responde siempre en español.
-Usa tono cercano, breve y útil.
-No uses Markdown pesado.
-No uses títulos con ###.
-No uses negritas con **.
-No diagnostiques enfermedades.
-No digas que eres terapeuta, médico o psicólogo.
-No reemplazas ayuda profesional.
-Valida primero la situación del usuario.
-Da máximo 3 pasos concretos.
-Usa el contexto del usuario: check-in, actividades y objetivos.
-Si detectas distracción digital, recomienda una pausa digital.
-Si detectas cansancio, recomienda una actividad corta y realista.
-Si detectas estrés alto, recomienda bajar la carga.
-        `,
-        input: `
-CONTEXTO DEL USUARIO:
-${JSON.stringify(contexto, null, 2)}
+      const mensajesAPI = [
+        ...historialValido,
+        { role: "user", content: mensajeLimpio }
+      ];
 
-MENSAJE DEL USUARIO:
-${mensajeLimpio}
-        `,
-        max_output_tokens: 300
-      });
+    const respuestaIA = await client.messages.create({
+  model: process.env.CLAUDE_MODEL || "claude-sonnet-4-6",
+  max_tokens: 400,
+  system: systemPrompt,
+  messages: mensajesAPI
+});
 
-      textoIA =
-        respuesta.output_text ||
-        respuestaLocalFallback(mensajeLimpio, checkin);
-    }
+textoIA =
+  respuestaIA.content[0]?.text ||
+  respuestaLocalFallback(mensajeLimpio, checkin);
+    } catch (iaError) {
+  console.error("[ia/chat] Anthropic falló:", iaError);
+
+  textoIA = respuestaLocalFallback(mensajeLimpio, checkin);
+}
 
     const respuestaLimpia = limpiarRespuestaIA(textoIA);
 
-    const recomendacion = await guardarRecomendacionIA({
-      usuarioId,
-      mensajeUsuario: mensajeLimpio,
-      mensajeIA: respuestaLimpia,
-      checkin,
-      contexto
-    });
+    const esRespuestaConversacional =
+      quiereConversar || respuestaLimpia.trimEnd().endsWith("?");
+
+    let recomendacion = null;
+    if (!esRespuestaConversacional) {
+      recomendacion = await guardarRecomendacionIA({
+        usuarioId,
+        mensajeUsuario: mensajeLimpio,
+        mensajeIA: respuestaLimpia,
+        checkin,
+        contexto
+      });
+    }
 
     return res.json({
       respuesta: respuestaLimpia,
-      modo: openai ? "openai_adaptativa" : "local_adaptativa",
-      recomendacionId: recomendacion ? recomendacion._id : null,
+      modo: "anthropic_adaptativa",
+      recomendacionId: recomendacion ? recomendacion._id.toString() : null,
       recomendacion: recomendacion || null
     });
   } catch (error) {
     console.error("Error en IA adaptativa:", error);
-
     return res.status(500).json({
       mensaje: "Error al conectar con IA adaptativa.",
       error: error.message

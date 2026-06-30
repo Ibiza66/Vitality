@@ -52,7 +52,8 @@ router.post("/registro", async (req, res) => {
     const ocupacionesValidas = [
       "Trabajador",
       "Estudiante universitario",
-      "Estudiante escolar"
+      "Estudiante escolar",
+      "Otra"
     ];
 
     if (!ocupacionesValidas.includes(ocupacion)) {

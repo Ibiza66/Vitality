@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
         completado: Boolean(completado)
       },
       {
-        new: true,
+        returnDocument: 'after',
         upsert: true,
         runValidators: true
       }

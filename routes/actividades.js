@@ -66,7 +66,7 @@ router.put("/:actividadId", async (req, res) => {
     const actividadActualizada = await Actividad.findByIdAndUpdate(
       req.params.actividadId,
       req.body,
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!actividadActualizada) {

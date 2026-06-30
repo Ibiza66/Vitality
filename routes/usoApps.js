@@ -153,7 +153,7 @@ router.put("/:usoAppId", async (req, res) => {
         limiteMinutos: limite,
         minutosUsados: usados
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!usoApp) {

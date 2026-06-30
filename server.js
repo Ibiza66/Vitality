@@ -17,7 +17,7 @@ const chatHistorialRoutes = require("./routes/chatHistorial");
 const configuracionRoutes = require("./routes/configuracion");
 const reflexionesRoutes = require("./routes/reflexiones");
 const habitosRoutes = require("./routes/habitos");
-
+const rutasCuestionario = require('./routes/cuestionario');
 
 const app = express();
 
@@ -38,6 +38,8 @@ app.use("/api/chat-historial", chatHistorialRoutes);
 app.use("/api/configuracion", configuracionRoutes);
 app.use("/api/reflexiones", reflexionesRoutes);
 app.use("/api/habitos", habitosRoutes);
+app.use('/api/cuestionario', rutasCuestionario);
+
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

@@ -441,7 +441,7 @@ router.get("/:usuarioId", async (req, res) => {
 ========================= */
 router.patch("/:recomendacionId/rechazar", async (req, res) => {
   try {
-    const recomendacionIdLimpio = limpiarId(req.params.recomendacionId);
+    const recomendacionIdLimpio = String(req.params.recomendacionId || "").trim();
 
     if (!idValido(recomendacionIdLimpio)) {
       return res.status(400).json({
@@ -455,7 +455,7 @@ router.patch("/:recomendacionId/rechazar", async (req, res) => {
         estado: "rechazada"
       },
       {
-        new: true
+        returnDocument: 'after'
       }
     );
 
@@ -482,7 +482,7 @@ router.patch("/:recomendacionId/rechazar", async (req, res) => {
 ========================= */
 router.patch("/:recomendacionId/aceptar", async (req, res) => {
   try {
-    const recomendacionIdLimpio = limpiarId(req.params.recomendacionId);
+    const recomendacionIdLimpio = String(req.params.recomendacionId || "").trim();
 
     if (!idValido(recomendacionIdLimpio)) {
       return res.status(400).json({

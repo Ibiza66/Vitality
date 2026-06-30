@@ -5459,12 +5459,18 @@ body.dark-mode #chatBox {
 }
 
 .onboarding-option.seleccionada {
-  background: #fff0e5;
-  box-shadow: 0 10px 22px rgba(255, 104, 28, 0.12);
+  background: rgba(34, 197, 94, 0.12);
+  border-color: #22c55e;
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.18);
+}
+
+.onboarding-option.seleccionada strong {
+  color: #22c55e;
 }
 
 .onboarding-option.seleccionada em {
   display: flex;
+  background: #22c55e;
 }
 
 #identidadVitalityInput {
@@ -6218,7 +6224,7 @@ body.registro-warm-page .registro-password-wrapper button {
   height: 78px;
   display: flex;
   align-items: end;
-  gap: 9px;
+  justify-content: space-between;
   margin-bottom: 8px;
 }
 
@@ -6254,6 +6260,12 @@ body.registro-warm-page .registro-password-wrapper button {
   justify-content: space-between;
   color: #8b7b6b;
   font-weight: 900;
+}
+
+.home-days small {
+  display: block;
+  width: 18px;
+  text-align: center;
 }
 
 .home-circle-card {
@@ -6560,6 +6572,14 @@ body.registro-warm-page .registro-password-wrapper button {
 
 .home-mini-bars span.hoy {
   background: #ff681c;
+}
+
+.home-mini-bars span.hoy.sin-checkin {
+  background: transparent;
+  border: 2px solid #ff681c;
+  min-height: 26px !important;
+  height: 26px !important;
+  box-sizing: border-box;
 }
 
 .home-mini-bars span.sin-checkin {
@@ -9215,7 +9235,7 @@ body.chat-keyboard-open #chatBox {
 }
 
 .home-app-reco-card p {
-  margin center;
+  margin: center;
   font-size: 1.55rem;
   flex: 0 0 auto;
 }
@@ -9816,4 +9836,27 @@ html.vitality-dark-mode select {
   .organizar-switch-btn strong {
     font-size: 0.82rem !important;
   }
+}
+
+/* Nav siempre visible cuando el teclado aparece */
+body.chat-keyboard-open .bottom-app-nav,
+body.chat-input-focused .bottom-app-nav {
+  display: flex !important;
+}
+
+/* Input queda SOBRE la nav (no detrás), chatBox se achica con dvh */
+body.chat-input-focused .chat-warm-input,
+body.chat-keyboard-open .chat-warm-input {
+  bottom: 88px !important;
+}
+
+body.chat-input-focused .chat-warm-screen,
+body.chat-keyboard-open .chat-warm-screen {
+  padding-bottom: 165px !important;
+}
+
+body.chat-input-focused #chatBox,
+body.chat-keyboard-open #chatBox {
+  height: calc(100dvh - 355px) !important;
+  min-height: 160px !important;
 }

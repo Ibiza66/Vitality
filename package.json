@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Ibiza66/Vitality#readme",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.107.0",
     "@capacitor/android": "^8.4.0",
     "@capacitor/cli": "^8.4.0",
     "@capacitor/core": "^8.4.0",
@@ -32,10 +33,20 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.6.2",
-    "openai": "^6.41.0"
+    "openai": "^6.45.0"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "nodemon": "^3.1.14"
-  }
+  },
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules",
+    "android"
+  ]
 }

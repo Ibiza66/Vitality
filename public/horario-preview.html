@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Tu Horario Generado | Vitality</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      color: #f0f0f0;
+      font-family: inherit;
+      padding-bottom: 100px; /* espacio para el footer fijo */
+    }
+
+    /* ── Header ── */
+    #hp-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 1rem;
+      height: 56px;
+      background: rgba(13,13,13,0.96);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .hp-logo    { font-size: 20px; }
+    .hp-titulo  { font-size: 15px; font-weight: 600; flex: 1; }
+    .hp-badge-ia {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 12px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.25);
+      font-size: 11px; color: #a78bfa;
+    }
+
+    /* ── Pantallas ── */
+    .hp-screen { display: none; }
+    .hp-screen.activa { display: block; }
+
+    /* ── Cargando ── */
+    #s-cargando {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 56px);
+      gap: 1rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .hp-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(255,255,255,0.08);
+      border-top-color: #22c55e;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hp-cargando-titulo {
+      font-size: 18px; font-weight: 600; margin: 0;
+    }
+
+    .hp-cargando-desc {
+      font-size: 14px; color: rgba(255,255,255,0.45); margin: 0; max-width: 280px;
+    }
+
+    .hp-dots { display: flex; gap: 5px; justify-content: center; }
+    .hp-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #22c55e;
+      animation: blink 1.2s infinite ease-in-out;
+    }
+    .hp-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .hp-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+    /* ── Preview ── */
+    #s-preview { padding: 1.25rem 1rem 1rem; }
+
+    .hp-intro {
+      margin-bottom: 1.25rem;
+    }
+
+    .hp-intro h2 {
+      font-size: 18px; font-weight: 600; margin: 0 0 0.35rem;
+    }
+
+    .hp-intro p {
+      font-size: 13px; color: rgba(255,255,255,0.45); margin: 0;
+    }
+
+    .hp-stats-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hp-stat {
+      flex: 1; padding: 10px 8px; text-align: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+    }
+
+    .hp-stat-n  { display: block; font-size: 20px; font-weight: 700; color: #22c55e; }
+    .hp-stat-lb { display: block; font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 1px; }
+
+    /* ── Días y actividades ── */
+    .dia-grupo {
+      margin-bottom: 1.25rem;
+    }
+
+    .dia-titulo {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin: 0 0 0.5rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .act-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      transition: border-color 0.15s;
+    }
+
+    .act-card:hover { border-color: rgba(255,255,255,0.13); }
+
+    .act-hora {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+      min-width: 90px;
+    }
+
+    .act-nombre {
+      flex: 1;
+      font-size: 14px;
+      color: #f0f0f0;
+      line-height: 1.4;
+    }
+
+    .act-ia-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #a78bfa;
+      flex-shrink: 0;
+    }
+
+    /* ── Footer fijo ── */
+    #hp-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 1rem;
+      background: rgba(13,13,13,0.97);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+    }
+
+    .btn-regenerar {
+      padding: 13px 16px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.55);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-regenerar:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .btn-regenerar:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-confirmar {
+      flex: 1;
+      padding: 13px 18px;
+      background: #22c55e;
+      border: none;
+      border-radius: 10px;
+      color: #0d0d0d;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-confirmar:hover    { background: #16a34a; }
+    .btn-confirmar:active   { transform: scale(0.98); }
+    .btn-confirmar:disabled { background: rgba(34,197,94,0.3); cursor: not-allowed; }
+
+    /* ── Error ── */
+    #s-error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 56px);
+      text-align: center;
+      padding: 2rem;
+      gap: 1rem;
+    }
+
+    .hp-error-icon  { font-size: 40px; }
+    .hp-error-titulo { font-size: 17px; font-weight: 600; margin: 0; }
+    .hp-error-desc  { font-size: 14px; color: rgba(255,255,255,0.45); margin: 0; }
+
+    .btn-reintentar {
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: #f0f0f0;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.18s;
+    }
+    .btn-reintentar:hover { background: rgba(255,255,255,0.11); }
+
+    /* ── Confirmando overlay ── */
+    #overlay-confirmando {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(13,13,13,0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      text-align: center;
+    }
+    #overlay-confirmando.visible { display: flex; }
+    #overlay-confirmando p { font-size: 16px; font-weight: 600; margin: 0; }
+    #overlay-confirmando span { font-size: 13px; color: rgba(255,255,255,0.45); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header id="hp-header">
+  <span class="hp-logo">🌱</span>
+  <span class="hp-titulo">Tu horario generado</span>
+  <span class="hp-badge-ia">✨ Vitality IA</span>
+</header>
+
+<!-- ── CARGANDO ── -->
+<div id="s-cargando" class="hp-screen activa">
+  <div class="hp-spinner"></div>
+  <p class="hp-cargando-titulo">Generando tu horario...</p>
+  <p class="hp-cargando-desc">Vitality está analizando tu ficha clínica para crear un plan personalizado.</p>
+  <div class="hp-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- ── PREVIEW ── -->
+<div id="s-preview" class="hp-screen">
+  <div class="hp-intro">
+    <h2>Tu horario de la semana</h2>
+    <p>Revisa las actividades recomendadas. Puedes aceptarlas o generar una nueva propuesta.</p>
+  </div>
+
+  <div class="hp-stats-row">
+    <div class="hp-stat">
+      <span class="hp-stat-n" id="stat-total">0</span>
+      <span class="hp-stat-lb">Actividades</span>
+    </div>
+    <div class="hp-stat">
+      <span class="hp-stat-n" id="stat-dias">0</span>
+      <span class="hp-stat-lb">Días</span>
+    </div>
+    <div class="hp-stat">
+      <span class="hp-stat-n" id="stat-horas">0h</span>
+      <span class="hp-stat-lb">Por semana</span>
+    </div>
+  </div>
+
+  <!-- Actividades agrupadas por día (renderizadas por JS) -->
+  <div id="actividades-container"></div>
+</div>
+
+<!-- ── ERROR ── -->
+<div id="s-error" class="hp-screen">
+  <div class="hp-error-icon">⚠️</div>
+  <p class="hp-error-titulo">No se pudo generar el horario</p>
+  <p class="hp-error-desc">Asegúrate de haber completado el cuestionario de identidad.</p>
+  <button class="btn-reintentar" onclick="window.HP.generarHorario()">🔄 Reintentar</button>
+  <button class="btn-reintentar" style="opacity:0.5" onclick="window.location.href='cuestionario.html'">
+    Ir al cuestionario
+  </button>
+</div>
+
+<!-- Footer fijo (visible solo en preview) -->
+<div id="hp-footer" style="display:none">
+  <button class="btn-regenerar" id="btn-regen" onclick="window.HP.regenerar()">
+    🔄 Regenerar
+  </button>
+  <button class="btn-confirmar" id="btn-confirmar" onclick="window.HP.confirmar()">
+    ✅ Confirmar y guardar
+  </button>
+</div>
+
+<!-- Overlay de guardando -->
+<div id="overlay-confirmando">
+  <div class="hp-spinner"></div>
+  <p>Guardando tu horario...</p>
+  <span>Esto solo toma un momento</span>
+</div>
+
+<script type="module" src="js/horario-preview.js"></script>
+</body>
+</html>

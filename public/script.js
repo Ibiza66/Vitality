@@ -54,6 +54,7 @@ async function enviarNotificacionCelularVitality(titulo, mensaje) {
     console.log("No se pudo enviar notificación del celular:", error);
   }
 }
+
 function mostrarToastVitality(mensaje) {
   const texto = String(mensaje || "").trim();
 
@@ -84,6 +85,10 @@ function mostrarToastVitality(mensaje) {
     toast.remove();
   }, 3100);
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
 /* =========================
    CALENDARIO NATIVO ANDROID / IOS
 ========================= */
@@ -189,24 +194,24 @@ async function agregarEventoAlCalendarioVitality(datos) {
     mostrarToastVitality("No se pudo agregar al calendario.");
   }
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 /* =========================
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = (() => {
+  const API_EMULADOR = "http://10.0.2.2:3000";
+
   const esAppMovil =
     window.Capacitor ||
     window.location.protocol === "capacitor:" ||
-    (
-      window.location.hostname === "localhost" &&
-      window.location.port !== "3000"
-    );
+    window.location.hostname !== "localhost";
 
-  if (esAppMovil) {
-    return "http://10.30.16.154:3000";
-  }
-
-  return "";
+  return esAppMovil ? API_EMULADOR : "";
 })();
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 /* =========================
    FUNCIONES GENERALES
@@ -238,9 +243,24 @@ function compararId(a, b) {
   return String(a) === String(b);
 }
 
+/* ── Convierte "HH:MM" (24h) a "H:MM AM/PM" para mostrar en UI ── */
+function convertirHora24a12(hora) {
+  if (!hora || typeof hora !== "string" || !hora.includes(":")) return hora || "";
+  const partes = hora.split(":");
+  let h = parseInt(partes[0], 10);
+  const m = partes[1] || "00";
+  if (isNaN(h)) return hora;
+  const periodo = h >= 12 ? "PM" : "AM";
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${m} ${periodo}`;
+}
+
 function obtenerRangoHora(inicio, fin) {
-  if (inicio && fin) return `${inicio} - ${fin}`;
-  if (inicio) return inicio;
+  const i = convertirHora24a12(inicio);
+  const f = convertirHora24a12(fin);
+  if (i && f) return `${i} - ${f}`;
+  if (i) return i;
   return "Sin hora";
 }
 
@@ -265,6 +285,12 @@ function limpiarDatosLocalesUsuario() {
   localStorage.removeItem("onboardingVitality");
   sessionStorage.removeItem("notificacionesVitalityCerradas");
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    MENÚ HAMBURGUESA Y PERFIL
 ========================= */
@@ -320,6 +346,9 @@ window.addEventListener("click", function (e) {
   }
 });
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 /* =========================
    MODO OSCURO / CLARO
 ========================= */
@@ -332,6 +361,11 @@ function toggleTheme() {
     localStorage.setItem("theme", "light");
   }
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 /* =========================
    NAVEGACIÓN EN HORARIO
@@ -346,6 +380,11 @@ function irASeccion(idSeccion) {
     });
   }
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 /* =========================
    USUARIO, REGISTRO E INICIO DE SESIÓN
@@ -458,7 +497,7 @@ guardarJSON("detalleOcupacionVitality", {
 });
 
 mostrarToastVitality("Cuenta creada con éxito.");
-window.location.href = "onboarding.html";
+window.location.href = "cuestionario.html";
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     mostrarToastVitality(
@@ -513,6 +552,11 @@ async function iniciarSesion(event) {
     mostrarToastVitality("Error al conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 
 /* =========================
    PERFIL DEL USUARIO
@@ -666,6 +710,10 @@ async function mostrarDatosPerfil() {
     actividadesInput.value = perfil.actividades;
   }
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 /* =========================
    CHECK-IN DIARIO
@@ -884,6 +932,12 @@ async function sincronizarCheckinBackendConInterfaz() {
     iniciarChatInteligente();
   }
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    ALERTAS SEGÚN CHECK-IN
 ========================= */
@@ -959,6 +1013,11 @@ function mostrarAlertas() {
 
   alertasContainer.innerHTML = alertasHTML;
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 
 /* =========================
    GRÁFICO DEL PERFIL SEGÚN CHECK-IN
@@ -1043,17 +1102,28 @@ function obtenerUsuarioBackendActual() {
 
 function transformarActividadBackendParaLocal(item) {
   if (item.tipoActividad === "fija") {
-    return {
+    /* Normalizar el campo dia: puede venir en minúscula ("lunes") o
+       con múltiples días separados por coma ("Lunes,Miércoles,Sábado").
+       Devolvemos UN objeto por día para que el filtro por día de hoy funcione. */
+    const diasRaw = String(item.dia || "");
+    const dias = diasRaw.split(",").map(d => {
+      const t = d.trim();
+      /* Capitalizar primera letra para uniformidad con obtenerNombreDiaHoy() */
+      return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+    }).filter(Boolean);
+
+    /* Si hay múltiples días, devolvemos un array; si hay uno solo, también array */
+    return (dias.length > 0 ? dias : [""]).map(dia => ({
       id: item._id,
-      dia: item.dia,
+      dia,
       hora: item.hora,
       horaFin: item.horaFin,
       actividad: item.actividad,
       completada: item.completada
-    };
+    }));
   }
 
-  return {
+  return [{
     id: item._id,
     tipo: item.tipoEspecial,
     fecha: item.fecha,
@@ -1061,7 +1131,7 @@ function transformarActividadBackendParaLocal(item) {
     horaFin: item.horaFin,
     actividad: item.actividad,
     completada: item.completada
-  };
+  }];
 }
 
 async function obtenerActividadesBackend() {
@@ -1091,11 +1161,11 @@ async function obtenerActividadesBackend() {
 
     const fijas = data
       .filter((item) => item.tipoActividad === "fija")
-      .map(transformarActividadBackendParaLocal);
+      .flatMap(transformarActividadBackendParaLocal);
 
     const especiales = data
       .filter((item) => item.tipoActividad === "especial")
-      .map(transformarActividadBackendParaLocal);
+      .flatMap(transformarActividadBackendParaLocal);
 
     guardarActividadesFijas(fijas);
     guardarActividadesEspeciales(especiales);
@@ -1245,6 +1315,12 @@ async function guardarActividadEspecialBackend(tipo, fecha, hora, horaFin, activ
     };
   }
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 
 /* =========================
    EDITAR ACTIVIDADES
@@ -1426,7 +1502,8 @@ async function guardarActividadFija(event) {
   limpiarEdicionActividadFija();
   await sincronizarActividadesBackendConInterfaz();
 
-  mostrarToastVitality(editandoId ? "Actividad fija actualizada en MongoDB." : "Actividad fija guardada en MongoDB.");
+  mostrarToastVitality(editandoId ? "Actividad actualizada." : "Actividad guardada.");
+  setTimeout(() => { window.location.href = "horario.html"; }, 1200);
 }
 
 async function guardarActividadEspecial(event) {
@@ -1635,6 +1712,11 @@ function mostrarActividadesEspeciales() {
     .join("");
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    ACTIVIDADES DE HOY
 ========================= */
@@ -1835,6 +1917,12 @@ function mostrarEventosEspecialesHoy() {
     .join("");
 }
 
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    CHAT DE APOYO INTELIGENTE
 ========================= */
@@ -1891,6 +1979,34 @@ function iniciarChatInteligente() {
   actualizarBotonesChat();
 }
 
+/* ── Extrae los últimos N mensajes del chatBox para pasarlos a la IA ── */
+function obtenerHistorialChatParaIA(maxMensajes) {
+  const chatBox = document.getElementById("chatBox");
+  if (!chatBox) return [];
+
+  const historial = [];
+  /* :not(.vitality-loading) excluye los "Vitality está pensando..." */
+  chatBox.querySelectorAll(".message:not(.vitality-loading)").forEach((msg) => {
+    const esBot = msg.classList.contains("bot");
+    const p = msg.querySelector("p");
+    const texto = p?.textContent?.trim();
+    if (texto && texto.length > 2) {
+      historial.push({ role: esBot ? "assistant" : "user", content: texto });
+    }
+  });
+
+  const result = historial.slice(-(maxMensajes || 8));
+
+  /* Quitar el último mensaje si es del usuario: ya va incluido como
+     mensajeLimpio en el backend — enviarlo también en el historial
+     crea un duplicado y rompe la alternancia user/assistant de Anthropic */
+  if (result.length > 0 && result[result.length - 1].role === "user") {
+    result.pop();
+  }
+
+  return result;
+}
+
 async function obtenerRespuestaIAChat(texto) {
   const checkin = obtenerCheckin();
 
@@ -1914,6 +2030,9 @@ async function obtenerRespuestaIAChat(texto) {
     console.error("Error preparando contexto para IA:", error);
   }
 
+  /* Incluir historial de conversación para que la IA tenga contexto */
+  const historialChat = obtenerHistorialChatParaIA(8);
+
   const respuesta = await fetch(`${API_URL}/api/ia/chat`, {
     method: "POST",
     headers: {
@@ -1922,6 +2041,7 @@ async function obtenerRespuestaIAChat(texto) {
     body: JSON.stringify({
       usuarioId: obtenerUsuarioIdVitality(),
       mensaje: texto,
+      historialChat,
       checkin,
       actividadesHoy,
       objetivos,
@@ -1941,6 +2061,7 @@ async function obtenerRespuestaIAChat(texto) {
     recomendacion: data.recomendacion || null
   };
 }
+
 async function sendMessage(event) {
   event.preventDefault();
 
@@ -1956,7 +2077,7 @@ async function sendMessage(event) {
   input.value = "";
 
   const mensajeCargando = document.createElement("div");
-  mensajeCargando.classList.add("message", "bot");
+  mensajeCargando.classList.add("message", "bot", "vitality-loading");
   mensajeCargando.innerHTML = "<p>Vitality está pensando...</p>";
   chatBox.appendChild(mensajeCargando);
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -1983,7 +2104,9 @@ async function sendMessage(event) {
     addMessage(response, "bot");
     actualizarBotonesChat();
   }
-}function usarOpcionRapida(opcion) {
+}
+
+function usarOpcionRapida(opcion) {
   const input = document.getElementById("userInput");
   if (!input) return;
 
@@ -2047,7 +2170,12 @@ function addMessage(text, sender, recomendacionId = null, recomendacion = null, 
   }
 
   chatBox.appendChild(message);
-  chatBox.scrollTop = chatBox.scrollHeight;
+
+  /* Defer scroll para que el DOM termine de renderizar el mensaje completo
+     (incluyendo botones de recomendación) antes de calcular scrollHeight */
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
 
   if (guardarMongo && typeof guardarMensajeChatMongoVitality === "function") {
     guardarMensajeChatMongoVitality(
@@ -2140,6 +2268,43 @@ async function aceptarRecomendacionIAChat(recomendacionId, contenedor) {
     } else {
       mostrarToastVitality("Recomendación aceptada correctamente.");
     }
+
+    /* ── Follow-up automático: la IA continúa la conversación ── */
+    setTimeout(async () => {
+      const chatBox = document.getElementById("chatBox");
+      if (!chatBox) return;
+
+      const cargando = document.createElement("div");
+      cargando.classList.add("message", "bot", "vitality-loading");
+      cargando.innerHTML = "<p>Vitality está pensando...</p>";
+      chatBox.appendChild(cargando);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const followup = await obtenerRespuestaIAChat(
+          "Acabo de aceptar tu recomendación. ¿Cuál sería el primer paso concreto que puedo hacer ahora mismo, en los próximos 15 minutos?"
+        );
+        cargando.remove();
+        addMessage(
+          followup.respuesta,
+          "bot",
+          followup.recomendacionId,
+          followup.recomendacion,
+          false
+        );
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (_) {
+        cargando.remove();
+        addMessage(
+          "Perfecto. Empieza con algo pequeño: elige la tarea más urgente y trabaja en ella durante 15 minutos sin distracciones.",
+          "bot",
+          null,
+          null,
+          false
+        );
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }, 600);
   } catch (error) {
     console.error("Error al aceptar recomendación IA:", error);
     mostrarToastVitality("No se pudo conectar con el servidor.");
@@ -2176,6 +2341,7 @@ async function rechazarRecomendacionIAChat(recomendacionId, contenedor) {
     mostrarToastVitality("No se pudo conectar con el servidor.");
   }
 }
+
 function detectarIntencionPrincipal(msg) {
   if (
     msg.includes("organizar") ||
@@ -2365,6 +2531,11 @@ function generateSupportResponse(text) {
   return "Estoy aquí para ayudarte. ¿Prefieres conversar, organizar tu día o recibir una recomendación?";
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    NOTIFICACIONES VISUALES
 ========================= */
@@ -2551,6 +2722,11 @@ function generarNotificacionesAutomaticas() {
   }
 }
 
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    PANEL AVANZADO DEL PERFIL
 ========================= */
@@ -2718,6 +2894,10 @@ function mostrarPanelPerfilAvanzado() {
   }
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    TABLA SEMANAL DINÁMICA
 ========================= */
@@ -2809,9 +2989,15 @@ function rellenarTablaHorarioSemanal() {
   });
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    CARGA INICIAL
 ========================= */
+
+
 window.addEventListener("DOMContentLoaded", async () => {
   const savedTheme = localStorage.getItem("theme");
 
@@ -2879,6 +3065,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     generarNotificacionesAutomaticas();
   }
 });
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    CONTROL DE SESIÓN Y PROTECCIÓN DE PÁGINAS
 ========================= */
@@ -2930,6 +3121,12 @@ function cerrarSesion() {
 window.addEventListener("DOMContentLoaded", () => {
   protegerPaginaActual();
 });
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    HISTORIAL EMOCIONAL EN PERFIL
 ========================= */
@@ -3019,6 +3216,13 @@ async function mostrarHistorialCheckins() {
 window.addEventListener("DOMContentLoaded", () => {
   mostrarHistorialCheckins();
 });
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    ESTADÍSTICAS EMOCIONALES EN PERFIL
 ========================= */
@@ -3227,6 +3431,15 @@ if (document.readyState === "loading") {
 } else {
   iniciarEstadisticasEmocionales();
 }
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 /* =========================
    TENDENCIA EMOCIONAL EN PERFIL
 ========================= */
@@ -3354,6 +3567,12 @@ if (document.readyState === "loading") {
 } else {
   iniciarTendenciaEmocional();
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    ELIMINAR CHECK-IN DESDE HISTORIAL
 ========================= */
@@ -3399,9 +3618,16 @@ async function eliminarCheckinHistorial(checkinId) {
   }
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    HISTORIAL EMOCIONAL CON BOTÓN ELIMINAR
 ========================= */
+
+
 async function mostrarHistorialCheckins() {
   const contenedor = document.getElementById("historialCheckinsContainer");
 
@@ -3444,6 +3670,12 @@ async function mostrarHistorialCheckins() {
     })
     .join("");
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    RACHA DE CHECK-INS EN PERFIL
 ========================= */
@@ -3610,6 +3842,13 @@ if (document.readyState === "loading") {
 } else {
   iniciarRachaCheckins();
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    OBJETIVOS PERSONALES EN PERFIL
 ========================= */
@@ -3843,6 +4082,15 @@ if (document.readyState === "loading") {
 } else {
   iniciarObjetivosPersonales();
 }
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    CHECK-IN DIARIO OBLIGATORIO
 ========================= */
@@ -3889,6 +4137,8 @@ function paginaLibreCheckinDiario(pagina) {
 
   return paginasLibres.includes(pagina);
 }
+
+
 async function usuarioTieneCheckinDeHoy() {
   const fechaHoy = obtenerFechaISOHoyCheckinDiario();
 
@@ -3949,9 +4199,28 @@ async function usuarioTieneCheckinDeHoy() {
     return false;
   }
 }
-async function redirigirDespuesDeLoginSegunCheckin() {
-  const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
 
+
+async function redirigirDespuesDeLoginSegunCheckin() {
+  /* Primero verificar si el usuario completó el cuestionario I→G→A.
+     Si no lo hizo (404), lo mandamos ahí antes de cualquier otra cosa. */
+  try {
+    const usuario = obtenerUsuario();
+    const userId  = usuario && (usuario.id || usuario._id);
+    if (userId) {
+      const checkCuestionario = await fetch(`${API_URL}/api/cuestionario/${userId}`);
+      if (!checkCuestionario.ok) {
+        window.location.href = "cuestionario.html";
+        return;
+      }
+    }
+  } catch (e) {
+    /* Si la red falla, asumimos que sigue el flujo normal */
+    console.log("[auth] No se pudo verificar cuestionario:", e.message);
+  }
+
+  /* Cuestionario completado: verificar check-in del día */
+  const tieneCheckinHoy = await usuarioTieneCheckinDeHoy();
   if (tieneCheckinHoy) {
     window.location.href = "horario.html";
   } else {
@@ -3984,6 +4253,9 @@ window.addEventListener("DOMContentLoaded", () => {
   protegerCheckinDiario();
 });
 
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -4162,6 +4434,8 @@ async function guardarUsoAppBackend(event) {
     );
   }
 }
+
+
 async function eliminarUsoApp(usoAppId) {
   const confirmar = confirm("¿Seguro que quieres eliminar esta app del monitoreo?");
 
@@ -4185,6 +4459,7 @@ async function eliminarUsoApp(usoAppId) {
     mostrarToastVitality("No se pudo conectar con el servidor. Detalle: " + error.message + " | API_URL: " + API_URL);
   }
 }
+
 
 async function mostrarUsoApps() {
   const contenedor = document.getElementById("listaUsoApps");
@@ -4243,6 +4518,8 @@ async function mostrarUsoApps() {
     })
     .join("");
 }
+
+
 function crearContenedorAlertaUsoApps() {
   let alerta = document.getElementById("alertaUsoAppsGlobal");
 
@@ -4273,6 +4550,8 @@ function cerrarAlertaUsoApps() {
 
   mostrarToastVitality("Alerta pausada por 30 minutos.");
 }
+
+
 function alertaUsoAppsEstaPausada() {
   const pausadaHasta = Number(
     localStorage.getItem("alertaUsoAppsPausadaHasta") || 0
@@ -4289,6 +4568,7 @@ function alertaUsoAppsEstaPausada() {
 
   return true;
 }
+
 
 function obtenerMinutosRestantesPausaUsoApps() {
   const pausadaHasta = Number(
@@ -4307,6 +4587,8 @@ function obtenerMinutosRestantesPausaUsoApps() {
 
   return Math.ceil(diferencia / 60000);
 }
+
+
 function mostrarAlertaUsoExcesivoGlobal(usoApp) {
   const alerta = crearContenedorAlertaUsoApps();
 
@@ -4349,6 +4631,8 @@ async function revisarUsoExcesivoGlobal() {
     mostrarAlertaUsoExcesivoGlobal(usoExcesivo);
   }
 }
+
+
 function iniciarControlUsoApps() {
   const usoAppForm = document.getElementById("usoAppForm");
 
@@ -4378,12 +4662,14 @@ if (document.readyState === "loading") {
 
 
 
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
 /* =========================
    PUENTE: ALERTAS VISUALES -> NOTIFICACIÓN DEL CELULAR
 ========================= */
+
 function iniciarPuenteNotificacionesNativasVitality() {
   if (window.__puenteNotificacionesVitalityActivo) {
     return;
@@ -4473,6 +4759,11 @@ if (document.readyState === "loading") {
 } else {
   iniciarPuenteNotificacionesNativasVitality();
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    INICIALES DEL USUARIO
 ========================= */
@@ -4531,6 +4822,11 @@ if (document.readyState === "loading") {
 } else {
   iniciarInicialesUsuarioVitality();
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 /* =========================
    USO REAL DE APPS ANDROID
 ========================= */
@@ -4547,6 +4843,8 @@ const PACKAGES_APPS_VITALITY = {
   Netflix: "com.netflix.mediaclient",
   X: "com.twitter.android"
 };
+
+
 function obtenerPluginUsoAppsVitality() {
   if (!window.Capacitor || !window.Capacitor.Plugins) {
     return null;
@@ -4703,6 +5001,12 @@ async function enriquecerUsoAppsConUsoRealVitality(usos) {
     };
   });
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    RECOMENDACIÓN IA EN INICIO
 ========================= */
@@ -4876,6 +5180,12 @@ async function rechazarRecomendacionIAInicio(recomendacionId) {
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(mostrarRecomendacionIAInicio, 800);
 });
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    VER Y ELIMINAR RECOMENDACIÓN IA
 ========================= */
@@ -5046,6 +5356,13 @@ async function mostrarRecomendacionSeleccionadaEnChat() {
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(mostrarRecomendacionSeleccionadaEnChat, 1200);
 });
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    ONBOARDING INICIAL DE USUARIO
 ========================= */
@@ -5243,6 +5560,11 @@ async function finalizarOnboardingVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", inicializarOnboardingVitality);
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    REGISTRO - INTERACCIONES
 ========================= */
@@ -5302,6 +5624,13 @@ function actualizarCampoDetalleOcupacion() {
   input.value = "";
   input.required = false;
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    ONBOARDING EN BACKEND
 ========================= */
@@ -5388,6 +5717,12 @@ async function obtenerOnboardingBackendVitality() {
     return obtenerDatosOnboardingVitality();
   }
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    INICIO WARM REDISEÑADO
 ========================= */
@@ -5532,100 +5867,85 @@ function pintarAccionesHomeVitality(acciones) {
 
 async function iniciarHomeWarmVitality() {
   const pagina = obtenerPaginaActual();
-
-  if (pagina !== "horario.html") {
-    return;
-  }
+  if (pagina !== "horario.html") return;
 
   await obtenerActividadesBackend();
 
-  const usuario = obtenerUsuario();
+  const usuario  = obtenerUsuario();
   const acciones = obtenerAccionesHomeVitality();
-  const completadas = acciones.filter((item) => item.completada).length;
-  const total = acciones.length;
-  const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
-  const proxima = obtenerProximaAccionHomeVitality(acciones);
 
-  const fecha = document.getElementById("homeFechaActual");
-  const saludo = document.getElementById("homeSaludoUsuario");
-  const avatar = document.querySelector(".home-avatar-btn");
-  const identidad = document.getElementById("homeIdentidadUsuario");
+  const [historial, onboarding] = await Promise.all([
+    typeof obtenerHistorialHomeVitality === "function"
+      ? obtenerHistorialHomeVitality()
+      : Promise.resolve([]),
+    typeof obtenerOnboardingBackendVitality === "function"
+      ? obtenerOnboardingBackendVitality().catch(() => ({}))
+      : Promise.resolve({})
+  ]);
+
+  const completadas        = acciones.filter((a) => a.completada).length;
+  const total              = acciones.length;
+  const porcentajeAcciones = total > 0 ? Math.round((completadas / total) * 100) : 0;
+  const proxima            = obtenerProximaAccionHomeVitality(acciones);
+
+  const fecha            = document.getElementById("homeFechaActual");
+  const saludo           = document.getElementById("homeSaludoUsuario");
+  const avatar           = document.querySelector(".home-avatar-btn");
+  const identidad        = document.getElementById("homeIdentidadUsuario");
   const porcentajeSemana = document.getElementById("homePorcentajeSemana");
-  const circulo = document.querySelector(".home-progress-circle");
-  const accionesNumero = document.getElementById("homeAccionesNumero");
-  const accionesResumen = document.getElementById("homeAccionesResumen");
+  const circulo          = document.querySelector(".home-progress-circle");
+  const accionesNumero   = document.getElementById("homeAccionesNumero");
+  const accionesResumen  = document.getElementById("homeAccionesResumen");
+  const focoHora         = document.getElementById("homeFocoHora");
+  const focoTitulo       = document.getElementById("homeFocoTitulo");
+  const focoDetalle      = document.getElementById("homeFocoDetalle");
+  const focoBtn          = document.getElementById("homeFocoCompletarBtn");
 
-  if (fecha) {
-    fecha.textContent = formatearFechaHomeVitality();
-  }
+  if (fecha)  fecha.textContent = formatearFechaHomeVitality();
 
   if (saludo) {
-    const primerNombre = usuario && usuario.nombre
-      ? usuario.nombre.split(" ")[0]
-      : "Usuario";
-
+    const primerNombre = usuario?.nombre ? usuario.nombre.split(" ")[0] : "Usuario";
     saludo.textContent = `Hola, ${primerNombre}`;
   }
 
-  if (avatar && usuario) {
-    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
-  }
-
-  if (identidad) {
-    identidad.textContent = await obtenerIdentidadHomeVitality();
-  }
-
-  if (porcentajeSemana) {
-    porcentajeSemana.textContent = `${porcentaje}%`;
-  }
-
-  if (circulo) {
-    circulo.style.setProperty("--avance", `${porcentaje}%`);
-  }
-
-  if (accionesNumero) {
-    accionesNumero.textContent = `${completadas}/${total}`;
-  }
-
-  if (accionesResumen) {
-    accionesResumen.textContent = `${completadas} de ${total} hechas`;
-  }
-
-  const focoHora = document.getElementById("homeFocoHora");
-  const focoTitulo = document.getElementById("homeFocoTitulo");
-  const focoDetalle = document.getElementById("homeFocoDetalle");
-  const focoBtn = document.getElementById("homeFocoCompletarBtn");
+  if (avatar && usuario) avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
+  if (identidad) identidad.textContent = await obtenerIdentidadHomeVitality();
+  if (porcentajeSemana) porcentajeSemana.textContent = `${porcentajeAcciones}%`;
+  if (circulo) circulo.style.setProperty("--avance", `${porcentajeAcciones}%`);
+  if (accionesNumero)  accionesNumero.textContent  = `${completadas}/${total}`;
+  if (accionesResumen) accionesResumen.textContent = `${completadas} de ${total} hechas`;
 
   if (proxima) {
-    if (focoHora) focoHora.textContent = proxima.hora || "Sin hora";
-    if (focoTitulo) focoTitulo.textContent = proxima.titulo;
-    if (focoDetalle) {
-      focoDetalle.textContent = `Un paso pequeño hacia tu meta · ${obtenerRangoHora(
-        proxima.hora,
-        proxima.horaFin
-      )}`;
-    }
-
+    if (focoHora)    focoHora.textContent    = proxima.hora || "Sin hora";
+    if (focoTitulo)  focoTitulo.textContent  = proxima.titulo;
+    if (focoDetalle) focoDetalle.textContent = `Un paso pequeño hacia tu meta · ${obtenerRangoHora(proxima.hora, proxima.horaFin)}`;
     if (focoBtn) {
-      focoBtn.disabled = false;
+      focoBtn.disabled    = false;
       focoBtn.textContent = "▶ Empezar";
-      focoBtn.onclick = () => completarAccionHomeVitality(proxima.origen, proxima.id);
+      focoBtn.onclick     = () => completarAccionHomeVitality(proxima.origen, proxima.id);
     }
   } else {
-    if (focoHora) focoHora.textContent = "Hoy";
-    if (focoTitulo) focoTitulo.textContent = "Día organizado";
+    if (focoHora)    focoHora.textContent    = "Hoy";
+    if (focoTitulo)  focoTitulo.textContent  = "Día organizado";
     if (focoDetalle) focoDetalle.textContent = "No tienes acciones pendientes por ahora.";
-
-    if (focoBtn) {
-      focoBtn.disabled = true;
-      focoBtn.textContent = "Completado";
-    }
+    if (focoBtn) { focoBtn.disabled = true; focoBtn.textContent = "Completado"; }
   }
 
-  pintarAccionesHomeVitality(acciones);
+  if (typeof pintarGraficoCheckinsHomeVitality === "function") pintarGraficoCheckinsHomeVitality(historial);
+  if (typeof pintarRachaHomeVitality           === "function") pintarRachaHomeVitality(historial);
+  if (typeof pintarTipsHomeVitality            === "function") pintarTipsHomeVitality(historial, onboarding);
+  if (typeof pintarFocoHomeVitality            === "function") await pintarFocoHomeVitality(acciones);
+  if (typeof pintarAccionesHomeVitality        === "function") pintarAccionesHomeVitality(acciones);
 }
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(iniciarHomeWarmVitality, 600);
+});
 
-window.addEventListener("DOMContentLoaded", iniciarHomeWarmVitality);
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    HOME WARM V2 - IA, RACHA, CHECKINS Y ACCIONES
 ========================= */
@@ -5901,7 +6221,17 @@ function pintarAccionesHomeVitality(acciones) {
     .map((item) => {
       const idSeguro = escaparHTML(item.id);
       const origenSeguro = escaparHTML(item.origen);
+      const tituloSeguro = escaparHTML(item.titulo);
       const clase = item.completada ? "completada" : "";
+
+      /* Botón "No pude" solo para actividades pendientes */
+      const btnNoPude = !item.completada ? `
+        <button
+          type="button"
+          onclick="mostrarModalBarreraVitality('${idSeguro}', '${tituloSeguro}', '${origenSeguro}')"
+          style="margin-top:6px;padding:4px 10px;font-size:11px;font-weight:600;background:transparent;border:1px solid rgba(255,104,28,.35);border-radius:6px;color:rgba(255,104,28,.75);cursor:pointer;"
+        >No pude ↗</button>
+      ` : "";
 
       return `
         <article class="home-action-item ${clase}">
@@ -5920,6 +6250,7 @@ function pintarAccionesHomeVitality(acciones) {
               <span>${escaparHTML(obtenerRangoHora(item.hora, item.horaFin))}</span>
               <span class="home-action-tag">${escaparHTML(item.tipo)}</span>
             </div>
+            ${btnNoPude}
           </div>
         </article>
       `;
@@ -6016,73 +6347,13 @@ async function pintarFocoHomeVitality(acciones) {
   }
 }
 
-async function iniciarHomeWarmVitality() {
-  const pagina = obtenerPaginaActual();
 
-  if (pagina !== "horario.html") {
-    return;
-  }
 
-  await obtenerActividadesBackend();
 
-  const usuario = obtenerUsuario();
-  const historial = await obtenerHistorialHomeVitality();
-  const acciones = obtenerAccionesHomeVitality();
 
-  const completadas = acciones.filter((item) => item.completada).length;
-  const total = acciones.length;
-  const porcentajeAcciones = total > 0 ? Math.round((completadas / total) * 100) : 0;
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
-  const fecha = document.getElementById("homeFechaActual");
-  const saludo = document.getElementById("homeSaludoUsuario");
-  const avatar = document.querySelector(".home-avatar-btn");
-  const identidad = document.getElementById("homeIdentidadUsuario");
-  const circulo = document.querySelector(".home-progress-circle");
-  const accionesNumero = document.getElementById("homeAccionesNumero");
-  const accionesResumen = document.getElementById("homeAccionesResumen");
 
-  if (fecha) {
-    fecha.textContent = formatearFechaHomeVitality();
-  }
-
-  if (saludo) {
-    const primerNombre = usuario && usuario.nombre
-      ? usuario.nombre.split(" ")[0]
-      : "Usuario";
-
-    saludo.textContent = `Hola, ${primerNombre}`;
-  }
-
-  if (avatar && usuario) {
-    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
-  }
-
-  if (identidad) {
-    identidad.textContent = await obtenerIdentidadHomeVitality();
-  }
-
-  pintarGraficoCheckinsHomeVitality(historial);
-  pintarRachaHomeVitality(historial);
-
-  if (circulo) {
-    circulo.style.setProperty("--avance", `${porcentajeAcciones}%`);
-  }
-
-  if (accionesNumero) {
-    accionesNumero.textContent = `${completadas}/${total}`;
-  }
-
-  if (accionesResumen) {
-    accionesResumen.textContent = `${completadas} de ${total} hechas`;
-  }
-
-  pintarAccionesHomeVitality(acciones);
-  await pintarFocoHomeVitality(acciones);
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(iniciarHomeWarmVitality, 600);
-});
 /* =========================
    HISTORIAL CHECK-INS PARA HOME
 ========================= */
@@ -6108,6 +6379,12 @@ async function obtenerHistorialCheckinsBackend() {
     return [];
   }
 }
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 /* =========================
    FIX FINAL HOME - CHECKINS, RACHA Y GRAFICO
 ========================= */
@@ -6308,11 +6585,12 @@ function pintarRachaHomeVitality(historial) {
   console.log("Racha calculada:", racha);
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(() => {
-    iniciarHomeWarmVitality();
-  }, 1000);
-});
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    ORGANIZAR - LISTA ACTIVIDADES FIJAS
 ========================= */
@@ -6489,6 +6767,12 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    CHAT UX WARM - INPUT, TECLADO Y AUTO SCROLL
 ========================= */
@@ -6564,6 +6848,12 @@ function iniciarChatUXWarmVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", iniciarChatUXWarmVitality);
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    PERFIL WARM VISUAL
 ========================= */
@@ -6854,6 +7144,13 @@ async function iniciarPerfilWarmVitality() {
 }
 
 window.addEventListener("DOMContentLoaded", iniciarPerfilWarmVitality);
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 
 /* =========================
    PERFIL VISUAL - IDENTIDAD Y PORCENTAJES
@@ -7196,6 +7493,13 @@ async function iniciarPerfilVisualVitality() {
 
 window.addEventListener("DOMContentLoaded", iniciarPerfilVisualVitality);
 
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    HOME - FOCO IA + CARRUSEL + DIAS CORRECTOS
 ========================= */
@@ -7338,6 +7642,13 @@ async function pintarFocoHomeVitality(acciones) {
   }
 }
 
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    HOME - CARRUSEL DE RECOMENDACIONES CORTAS
 ========================= */
@@ -7441,6 +7752,10 @@ function pintarTipsHomeVitality(historial = [], onboarding = {}) {
   window.homeTipsIntervalVitality = setInterval(renderTip, 4500);
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    HOME - GRAFICO CHECKINS CON DIAS CORRECTOS
 ========================= */
@@ -7483,13 +7798,14 @@ function pintarGraficoCheckinsHomeVitality(historial) {
   contenedor.innerHTML = ultimos7Dias
     .map((dia) => {
       const checkin = historialPorDia[dia];
+      const esHoy = dia === hoy;
 
       if (!checkin) {
-        return `<span class="sin-checkin" style="height: 18%;"></span>`;
+        return `<span class="${esHoy ? 'hoy sin-checkin' : 'sin-checkin'}" style="height: 18%;"></span>`;
       }
 
       const altura = obtenerPuntajeHomeCheckin(checkin.estadoAnimo);
-      const clase = dia === hoy ? "hoy" : "con-checkin";
+      const clase = esHoy ? "hoy" : "con-checkin";
 
       return `<span class="${clase}" style="height: ${altura}%;"></span>`;
     })
@@ -7505,72 +7821,13 @@ function pintarGraficoCheckinsHomeVitality(historial) {
 /* =========================
    HOME - INICIO ACTUALIZADO
 ========================= */
-async function iniciarHomeWarmVitality() {
-  const pagina = obtenerPaginaActual();
 
-  if (pagina !== "horario.html") {
-    return;
-  }
 
-  await obtenerActividadesBackend();
 
-  const usuario = obtenerUsuario();
-  const historial = await obtenerHistorialHomeVitality();
-  const onboarding = typeof obtenerOnboardingBackendVitality === "function"
-    ? await obtenerOnboardingBackendVitality()
-    : {};
-  const acciones = obtenerAccionesHomeVitality();
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
-  const completadas = acciones.filter((item) => item.completada).length;
-  const total = acciones.length;
-  const porcentajeAcciones = total > 0 ? Math.round((completadas / total) * 100) : 0;
 
-  const fecha = document.getElementById("homeFechaActual");
-  const saludo = document.getElementById("homeSaludoUsuario");
-  const avatar = document.querySelector(".home-avatar-btn");
-  const circulo = document.querySelector(".home-progress-circle");
-  const accionesNumero = document.getElementById("homeAccionesNumero");
-  const accionesResumen = document.getElementById("homeAccionesResumen");
 
-  if (fecha) {
-    fecha.textContent = formatearFechaHomeVitality();
-  }
-
-  if (saludo) {
-    const primerNombre = usuario && usuario.nombre
-      ? usuario.nombre.split(" ")[0]
-      : "Usuario";
-
-    saludo.textContent = `Hola, ${primerNombre}`;
-  }
-
-  if (avatar && usuario) {
-    avatar.textContent = obtenerInicialNombreHomeVitality(usuario.nombre);
-  }
-
-  pintarGraficoCheckinsHomeVitality(historial);
-  pintarRachaHomeVitality(historial);
-  pintarTipsHomeVitality(historial, onboarding);
-
-  if (circulo) {
-    circulo.style.setProperty("--avance", `${porcentajeAcciones}%`);
-  }
-
-  if (accionesNumero) {
-    accionesNumero.textContent = `${completadas}/${total}`;
-  }
-
-  if (accionesResumen) {
-    accionesResumen.textContent = `${completadas} de ${total} hechas`;
-  }
-
-  pintarAccionesHomeVitality(acciones);
-  await pintarFocoHomeVitality(acciones);
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(iniciarHomeWarmVitality, 600);
-});
 /* =========================
    CHAT - HISTORIAL MONGODB FIX FINAL
 ========================= */
@@ -7712,6 +7969,14 @@ function iniciarHistorialChatMongoFixVitality() {
 
 window.addEventListener("DOMContentLoaded", iniciarHistorialChatMongoFixVitality);
 window.addEventListener("pageshow", iniciarHistorialChatMongoFixVitality);
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* =========================
    CHAT MONGODB - CONTROLADOR UNICO FINAL
 ========================= */
@@ -7850,25 +8115,30 @@ async function cargarHistorialChatMongoVitality() {
 
   const historial = await obtenerHistorialChatMongoVitality();
 
-  chatBox.innerHTML = "";
-
+  /* Si no hay historial → mantener el saludo limpio que ya pintó iniciarChatInteligente */
   if (!historial || historial.length === 0) {
-    addMessage("Hola, soy Vitality 💚", "bot", null, null, false);
-    addMessage("Cuéntame cómo te sientes hoy o qué necesitas organizar.", "bot", null, null, false);
     return;
   }
 
-  historial.forEach((mensaje) => {
+  /* Filtrar solo mensajes de HOY para no mezclar sesiones anteriores */
+  const hoy = new Date().toISOString().slice(0, 10);
+  const mensajesHoy = historial.filter((m) => {
+    const ts = m.createdAt || m.fecha || m.fechaISO;
+    if (!ts) return false;
+    return new Date(ts).toISOString().slice(0, 10) === hoy;
+  });
+
+  /* No hay mensajes de hoy → chat limpio con saludo */
+  if (mensajesHoy.length === 0) {
+    return;
+  }
+
+  /* Hay mensajes de hoy → mostrarlos para continuar la sesión */
+  chatBox.innerHTML = "";
+  mensajesHoy.forEach((mensaje) => {
     const texto = mensaje.texto || "";
     const sender = mensaje.sender === "user" ? "user" : "bot";
-
-    const elemento = crearMensajeChatVitality(
-      texto,
-      sender,
-      mensaje.recomendacionId || null,
-      mensaje.recomendacion || null
-    );
-
+    const elemento = crearMensajeChatVitality(texto, sender, null, null);
     chatBox.appendChild(elemento);
   });
 
@@ -8029,6 +8299,12 @@ function iniciarChatMongoControladorUnicoVitality() {
 
 window.addEventListener("DOMContentLoaded", iniciarChatMongoControladorUnicoVitality);
 window.addEventListener("pageshow", iniciarChatMongoControladorUnicoVitality);
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* =========================
    CONFIGURACION VITALITY
 ========================= */
@@ -8241,6 +8517,13 @@ function probarComoInvitado() {
   }, 1000);
 }
 
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 /* ==========================================================================
    ESPACIO DE BIENESTAR: DIARIO ESTOICO, TEMP, SONIDOS Y AUXILIO
    ========================================================================== */
@@ -8401,6 +8684,11 @@ async function eliminarReflexionDiario(id) {
     mostrarToastVitality("Error al eliminar del servidor.");
   }
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 /* ==========================================================================
    ESPACIO DE CALMA: RESPIRACIÓN, POMODORO Y SÍNTESIS DE AUDIO (WEB AUDIO API)
@@ -8746,6 +9034,11 @@ function actualizarUIPomodoro() {
   }
 }
 
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /* ==========================================================================
    ESPACIO DE BIENESTAR: AUXILIO Y PANIC OVERLAY (GROUNDING SENSORIAL 5-4-3-2-1)
    ========================================================================== */
@@ -8808,6 +9101,14 @@ function toggleAccordionLeccion(elemento) {
     elemento.classList.add("active");
   }
 }
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 /* ==========================================================================
    ESPACIO DE BIENESTAR: HABIT TRACKER CON RACHAS Y GRID ESTILO GITHUB
@@ -8980,6 +9281,11 @@ async function eliminarHabito(id) {
   }
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 /* ==========================================================================
    ESPACIO DE BIENESTAR: GESTIÓN DE PESTAÑAS (TABS)
    ========================================================================== */
@@ -9036,6 +9342,12 @@ function inicializarEspacioBienestar() {
 
   cambiarTecnicaRespiratoria();
 }
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 
 /* ==========================================================================
    ESTADÍSTICAS DASHBOARD: AVERAGES Y GRAFICOS CHART.JS
@@ -9235,3 +9547,161 @@ window.addEventListener("DOMContentLoaded", () => {
     inicializarEspacioBienestar();
   }
 });
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+/* =========================
+   CICLO DE BARRERA — VITALITY I→G→A
+   Cuando una actividad no se completa, diagnostica la causa
+   y genera una recomendación adaptada.
+========================= */
+
+const BARRERAS_VITALITY = {
+  DISTRACCION_DIGITAL: {
+    label: "Me distraje con el celular o las redes",
+    emoji: "📱",
+    mensajeIA: "El celular es una de las barreras más comunes. Vitality ajustará tu próxima acción para que sea más fácil de iniciar sin distracciones.",
+    accionTitulo: "Pausa digital de 25 minutos",
+    accionDesc: "Pon el celular en silencio y fuera de vista. Luego vuelve a tu actividad con más foco.",
+    accionTipo: "pausa_digital"
+  },
+  BARRERA_INTERNA_EMOCIONAL: {
+    label: "Me quedé sin energía o ánimo",
+    emoji: "😔",
+    mensajeIA: "El cansancio y el bajo ánimo son señales reales. Vitality lo tomará en cuenta para sugerirte algo más liviano la próxima vez.",
+    accionTitulo: "Bajar la carga del momento",
+    accionDesc: "En vez de la actividad completa, intenta hacer solo 10 minutos de la parte más simple de esa tarea.",
+    accionTipo: "solo_recomendacion"
+  },
+  BARRERA_INTERNA_COGNITIVA: {
+    label: "No supe cómo empezar o me abrumó",
+    emoji: "🤯",
+    mensajeIA: "Bloquearse al inicio es normal. La clave es dividir la tarea en pasos más pequeños y concretos.",
+    accionTitulo: "Empezar con el primer paso mínimo",
+    accionDesc: "Define solo el primer paso pequeño de esa actividad. No el todo, solo el inicio.",
+    accionTipo: "solo_recomendacion"
+  },
+  BARRERA_EXTERNA: {
+    label: "Surgió algo inesperado fuera de mi control",
+    emoji: "🌀",
+    mensajeIA: "Las interrupciones externas son parte de la vida. Vitality puede ayudarte a reorganizar lo que quedó pendiente.",
+    accionTitulo: "Reagendar la actividad",
+    accionDesc: "Busca un momento libre en tu día o semana para retomar esta actividad sin presión.",
+    accionTipo: "solo_recomendacion"
+  },
+  SIN_BARRERA_CLARA: {
+    label: "Otra razón",
+    emoji: "❓",
+    mensajeIA: "Gracias por registrarlo. Vitality usará este dato para entender mejor tus patrones y adaptarse a ti con el tiempo.",
+    accionTitulo: "Seguir adelante",
+    accionDesc: "Hay días en que las cosas no salen. Lo importante es retomarlo cuando puedas.",
+    accionTipo: "solo_recomendacion"
+  }
+};
+
+/* Datos de la actividad que disparó el modal */
+let _barreraActividadId   = null;
+let _barreraActividadNombre = "";
+let _barreraOrigen        = "";
+
+function mostrarModalBarreraVitality(actividadId, actividadNombre, origen) {
+  _barreraActividadId     = actividadId;
+  _barreraActividadNombre = actividadNombre;
+  _barreraOrigen          = origen;
+
+  /* Título del modal */
+  const titulo = document.getElementById("barreraTitle");
+  if (titulo) titulo.textContent = `"${actividadNombre}"`;
+
+  /* Renderizar opciones */
+  const contenedor = document.getElementById("barreraOpciones");
+  if (!contenedor) return;
+
+  contenedor.innerHTML = Object.entries(BARRERAS_VITALITY).map(([key, b]) => `
+    <button
+      type="button"
+      onclick="seleccionarBarreraVitality('${key}')"
+      style="
+        display:flex; align-items:center; gap:12px; width:100%;
+        padding:12px 14px; background:rgba(255,255,255,.04);
+        border:1px solid rgba(255,255,255,.08); border-radius:10px;
+        color:#f0f0f0; font-size:14px; text-align:left; cursor:pointer;
+        transition:background .15s;
+      "
+    >
+      <span style="font-size:20px;">${b.emoji}</span>
+      <span>${b.label}</span>
+    </button>
+  `).join("");
+
+  /* Mostrar overlay */
+  const overlay = document.getElementById("barreraOverlay");
+  if (overlay) overlay.style.display = "flex";
+}
+
+function cerrarModalBarreraVitality() {
+  const overlay = document.getElementById("barreraOverlay");
+  if (overlay) overlay.style.display = "none";
+}
+
+async function seleccionarBarreraVitality(categoria) {
+  cerrarModalBarreraVitality();
+
+  const barrera = BARRERAS_VITALITY[categoria];
+  if (!barrera) return;
+
+  const usuarioId = obtenerUsuarioIdVitality();
+  if (!usuarioId) {
+    mostrarToastVitality("Inicia sesión para registrar la barrera.");
+    return;
+  }
+
+  /* Guardar en MongoDB via endpoint existente */
+  try {
+    await fetch(`${API_URL}/api/recomendaciones-ia`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuarioId,
+        mensajeUsuario: `No pude completar "${_barreraActividadNombre}". Barrera: ${barrera.label}`,
+        mensajeIA: barrera.mensajeIA,
+        fase: "acciones",
+        categoriaBarrera: categoria,
+        nivelPrioridad: "medio",
+        accionSugerida: {
+          tipo: barrera.accionTipo,
+          titulo: barrera.accionTitulo,
+          descripcion: barrera.accionDesc
+        },
+        requiereConfirmacion: false
+      })
+    });
+  } catch (err) {
+    console.error("[Barrera] Error guardando en MongoDB:", err.message);
+    /* Continúa de todas formas — la UX no debe romperse por esto */
+  }
+
+  /* Mostrar resultado */
+  const elEmoji   = document.getElementById("barreraResultadoEmoji");
+  const elTitulo  = document.getElementById("barreraResultadoTitulo");
+  const elMensaje = document.getElementById("barreraResultadoMensaje");
+  const elActTit  = document.getElementById("barreraAccionTitulo");
+  const elActDesc = document.getElementById("barreraAccionDesc");
+
+  if (elEmoji)   elEmoji.textContent   = barrera.emoji;
+  if (elTitulo)  elTitulo.textContent  = barrera.accionTitulo;
+  if (elMensaje) elMensaje.textContent = barrera.mensajeIA;
+  if (elActTit)  elActTit.textContent  = barrera.accionTitulo;
+  if (elActDesc) elActDesc.textContent = barrera.accionDesc;
+
+  const resultado = document.getElementById("barreraResultado");
+  if (resultado) resultado.style.display = "flex";
+}
+
+function cerrarResultadoBarreraVitality() {
+  const resultado = document.getElementById("barreraResultado");
+  if (resultado) resultado.style.display = "none";
+}
+

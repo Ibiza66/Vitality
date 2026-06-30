@@ -170,6 +170,7 @@
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
+  
 
   <script>
     function convertirEstres(valor) {
@@ -237,11 +238,11 @@ function actualizarSliderVisual(slider) {
   const porcentaje = ((value - min) / (max - min)) * 100;
 
   const color = obtenerColorSliderSimple(slider, value);
-
   slider.style.setProperty("--slider-thumb-color", color);
 
-  slider.style.background =
-    `linear-gradient(90deg, ${color} ${porcentaje}%, #eadfce ${porcentaje}%)`;
+  // Compensar el ancho del thumb (26px) para que el fill coincida con el centro del thumb
+  const fill = `calc(${porcentaje}% + ${14 - 28 * porcentaje / 100}px)`;
+  slider.style.background = `linear-gradient(90deg, ${color} ${fill}, #eadfce ${fill})`;
 }
     function iniciarCheckinInteractivo() {
       const moodButtons = document.querySelectorAll(".mood-option");

@@ -33,7 +33,7 @@ router.patch("/usuario/:usuarioId", async (req, res) => {
     const usuario = await Usuario.findByIdAndUpdate(
       usuarioId,
       { nombre: String(nombre).trim() },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!usuario) {
@@ -84,7 +84,7 @@ router.patch("/onboarding/:usuarioId", async (req, res) => {
         completado: true
       },
       {
-        new: true,
+        returnDocument: 'after',
         upsert: true
       }
     );

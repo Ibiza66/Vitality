@@ -1,0 +1,1 @@
+// Para perfil.html y estadisticas.html: Renderizado de las tarjetas de identidad, mapeo de los gráficos de tendencia mediante Chart.js (renderDonaChart, tendenciaChart) y resumen del nivel de bienestar.

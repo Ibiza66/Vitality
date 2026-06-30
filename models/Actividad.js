@@ -30,7 +30,7 @@ const actividadSchema = new mongoose.Schema(
     },
     horaFin: {
       type: String,
-      required: true
+      default: "" 
     },
     actividad: {
       type: String,
@@ -39,7 +39,24 @@ const actividadSchema = new mongoose.Schema(
     completada: {
       type: Boolean,
       default: false
-    }
+    },
+    /* ── Campos nuevos para actividades generadas por IA ──
+       Son opcionales, así que el código existente no se rompe */
+       
+    descripcion: {
+      type: String,
+      default: ""
+    },
+    
+    duracion: {
+      type: Number, // En minutos
+      default: 30
+    },
+    origen: {
+      type: String,
+      default: ""
+    },
+
   },
   {
     timestamps: true

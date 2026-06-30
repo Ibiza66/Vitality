@@ -1,61 +1,45 @@
 const express = require("express");
-const Perfil = require("../models/Perfil");
+const Perfil  = require("../models/Perfil");
+const router  = express.Router();
 
-const router = express.Router();
-
+/* ─── OBTENER PERFIL ───────────────────────────────────────────────────────
+   Si el perfil no existe (usuario nuevo), retorna un objeto vacío con 200.
+   Antes retornaba 404, lo que generaba errores rojos en la consola del
+   browser aunque el código los manejara correctamente.
+─────────────────────────────────────────────────────────────────────────── */
 router.get("/:usuarioId", async (req, res) => {
   try {
-    const perfil = await Perfil.findOne({
-      usuario: req.params.usuarioId
-    });
+    const perfil = await Perfil.findOne({ usuario: req.params.usuarioId });
 
     if (!perfil) {
-      return res.status(404).json({
-        mensaje: "Perfil no encontrado."
-      });
+      /* Usuario nuevo sin perfil: retornar vacío en lugar de 404 */
+      return res.json({ categoria: null, actividades: [], nuevo: true });
     }
 
     res.json(perfil);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener perfil.",
-      error: error.message
-    });
+    res.status(500).json({ mensaje: "Error al obtener perfil.", error: error.message });
   }
 });
 
+/* ─── GUARDAR / ACTUALIZAR PERFIL ─── */
 router.put("/:usuarioId", async (req, res) => {
   try {
     const { categoria, actividades } = req.body;
 
     if (!categoria || !actividades) {
-      return res.status(400).json({
-        mensaje: "Categor�a y actividades son obligatorias."
-      });
+      return res.status(400).json({ mensaje: "Categoría y actividades son obligatorias." });
     }
 
     const perfil = await Perfil.findOneAndUpdate(
       { usuario: req.params.usuarioId },
-      {
-        usuario: req.params.usuarioId,
-        categoria,
-        actividades
-      },
-      {
-        new: true,
-        upsert: true
-      }
+      { usuario: req.params.usuarioId, categoria, actividades },
+      { returnDocument: "after", upsert: true }
     );
 
-    res.json({
-      mensaje: "Perfil guardado correctamente.",
-      perfil
-    });
+    res.json({ mensaje: "Perfil guardado correctamente.", perfil });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al guardar perfil.",
-      error: error.message
-    });
+    res.status(500).json({ mensaje: "Error al guardar perfil.", error: error.message });
   }
 });
 

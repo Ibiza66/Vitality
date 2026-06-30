@@ -10,7 +10,8 @@ router.post("/", async (req, res) => {
   try {
     const {
       usuarioId, tipoActividad, dia, fecha,
-      tipoEspecial, hora, horaFin, actividad
+      tipoEspecial, hora, horaFin, actividad,
+      completada, origen
     } = req.body;
 
     if (!usuarioId || !tipoActividad || !hora || !horaFin || !actividad) {
@@ -26,6 +27,7 @@ router.post("/", async (req, res) => {
       hora,
       horaFin,
       actividad,
+      origen, 
       completada: false
     });
 

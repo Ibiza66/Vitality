@@ -39,7 +39,8 @@ const usuarioSchema = new mongoose.Schema(
       enum: [
         "Trabajador",
         "Estudiante universitario",
-        "Estudiante escolar"
+        "Estudiante escolar",
+        "Otra"
       ],
       required: true
     },
