@@ -8,13 +8,19 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      background: #0d0d0d;
-      color: #f0f0f0;
-      font-family: inherit;
-      overflow-x: hidden;
-    }
+ body {
+  margin: 0;
+  background: linear-gradient(
+      180deg,
+      #FFFDF9 0%,
+      #FFF6EE 45%,
+      #F7EFE5 100%
+  );
+
+  color: #3A2418;
+  font-family: inherit;
+  overflow-x: hidden;
+}
 
     /* ── Header fijo ── */
     #cq-header {
@@ -26,8 +32,8 @@
       align-items: center;
       gap: 10px;
       padding: 0 1rem;
-      background: rgba(13,13,13,0.96);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+     background: rgba(255,250,244,.96);
+      border-bottom:1px solid #F2DDCF;
     }
 
     .cq-logo { font-size: 20px; }
@@ -78,7 +84,7 @@
     #btn-salir-cq {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.35);
+      color:#9B8676;
       font-size: 20px;
       cursor: pointer;
       padding: 6px;
@@ -86,7 +92,9 @@
       transition: color 0.2s;
       flex-shrink: 0;
     }
-    #btn-salir-cq:hover { color: rgba(255,255,255,0.7); }
+    #btn-salir-cq:hover{
+    color:#F57C22;
+}
 
     /* ── Screens ── */
     .cq-screen {
@@ -100,44 +108,66 @@
     .cq-screen.activa { display: flex; }
 
     /* ── Tarjeta base ── */
-    .cq-card {
-      width: 100%;
-      max-width: 520px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 2rem 1.5rem;
-    }
+   .cq-card{
+    width:100%;
+    max-width:520px;
 
+    background:#FFFFFF;
+
+    border:1px solid #F2DDCF;
+
+    border-radius:28px;
+
+    padding:2rem 1.5rem;
+
+    box-shadow:
+        0 12px 28px rgba(245,124,34,.08);
+}
     /* ── Bienvenida ── */
     .cq-welcome-icon { font-size: 50px; text-align: center; margin-bottom: 1rem; }
 
-    .cq-welcome-title {
-      font-size: 21px; font-weight: 600;
-      text-align: center; margin: 0 0 0.6rem;
-    }
+  .cq-welcome-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #3A2418;
+    text-align: center;
+    margin: 0 0 0.8rem;
+    line-height: 1.3;
+}
 
     .cq-welcome-desc {
-      font-size: 14px; color: rgba(255,255,255,0.5);
-      text-align: center; line-height: 1.65; margin: 0 0 1.5rem;
-    }
+    color: #7B695B;
+    text-align: center;
+    line-height: 1.7;
+    font-size: 15px;
+    margin-bottom: 2rem;
+}
 
     .cq-fases-preview {
       display: flex; gap: 8px; justify-content: center;
       flex-wrap: wrap; margin-bottom: 2rem;
     }
 
-    .cq-fase-chip {
-      padding: 5px 12px; border-radius: 20px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.09);
-      font-size: 13px; color: rgba(255,255,255,0.65);
-    }
+   .cq-fase-chip{
+
+padding:6px 14px;
+
+border-radius:999px;
+
+background:#FFF5EC;
+
+border:1px solid #F3DAC8;
+
+color:#F57C22;
+
+font-weight:600;
+
+}
 
     /* ── Intro de fase ── */
     .cq-intro-icon  { font-size: 50px; text-align: center; margin-bottom: 0.75rem; }
-    .cq-intro-name  { font-size: 22px; font-weight: 600; text-align: center; margin: 0 0 0.4rem; }
-    .cq-intro-desc  { font-size: 14px; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.65; margin: 0 0 1.25rem; }
+    .cq-intro-name  { font-size: 22px; font-weight: 600; text-align: center; margin: 0 0 0.4rem;color:#F57C22; }
+    .cq-intro-desc  { font-size: 14px; color:#7B695B; text-align: center; line-height: 1.65; margin: 0 0 1.25rem; }
 
     .cq-badge {
       display: inline-flex; align-items: center;
@@ -161,38 +191,56 @@
 
     .cq-q-numero { font-size: 12px; color: rgba(255,255,255,0.28); }
 
-    .cq-pregunta {
-      font-size: 16px; font-weight: 400;
-      line-height: 1.65; color: #f0f0f0;
-      margin: 0 0 0.65rem;
-    }
+    .cq-pregunta{
 
-    .cq-hint {
-      font-size: 12px; color: rgba(255,255,255,0.32);
-      font-style: italic;
-      border-left: 2px solid rgba(255,255,255,0.09);
-      padding: 6px 10px;
-      border-radius: 0 4px 4px 0;
-      margin: 0 0 1.1rem;
-    }
+    color:#3A2418;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    line-height:1.45;
+
+}
+
+    .cq-hint{
+
+    color:#8A7768;
+
+    font-size:15px;
+
+    line-height:1.6;
+
+}
 
     /* ── Inputs ── */
     .cq-textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 10px;
-      padding: 11px 13px;
-      color: #f0f0f0;
-      font-size: 15px;
-      font-family: inherit;
-      line-height: 1.6;
-      resize: vertical;
-      min-height: 96px;
-      transition: border-color 0.2s;
-    }
-    .cq-textarea:focus    { outline: none; border-color: rgba(255,255,255,0.22); }
-    .cq-textarea::placeholder { color: rgba(255,255,255,0.22); }
+  width: 100%;
+  min-height: 110px;
+
+  background: #FFFDFB;
+  border: 2px solid #F3DAC6;
+  border-radius: 18px;
+
+  padding: 16px 18px;
+
+  color: #3A2418;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.6;
+
+  resize: vertical;
+
+  transition: all 0.25s ease;
+}
+    .cq-textarea:focus {
+  outline: none;
+  border-color: #F57C22;
+  box-shadow: 0 0 0 5px rgba(245, 124, 34, 0.15);
+}
+    .cq-textarea::placeholder {
+  color: #A38E7E;
+}
 
     .cq-char-count {
       text-align: right; font-size: 11px;
@@ -276,15 +324,42 @@
       margin-top: 1.1rem; flex-wrap: wrap;
     }
 
-    .btn-primary {
-      flex: 1; min-width: 110px;
-      padding: 12px 18px;
-      background: #22c55e; border: none;
-      border-radius: 10px;
-      color: #0d0d0d; font-size: 15px; font-weight: 600;
-      cursor: pointer; transition: all 0.18s;
-    }
-    .btn-primary:hover    { background: #16a34a; }
+    .btn-primary{
+
+    background:linear-gradient(
+        135deg,
+        #FF8A2B,
+        #F56C18
+    );
+
+    color:white;
+
+    border:none;
+
+    border-radius:18px;
+
+    font-weight:700;
+
+    padding:15px;
+
+    transition:.25s;
+
+    box-shadow:
+        0 8px 22px rgba(245,124,34,.25);
+
+}
+    .btn-primary:hover{
+
+    transform:translateY(-2px);
+
+    background:linear-gradient(
+        135deg,
+        #FF9A42,
+        #F57C22
+    );
+
+}
+
     .btn-primary:active   { transform: scale(0.98); }
     .btn-primary:disabled { background: rgba(34,197,94,0.28); color: rgba(0,0,0,0.4); cursor: not-allowed; }
 

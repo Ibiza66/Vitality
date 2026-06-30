@@ -172,58 +172,232 @@
     </a>
   </nav>
 
-  <!-- ══════════════ MODAL CICLO DE BARRERA ══════════════ -->
-  <div id="barreraOverlay" style="
-    display:none; position:fixed; inset:0; z-index:9999;
-    background:rgba(0,0,0,0.7); align-items:flex-end; justify-content:center;
-  ">
-    <div style="
-      background:#1a1a1a; border-radius:20px 20px 0 0; width:100%; max-width:520px;
-      padding:1.5rem 1.25rem 2rem; border-top:1px solid rgba(255,255,255,0.08);
-    ">
-      <div style="width:40px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 1.25rem;"></div>
-      <p style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#22c55e;margin:0 0 .4rem;">VITALITY · CICLO DE BARRERA</p>
-      <h2 id="barreraTitle" style="font-size:16px;font-weight:600;color:#f0f0f0;margin:0 0 .35rem;line-height:1.45;"></h2>
-      <p style="font-size:13px;color:rgba(255,255,255,.4);margin:0 0 1.25rem;">¿Qué te impidió completarla? Vitality ajustará tu plan.</p>
+ <!-- ══════════════ MODAL CICLO DE BARRERA ══════════════ -->
+<div id="barreraOverlay" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:9999;
+background:rgba(58,36,24,.30);
+backdrop-filter:blur(8px);
+align-items:flex-end;
+justify-content:center;
+">
 
-      <div id="barreraOpciones" style="display:flex;flex-direction:column;gap:8px;"></div>
+<div style="
+background:var(--vt-card);
+border-radius:28px 28px 0 0;
+width:100%;
+max-width:520px;
+padding:1.75rem 1.4rem 2rem;
+border-top:1px solid var(--vt-border);
+box-shadow:0 -12px 32px rgba(0,0,0,.12);
+">
 
-      <button onclick="cerrarModalBarreraVitality()" style="
-        width:100%;margin-top:12px;padding:11px;background:transparent;
-        border:1px solid rgba(255,255,255,.1);border-radius:10px;
-        color:rgba(255,255,255,.35);font-size:14px;cursor:pointer;
-      ">Cancelar</button>
-    </div>
-  </div>
+<div style="
+width:60px;
+height:6px;
+background:#E5CDB9;
+border-radius:999px;
+margin:0 auto 1.5rem;
+"></div>
 
-  <!-- ══════════════ MODAL RESULTADO BARRERA ══════════════ -->
-  <div id="barreraResultado" style="
-    display:none; position:fixed; inset:0; z-index:9999;
-    background:rgba(0,0,0,0.7); align-items:flex-end; justify-content:center;
-  ">
-    <div style="
-      background:#1a1a1a; border-radius:20px 20px 0 0; width:100%; max-width:520px;
-      padding:1.5rem 1.25rem 2rem; border-top:1px solid rgba(255,255,255,0.08);
-      max-height:85vh; overflow-y:auto;
-    ">
-      <div style="width:40px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 1.25rem;"></div>
-      <div style="font-size:36px;text-align:center;margin-bottom:.75rem;" id="barreraResultadoEmoji">✅</div>
-      <p style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#22c55e;margin:0 0 .4rem;">VITALITY RESPONDE</p>
-      <h2 id="barreraResultadoTitulo" style="font-size:16px;font-weight:600;color:#f0f0f0;margin:0 0 .75rem;"></h2>
-      <p id="barreraResultadoMensaje" style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.65;margin:0 0 1.25rem;"></p>
+<p style="
+font-size:11px;
+font-weight:700;
+letter-spacing:.12em;
+text-transform:uppercase;
+color:var(--vt-primary);
+margin:0 0 .45rem;
+">
+VITALITY · CICLO DE BARRERA
+</p>
 
-      <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:12px;padding:1rem;margin-bottom:1.25rem;">
-        <p style="font-size:11px;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:.08em;margin:0 0 .3rem;">Acción sugerida</p>
-        <p id="barreraAccionTitulo" style="font-size:14px;font-weight:600;color:#f0f0f0;margin:0 0 .2rem;"></p>
-        <p id="barreraAccionDesc" style="font-size:13px;color:rgba(255,255,255,.45);margin:0;"></p>
-      </div>
+<h2 id="barreraTitle" style="
+font-size:20px;
+font-weight:700;
+color:var(--vt-text);
+margin:0 0 .45rem;
+line-height:1.4;
+"></h2>
 
-      <button onclick="cerrarResultadoBarreraVitality()" style="
-        width:100%;padding:13px;background:#22c55e;border:none;border-radius:10px;
-        color:#000;font-size:15px;font-weight:600;cursor:pointer;
-      ">Entendido →</button>
-    </div>
-  </div>
+<p style="
+font-size:14px;
+line-height:1.6;
+color:var(--vt-text-soft);
+margin:0 0 1.4rem;
+">
+¿Qué te impidió completarla? Vitality ajustará tu plan para ayudarte mejor.
+</p>
+
+<div
+id="barreraOpciones"
+style="
+display:flex;
+flex-direction:column;
+gap:12px;
+"></div>
+
+<button
+onclick="cerrarModalBarreraVitality()"
+style="
+width:100%;
+margin-top:18px;
+padding:14px;
+background:var(--vt-bg-soft);
+border:2px solid var(--vt-border);
+border-radius:18px;
+color:var(--vt-text-soft);
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+transition:.2s;
+">
+Cancelar
+</button>
+
+</div>
+</div>
+
+ <!-- ══════════════ MODAL RESULTADO BARRERA ══════════════ -->
+
+<div id="barreraResultado" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:9999;
+background:rgba(58,36,24,.30);
+backdrop-filter:blur(8px);
+align-items:flex-end;
+justify-content:center;
+">
+
+<div style="
+background:var(--vt-card);
+border-radius:28px 28px 0 0;
+width:100%;
+max-width:520px;
+padding:1.75rem 1.4rem 2rem;
+border-top:1px solid var(--vt-border);
+box-shadow:0 -12px 32px rgba(0,0,0,.12);
+max-height:85vh;
+overflow-y:auto;
+">
+
+<div style="
+width:60px;
+height:6px;
+background:#E5CDB9;
+border-radius:999px;
+margin:0 auto 1.5rem;
+"></div>
+
+<div
+id="barreraResultadoEmoji"
+style="
+font-size:42px;
+text-align:center;
+margin-bottom:.8rem;
+">
+✅
+</div>
+
+<p style="
+font-size:11px;
+font-weight:700;
+letter-spacing:.12em;
+text-transform:uppercase;
+color:var(--vt-primary);
+margin:0 0 .5rem;
+">
+VITALITY RESPONDE
+</p>
+
+<h2
+id="barreraResultadoTitulo"
+style="
+font-size:20px;
+font-weight:700;
+color:var(--vt-text);
+margin:0 0 .8rem;
+">
+</h2>
+
+<p
+id="barreraResultadoMensaje"
+style="
+font-size:15px;
+line-height:1.7;
+color:var(--vt-text-soft);
+margin:0 0 1.5rem;
+">
+</p>
+
+<div style="
+background:var(--vt-bg-soft);
+border:2px solid var(--vt-border);
+border-radius:18px;
+padding:1rem;
+margin-bottom:1.5rem;
+">
+
+<p style="
+font-size:11px;
+font-weight:700;
+color:var(--vt-primary);
+text-transform:uppercase;
+letter-spacing:.08em;
+margin:0 0 .35rem;
+">
+Acción sugerida
+</p>
+
+<p
+id="barreraAccionTitulo"
+style="
+font-size:15px;
+font-weight:700;
+color:var(--vt-text);
+margin:0 0 .3rem;
+">
+</p>
+
+<p
+id="barreraAccionDesc"
+style="
+font-size:14px;
+line-height:1.6;
+color:var(--vt-text-soft);
+margin:0;
+">
+</p>
+
+</div>
+
+<button
+onclick="cerrarResultadoBarreraVitality()"
+style="
+width:100%;
+padding:15px;
+background:linear-gradient(
+135deg,
+var(--vt-primary),
+#FF8D35
+);
+border:none;
+border-radius:18px;
+color:white;
+font-size:15px;
+font-weight:700;
+cursor:pointer;
+box-shadow:var(--vt-shadow);
+transition:.2s;
+">
+Entendido →
+</button>
+
+</div>
+</div>
 
   <script src="nav.js"></script>
   <script src="script.js"></script>

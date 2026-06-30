@@ -5459,18 +5459,22 @@ body.dark-mode #chatBox {
 }
 
 .onboarding-option.seleccionada {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: #22c55e;
-  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.18);
+
+  background:#FFF2E8;
+
+  border-color:#F57C22;
+
+  box-shadow:0 10px 24px rgba(245,124,34,.18);
+
 }
 
 .onboarding-option.seleccionada strong {
-  color: #22c55e;
+ color:#F57C22;
 }
 
 .onboarding-option.seleccionada em {
   display: flex;
-  background: #22c55e;
+  background:#4CAF50;
 }
 
 #identidadVitalityInput {
@@ -5679,9 +5683,32 @@ body.dark-mode #chatBox {
 }
 
 .onboarding-option {
-  padding: 12px 14px;
-  border-radius: 18px;
-  gap: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  background: #ffffff;
+  border: 2px solid #F4D7C4;
+  border-radius: 22px;
+
+  padding: 18px;
+
+  color: #2E2118;
+  text-align: left;
+  cursor: pointer;
+
+  transition: .25s;
+  box-shadow: 0 4px 10px rgba(0,0,0,.03);
+}
+.onboarding-option:hover{
+  transform: translateY(-2px);
+
+  border-color:#F57C22;
+
+  background:#FFF7F1;
+
+  box-shadow:0 10px 22px rgba(245,124,34,.12);
 }
 
 .onboarding-option span {
@@ -9859,4 +9886,44 @@ body.chat-input-focused #chatBox,
 body.chat-keyboard-open #chatBox {
   height: calc(100dvh - 355px) !important;
   min-height: 160px !important;
+}
+/* ==========================================
+   TEMA OFICIAL VITALITY
+========================================== */
+
+:root{
+
+    /* Colores principales */
+    --vt-primary:#F57C22;
+    --vt-primary-hover:#FF9239;
+
+    /* Fondos */
+    --vt-bg:#FFFDF9;
+    --vt-bg-soft:#FFF6EE;
+    --vt-card:#FFFFFF;
+
+    /* Textos */
+    --vt-text:#3A2418;
+    --vt-text-soft:#7B695B;
+
+    /* Bordes */
+    --vt-border:#F3DAC7;
+
+    /* Estados */
+    --vt-success:#4CAF50;
+    --vt-danger:#E85A4F;
+    --vt-warning:#F4B400;
+
+    /* Sombras */
+    --vt-shadow:
+        0 10px 28px rgba(245,124,34,.08);
+
+    --vt-shadow-hover:
+        0 14px 34px rgba(245,124,34,.15);
+
+    /* Bordes redondeados */
+    --vt-radius-card:24px;
+    --vt-radius-input:18px;
+    --vt-radius-btn:18px;
+
 }
