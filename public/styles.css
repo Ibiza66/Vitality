@@ -11079,15 +11079,19 @@ font-weight:600;
     .cq-done-icon  { font-size: 50px; text-align: center; margin-bottom: 1rem; }
     .cq-done-title { font-size: 20px; font-weight: 600; text-align: center; margin: 0 0 1rem; }
 
-    .cq-resumen {
-      font-size: 14px; color: rgba(255,255,255,0.55);
-      line-height: 1.7;
-      padding: 13px 15px;
-      background: rgba(34,197,94,0.06);
-      border: 1px solid rgba(34,197,94,0.11);
-      border-radius: 10px;
-      margin-bottom: 1.25rem;
-    }
+  .cq-resumen {
+    font-size: 14px;
+    color: var(--vt-text-soft);
+    line-height: 1.7;
+
+    padding: 13px 15px;
+
+    background: rgba(34, 197, 94, 0.06);
+    border: 1px solid rgba(34, 197, 94, 0.11);
+    border-radius: 10px;
+
+    margin-bottom: 1.25rem;
+}
 
     .cq-stats {
       display: flex; gap: 10px; margin-bottom: 1.25rem;
