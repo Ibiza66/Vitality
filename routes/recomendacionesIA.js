@@ -310,7 +310,38 @@ router.post("/generar-chat", async (req, res) => {
       });
     }
 
-    const recomendacionBase = crearRecomendacionDesdeTextoChatVitality(mensajeUsuario);
+    const texto = mensajeUsuario.trim();
+
+    /* ---- Saludos ---- */
+    const saludoRegex =
+      /^(hola|holi|buenas|hey|ola|hello|hi|buen día|buenos días|buenas tardes|buenas noches)$/i;
+
+    if (saludoRegex.test(texto)) {
+      return res.status(200).json({
+        mensaje: "Solo saludo.",
+        mensajeIA:
+          "💚 ¡Hola! Qué gusto verte. Soy Vitality. ¿Cómo te encuentras hoy? ¿En qué puedo acompañarte?",
+        recomendacion: null
+      });
+    }
+
+    /* ---- Quiere conversar ---- */
+    const conversarRegex =
+      /^(quiero hablar|quiero conversar|necesito hablar|necesito conversar|podemos hablar|quiero desahogarme|me siento sola|estoy triste|me siento mal)$/i;
+
+    if (conversarRegex.test(texto)) {
+      return res.status(200).json({
+        mensaje: "Conversación.",
+        mensajeIA:
+          "💚 Estoy aquí para escucharte. Cuéntame un poco más, ¿qué ha estado pasando o cómo te has sentido estos días?",
+        recomendacion: null
+      });
+    }
+
+    // ↓↓↓ SOLO DESDE AQUÍ GENERA RECOMENDACIONES ↓↓↓
+
+    const recomendacionBase =
+      crearRecomendacionDesdeTextoChatVitality(mensajeUsuario);
 
     const accionSugeridaSegura = {
       ...recomendacionBase.accionSugerida,

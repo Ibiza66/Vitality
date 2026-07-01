@@ -201,15 +201,21 @@ async function agregarEventoAlCalendarioVitality(datos) {
    CONFIGURACIÓN GENERAL
 ========================= */
 const API_URL = (() => {
-  const API_EMULADOR = "http://10.0.2.2:3000";
-
   const esAppMovil =
     window.Capacitor ||
     window.location.protocol === "capacitor:" ||
-    window.location.hostname !== "localhost";
+    (
+      window.location.hostname === "localhost" &&
+      window.location.port !== "3000"
+    );
 
-  return esAppMovil ? API_EMULADOR : "";
+  if (esAppMovil) {
+    return "http://10.30.16.154:3000";
+  }
+
+  return "";
 })();
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -510,8 +516,8 @@ window.location.href = "cuestionario.html";
 }
 async function iniciarSesion(event) {
   event.preventDefault();
-
-  const correoInput = document.getElementById("correoLogin");
+ console.log("ENTRÉ A iniciarSesion");
+    const correoInput = document.getElementById("correoLogin");
   const passwordInput = document.getElementById("passwordLogin");
 
   if (!correoInput || !passwordInput) return;
@@ -8214,31 +8220,63 @@ async function manejarEnvioChatVitality(event) {
 
   const input = document.getElementById("userInput");
 
-  if (!input) {
-    return;
-  }
+  if (!input) return;
 
   const texto = input.value.trim();
 
-  if (!texto) {
-    return;
-  }
+  if (!texto) return;
 
   input.value = "";
 
+  // Mensaje del usuario
   addMessage(texto, "user", null, null, true);
 
-  const respuestaIA = await generarRespuestaChatVitalityMongo(texto);
+  // Indicador de escritura
+  const chat = document.getElementById("chatBox");
 
-setTimeout(() => {
-  addMessage(
-    respuestaIA.texto,
-    "bot",
-    respuestaIA.recomendacionId,
-    respuestaIA.recomendacion,
-    true
-  );
-}, 350);
+  const typing = document.createElement("div");
+  typing.className = "message bot typing";
+  typing.id = "typingIndicator";
+
+  typing.innerHTML = `
+      <p>💚 Vitality está escribiendo...</p>
+  `;
+
+  chat.appendChild(typing);
+  bajarChatAlUltimoMensajeVitality();
+
+  try {
+
+    const respuestaIA = await generarRespuestaChatVitalityMongo(texto);
+
+    // Elimina el indicador
+    document.getElementById("typingIndicator")?.remove();
+
+    // Pequeña pausa para que parezca natural
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    addMessage(
+      respuestaIA.texto,
+      "bot",
+      respuestaIA.recomendacionId,
+      respuestaIA.recomendacion,
+      true
+    );
+
+  } catch (error) {
+
+    document.getElementById("typingIndicator")?.remove();
+
+    addMessage(
+      "Lo siento 😔. En este momento tuve un problema para responder. Intenta nuevamente en unos segundos.",
+      "bot",
+      null,
+      null,
+      true
+    );
+
+    console.error(error);
+  }
 }
 
 function iniciarChatMongoControladorUnicoVitality() {
@@ -9619,16 +9657,22 @@ function mostrarModalBarreraVitality(actividadId, actividadNombre, origen) {
   const contenedor = document.getElementById("barreraOpciones");
   if (!contenedor) return;
 
-contenedor.innerHTML = Object.entries(BARRERAS_VITALITY).map(([key, b]) => `
+  contenedor.innerHTML = Object.entries(BARRERAS_VITALITY).map(([key, b]) => `
     <button
       type="button"
-      class="barrera-option"
       onclick="seleccionarBarreraVitality('${key}')"
+      style="
+        display:flex; align-items:center; gap:12px; width:100%;
+        padding:12px 14px; background:rgba(255,255,255,.04);
+        border:1px solid rgba(255,255,255,.08); border-radius:10px;
+        color:#f0f0f0; font-size:14px; text-align:left; cursor:pointer;
+        transition:background .15s;
+      "
     >
-      <span class="barrera-option-emoji">${b.emoji}</span>
-      <span class="barrera-option-text">${b.label}</span>
+      <span style="font-size:20px;">${b.emoji}</span>
+      <span>${b.label}</span>
     </button>
-`).join("");
+  `).join("");
 
   /* Mostrar overlay */
   const overlay = document.getElementById("barreraOverlay");
@@ -9699,3 +9743,61 @@ function cerrarResultadoBarreraVitality() {
   if (resultado) resultado.style.display = "none";
 }
 
+function cambiarColorVitality(color) {
+
+    localStorage.setItem("temaColor", color);
+
+    aplicarTemaColor(color);
+
+}
+function aplicarTemaColor(color){
+
+    const root = document.documentElement;
+
+    switch(color){
+
+        case "orange":
+
+            root.style.setProperty("--accent-color","#FF7A1A");
+            root.style.setProperty("--btn-bg","#FF7A1A");
+
+        break;
+
+        case "blue":
+
+            root.style.setProperty("--accent-color","#2979FF");
+            root.style.setProperty("--btn-bg","#2979FF");
+
+        break;
+
+        case "green":
+
+            root.style.setProperty("--accent-color","#4A9516");
+            root.style.setProperty("--btn-bg","#4A9516");
+
+        break;
+
+        case "purple":
+
+            root.style.setProperty("--accent-color","#8E44AD");
+            root.style.setProperty("--btn-bg","#8E44AD");
+
+        break;
+
+        case "pink":
+
+            root.style.setProperty("--accent-color","#EC407A");
+            root.style.setProperty("--btn-bg","#EC407A");
+
+        break;
+
+    }
+
+}
+const colorGuardado = localStorage.getItem("temaColor");
+
+if(colorGuardado){
+
+    aplicarTemaColor(colorGuardado);
+
+}
