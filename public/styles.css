@@ -1,4 +1,4 @@
-:root {
+:root{
   --bg-main: #EAEAEA;
   --bg-card: #FFFFFF;
   --text-main: #173600;
@@ -28,11 +28,11 @@
   --table-border: #58969E;
 
   --alert-bg: #FFFFFF;
-  --alert-border: #4A9516;
+  --alert-border: var(--primary);
 
-  --btn-bg: #4A9516;
-  --btn-text: #FFFFFF;
-  --btn-hover: #173600;
+--btn-bg: var(--primary);
+--btn-text: #FFFFFF;
+--btn-hover: var(--primary-dark);
 
   --input-bg: #FFFFFF;
   --input-text: #173600;
@@ -42,7 +42,7 @@
   --menu-divider: #eeeeee;
 
   --done-bg: #e7f7db;
-  --done-border: #4A9516;
+  --done-border: var(--primary);
   --done-text: #173600;
 
   --edit-bg: #fff8d9;
@@ -1572,12 +1572,13 @@ body.dark-mode .message.bot {
 }
 
 body.dark-mode .message.user {
-  background: #4a9516;
+  background: var(--primary);
   color: #ffffff;
 }
 
+
 body.dark-mode #userInput {
-  background: rgba(20, 40, 42, 0.9);
+  background: rgba(79, 176, 185, 0.9);
   color: #ffffff;
   border-color: rgba(166, 226, 124, 0.4);
 }
@@ -1898,12 +1899,25 @@ body.login-page {
   min-height: 100dvh !important;
   margin: 0 !important;
   padding: 0 !important;
+
   background:
-    radial-gradient(circle at top left, rgba(166, 226, 124, 0.45), transparent 35%),
-    linear-gradient(160deg, #f3f8ee 0%, #dfeee8 45%, #eef7e6 100%) !important;
-  color: #173600 !important;
+    radial-gradient(circle at top left,
+      rgba(166,226,124,.35),
+      transparent 35%),
+    linear-gradient(
+      160deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    ) !important;
+
+  color: var(--text-main) !important;
   font-family: Arial, Helvetica, sans-serif !important;
   overflow-x: hidden !important;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .login-app-screen {
@@ -2049,8 +2063,18 @@ body.login-page {
 /* Modo oscuro login */
 body.dark-mode.login-page {
   background:
-    radial-gradient(circle at top left, rgba(74, 149, 22, 0.28), transparent 35%),
-    linear-gradient(160deg, #0f2022 0%, #14282a 55%, #173600 100%) !important;
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--primary) 25%, transparent),
+      transparent 35%
+    ),
+    linear-gradient(
+      160deg,
+      #0f2022 0%,
+      #14282a 55%,
+      var(--primary-dark) 100%
+    ) !important;
+
   color: #f1f1f1 !important;
 }
 
@@ -2121,11 +2145,26 @@ body.app-mobile-page {
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top left, rgba(166, 226, 124, 0.38), transparent 34%),
-    linear-gradient(160deg, #f3f8ee 0%, #e7f3df 45%, #eef7e6 100%);
-  color: #173600;
+    radial-gradient(
+      circle at top left,
+      rgba(166, 226, 124, .35),
+      transparent 34%
+    ),
+    linear-gradient(
+      160deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
   overflow-x: hidden;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .app-mobile-header {
@@ -2341,8 +2380,18 @@ body.app-mobile-page {
 /* Modo oscuro check-in */
 body.dark-mode.app-mobile-page {
   background:
-    radial-gradient(circle at top left, rgba(74, 149, 22, 0.25), transparent 34%),
-    linear-gradient(160deg, #0f2022 0%, #14282a 55%, #173600 100%);
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--primary) 25%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      160deg,
+      #0f2022 0%,
+      #14282a 55%,
+      var(--primary-dark) 100%
+    );
+
   color: #f1f1f1;
 }
 
@@ -2681,13 +2730,22 @@ body.dark-mode .checkin-slider-actions a {
 .horario-hero-card {
   padding: 24px 20px;
   border-radius: 30px;
-  background:
-    linear-gradient(135deg, rgba(17, 92, 103, 0.95), rgba(74, 149, 22, 0.92)),
-    #115c67;
-  color: #ffffff;
-  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.24);
-}
 
+  background:
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    );
+
+  color: #ffffff;
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+
+  transition:
+    background .35s ease,
+    box-shadow .35s ease;
+}
 .horario-badge {
   display: inline-block;
   padding: 7px 12px;
@@ -3281,14 +3339,25 @@ body.dark-mode .horario-quick-actions .quick-card small {
 .perfil-hero-card {
   padding: 24px 20px;
   border-radius: 30px;
+
   background:
-    linear-gradient(135deg, rgba(17, 92, 103, 0.95), rgba(74, 149, 22, 0.92)),
-    #115c67;
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    );
+
   color: #ffffff;
-  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.24);
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+
   display: flex;
   align-items: center;
   gap: 16px;
+
+  transition:
+    background .35s ease,
+    box-shadow .35s ease;
 }
 
 .perfil-avatar-app {
@@ -3604,14 +3673,25 @@ body.dark-mode .tendencia-vacia {
 .chat-app-hero {
   padding: 22px 18px;
   border-radius: 30px;
+
   background:
-    linear-gradient(135deg, rgba(17, 92, 103, 0.95), rgba(74, 149, 22, 0.92)),
-    #115c67;
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    );
+
   color: #ffffff;
-  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.24);
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+
   display: flex;
   align-items: center;
   gap: 14px;
+
+  transition:
+    background .35s ease,
+    box-shadow .35s ease;
 }
 
 .chat-avatar {
@@ -3810,8 +3890,23 @@ body.dark-mode .chat-app-input input {
 ========================= */
 .chat-app-page {
   background:
-    radial-gradient(circle at top left, rgba(166, 226, 124, 0.35), transparent 34%),
-    linear-gradient(160deg, #e9f5df 0%, #d9ecd0 45%, #eef7e6 100%) !important;
+    radial-gradient(
+      circle at top left,
+      rgba(166, 226, 124, 0.35),
+      transparent 34%
+    ),
+    linear-gradient(
+      160deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    ) !important;
+
+  color: var(--text-main);
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .chat-app-screen {
@@ -3820,8 +3915,13 @@ body.dark-mode .chat-app-input input {
 
 .chat-app-hero {
   background:
-    linear-gradient(135deg, #0f5f66, #3f941a) !important;
-  box-shadow: 0 18px 42px rgba(17, 92, 103, 0.32) !important;
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    ) !important;
+
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
 }
 
 .chat-quick-actions button {
@@ -3879,8 +3979,19 @@ body.dark-mode .chat-app-input input {
 /* Chat modo oscuro con mejor contraste */
 body.dark-mode.chat-app-page {
   background:
-    radial-gradient(circle at top left, rgba(74, 149, 22, 0.25), transparent 34%),
-    linear-gradient(160deg, #0f2022 0%, #14282a 55%, #173600 100%) !important;
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--primary) 25%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      160deg,
+      #0f2022 0%,
+      #14282a 55%,
+      var(--primary-dark) 100%
+    ) !important;
+
+  color: #f1f1f1;
 }
 
 body.dark-mode .chat-app-box {
@@ -3928,14 +4039,25 @@ body.dark-mode .chat-app-input input {
 .uso-apps-hero {
   padding: 24px 20px;
   border-radius: 30px;
+
   background:
-    linear-gradient(135deg, #0f5f66, #3f941a),
-    #115c67;
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    );
+
   color: #ffffff;
-  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.26);
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+
   display: flex;
   align-items: center;
   gap: 16px;
+
+  transition:
+    background .35s ease,
+    box-shadow .35s ease;
 }
 
 .uso-apps-icon {
@@ -4173,14 +4295,25 @@ body.dark-mode .uso-apps-lista-mobile > div {
 .alertas-hero-card {
   padding: 24px 20px;
   border-radius: 30px;
+
   background:
-    linear-gradient(135deg, #0f5f66, #3f941a),
-    #115c67;
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    );
+
   color: #ffffff;
-  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.26);
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+
   display: flex;
   align-items: center;
   gap: 16px;
+
+  transition:
+    background .35s ease,
+    box-shadow .35s ease;
 }
 
 .alertas-icon {
@@ -4379,14 +4512,25 @@ body.dark-mode .alertas-action-row a {
 .organizar-hero-card {
   padding: 24px 20px;
   border-radius: 30px;
+
   background:
-    linear-gradient(135deg, #0f5f66, #3f941a),
-    #115c67;
+    linear-gradient(
+      135deg,
+      var(--secondary),
+      var(--primary)
+    );
+
   color: #ffffff;
-  box-shadow: 0 18px 40px rgba(17, 92, 103, 0.26);
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+
   display: flex;
   align-items: center;
   gap: 16px;
+
+  transition:
+    background .35s ease,
+    box-shadow .35s ease;
 }
 
 .organizar-icon {
@@ -4784,7 +4928,7 @@ body.dark-mode .uso-apps-permiso-texto {
 }
 
 .btn-aceptar-recomendacion {
-  background: #4a9516;
+  background: var(--primary);
   color: #ffffff;
 }
 
@@ -4911,7 +5055,7 @@ body.dark-mode .chat-recomendacion-rechazada {
   padding: 11px 14px;
   font-weight: 700;
   cursor: pointer;
-  background: #4a9516;
+  background: var(--primary);
   color: white;
 }
 
@@ -5000,7 +5144,7 @@ body.dark-mode .uso-app-opcion {
 }
 
 body.dark-mode .uso-app-opcion-activa {
-  background: #4a9516;
+  background: var(--primary);
   color: #ffffff;
 }
 
@@ -5087,11 +5231,26 @@ body.dark-mode #chatBox {
 .welcome-page {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(226, 247, 216, 0.9), transparent 38%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #241b14;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 38%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .welcome-screen {
@@ -5764,13 +5923,27 @@ body.dark-mode #chatBox {
 .registro-warm-page {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
-  font-family: Arial, Helvetica, sans-serif;
-}
 
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
+  font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
+}
 .registro-warm-screen {
   min-height: 100vh;
   padding: 24px;
@@ -6120,13 +6293,27 @@ body.registro-warm-page .registro-password-wrapper button {
 .home-warm-page {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
-  font-family: Arial, Helvetica, sans-serif;
-}
 
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
+  font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
+}
 .home-warm-screen {
   min-height: 100vh;
   padding: 34px 24px 118px;
@@ -6306,12 +6493,19 @@ body.registro-warm-page .registro-password-wrapper button {
   width: 96px;
   height: 96px;
   border-radius: 50%;
+
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
-    conic-gradient(#ff681c var(--avance, 0%), #e5d9cc 0);
+    conic-gradient(
+      var(--primary) var(--avance, 0%),
+      #e5d9cc 0
+    );
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  transition: background .35s ease;
 }
 
 .home-progress-circle span {
@@ -6616,7 +6810,12 @@ body.registro-warm-page .registro-password-wrapper button {
 .home-progress-circle {
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
-    conic-gradient(#ff681c var(--avance, 0%), #e5d9cc 0) !important;
+    conic-gradient(
+      var(--primary) var(--avance, 0%),
+      #e5d9cc 0
+    ) !important;
+
+  transition: background .35s ease;
 }
 
 .home-focus-card {
@@ -6839,11 +7038,26 @@ body.home-warm-page .home-warm-screen {
 .organizar-warm-page {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .organizar-warm-screen {
@@ -7240,11 +7454,26 @@ body.home-warm-page .home-warm-screen {
 .checkin-warm-page {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .checkin-warm-screen {
@@ -7692,9 +7921,23 @@ body.home-warm-page .home-warm-screen {
 body.chat-warm-page,
 body.chat-page {
   background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%) !important;
-  color: #261d16 !important;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    ) !important;
+
+  color: var(--text-main) !important;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .chat-app-screen {
@@ -7937,11 +8180,27 @@ body.chat-page .chat-hero-card,
 .chat-warm-page {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%) !important;
-  color: #261d16;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    ) !important;
+
+  color: var(--text-main);
+
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .chat-warm-screen {
@@ -8162,11 +8421,27 @@ body.chat-keyboard-open #chatBox {
 body.chat-warm-page {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%) !important;
-  color: #261d16;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    ) !important;
+
+  color: var(--text-main);
+
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .chat-warm-screen {
@@ -8422,11 +8697,26 @@ body.chat-keyboard-open #chatBox {
 .perfil-warm-page {
   min-height: 100vh;
   margin: 0;
+
   background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
 }
 
 .perfil-warm-screen {
@@ -8654,18 +8944,30 @@ body.chat-keyboard-open #chatBox {
   width: 96px;
   height: 96px;
   border-radius: 50%;
+
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
-    conic-gradient(#ff681c var(--avance, 0%), #e5d9cc 0);
+    conic-gradient(
+      var(--primary) var(--avance, 0%),
+      #e5d9cc 0
+    );
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  transition: background .35s ease;
 }
 
 .perfil-progress-circle.acciones {
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
-    conic-gradient(#7fc3a6 var(--avance, 0%), #e5d9cc 0);
+    conic-gradient(
+      var(--primary) var(--avance, 0%),
+      #e5d9cc 0
+    );
+
+  transition: background .35s ease;
 }
 
 .perfil-progress-circle span {
@@ -8808,13 +9110,27 @@ body.chat-keyboard-open #chatBox {
 .perfil-visual-page {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
-  font-family: Arial, Helvetica, sans-serif;
-}
 
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(166, 226, 124, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
+  font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
+}
 .perfil-visual-screen {
   min-height: 100vh;
   max-width: 460px;
@@ -8975,14 +9291,20 @@ body.chat-keyboard-open #chatBox {
   height: 84px;
   border-radius: 50%;
   margin: 0 auto 10px;
+
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
-    conic-gradient(#ff681c var(--avance, 0%), #e5d9cc 0);
+    conic-gradient(
+      var(--primary) var(--avance, 0%),
+      #e5d9cc 0
+    );
+
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
+  transition: background .35s ease;
+}
 .perfil-ring-constancia {
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
@@ -8992,7 +9314,12 @@ body.chat-keyboard-open #chatBox {
 .perfil-ring-organizacion {
   background:
     radial-gradient(circle, #ffffff 56%, transparent 57%),
-    conic-gradient(#7fc3a6 var(--avance, 0%), #e5d9cc 0);
+    conic-gradient(
+      var(--primary) var(--avance, 0%),
+      #e5d9cc 0
+    );
+
+  transition: background .35s ease;
 }
 
 .perfil-ring span {
@@ -9387,13 +9714,27 @@ body.chat-keyboard-open #chatBox {
 .config-warm-page {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at top, rgba(255, 239, 220, 0.95), transparent 42%),
-    linear-gradient(180deg, #fffaf2 0%, #f8f0e4 100%);
-  color: #261d16;
-  font-family: Arial, Helvetica, sans-serif;
-}
 
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255,239,220,.35),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      var(--gradient-1),
+      var(--gradient-2),
+      var(--gradient-3)
+    );
+
+  color: var(--text-main);
+  font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background .35s ease,
+    color .35s ease;
+}
 .config-warm-screen {
   min-height: 100vh;
   max-width: 460px;
@@ -9640,12 +9981,28 @@ body.chat-keyboard-open #chatBox {
    MODO OSCURO GLOBAL SIMPLE
 ========================= */
 html.vitality-dark-mode body {
-  background:
-    radial-gradient(circle at top, rgba(70, 45, 28, 0.85), transparent 42%),
-    linear-gradient(180deg, #17120f 0%, #241914 100%) !important;
-  color: #fff8f2 !important;
-}
+ background:
+  radial-gradient(
+      circle at top,
+      color-mix(in srgb, var(--primary) 18%, transparent),
+      transparent 35%
+  ),
+  radial-gradient(
+      circle at bottom,
+      color-mix(in srgb, var(--primary) 10%, transparent),
+      transparent 45%
+  ),
+  linear-gradient(
+      180deg,
+      #16101D,
+      #211427,
+      #2A1720
+  ) !important;
 
+  transition:
+    background .35s ease,
+    color .35s ease;
+}
 html.vitality-dark-mode .config-warm-card,
 html.vitality-dark-mode .perfil-balance-card,
 html.vitality-dark-mode .perfil-bienestar-card,
@@ -9658,11 +10015,20 @@ html.vitality-dark-mode .checkin-warm-card,
 html.vitality-dark-mode .organizar-warm-card,
 html.vitality-dark-mode .home-focus-card,
 html.vitality-dark-mode .home-app-reco-card {
-  background: #241914 !important;
-  color: #fff8f2 !important;
-  border-color: rgba(255, 240, 229, 0.18) !important;
-}
 
+  background: #2B1826 !important;
+
+  color: #F8F6F4 !important;
+
+  border: 1px solid rgba(255,255,255,.06) !important;
+
+  box-shadow:
+      0 12px 30px rgba(0,0,0,.35),
+      inset 0 1px 0 rgba(255,255,255,.03);
+
+  backdrop-filter: blur(10px);
+
+}
 html.vitality-dark-mode h1,
 html.vitality-dark-mode h2,
 html.vitality-dark-mode strong,

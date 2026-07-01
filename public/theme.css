@@ -1,0 +1,189 @@
+/* ===========================
+   VITALITY THEME
+=========================== */
+
+body[data-theme="green"]{
+
+    --primary:#4A9516;
+    --secondary:#115C67;
+
+    --btn-bg:#4A9516;
+
+    --gradient-1:#F7FAF1;
+    --gradient-2:#EEF7D9;
+    --gradient-3:#FFF7EF;
+
+}
+
+body[data-theme="orange"]{
+
+    --primary:#FF7A1A;
+    --secondary:#E96A13;
+
+    --btn-bg:#FF7A1A;
+
+    --gradient-1:#FFF7EF;
+    --gradient-2:#FFE7D4;
+    --gradient-3:#FFFDF9;
+
+}
+
+body[data-theme="blue"]{
+
+    --primary:#2979FF;
+    --secondary:#1565C0;
+
+    --btn-bg:#2979FF;
+
+    --gradient-1:#F2F7FF;
+    --gradient-2:#DCEAFF;
+    --gradient-3:#FBFDFF;
+
+}
+
+body[data-theme="purple"]{
+
+    --primary:#7E57C2;
+    --secondary:#5E35B1;
+
+    --btn-bg:#7E57C2;
+
+    --gradient-1:#F8F4FF;
+    --gradient-2:#EADFFF;
+    --gradient-3:#FDFBFF;
+
+}
+
+body[data-theme="pink"]{
+
+    --primary:#EC407A;
+    --secondary:#C2185B;
+
+    --btn-bg:#EC407A;
+
+    --gradient-1:#FFF4F8;
+    --gradient-2:#FFDCE8;
+    --gradient-3:#FFFDFE;
+
+}
+/* ===========================
+   BOTÓN PRINCIPAL
+=========================== */
+
+body[data-theme="green"] .config-primary-btn{
+    background: linear-gradient(135deg,#4A9516,#2F6F10);
+}
+
+body[data-theme="orange"] .config-primary-btn{
+    background: linear-gradient(135deg,#FF7A1A,#F05E13);
+}
+
+body[data-theme="blue"] .config-primary-btn{
+    background: linear-gradient(135deg,#2979FF,#1565C0);
+}
+
+body[data-theme="purple"] .config-primary-btn{
+    background: linear-gradient(135deg,#7E57C2,#5E35B1);
+}
+
+body[data-theme="pink"] .config-primary-btn{
+    background: linear-gradient(135deg,#EC407A,#C2185B);
+}
+/* ===== Fondo ===== */
+
+body[data-theme="green"] .config-warm-page{
+    background:
+    radial-gradient(circle at top,#F7FAF1,transparent 45%),
+    linear-gradient(180deg,#FFFDF9,#EEF7D9);
+}
+
+body[data-theme="orange"] .config-warm-page{
+    background:
+    radial-gradient(circle at top,#FFF3E7,transparent 45%),
+    linear-gradient(180deg,#FFFDFB,#FFE7D4);
+}
+
+body[data-theme="blue"] .config-warm-page{
+    background:
+    radial-gradient(circle at top,#EEF6FF,transparent 45%),
+    linear-gradient(180deg,#FFFFFF,#DCEAFF);
+}
+
+body[data-theme="purple"] .config-warm-page{
+    background:
+    radial-gradient(circle at top,#F6F0FF,transparent 45%),
+    linear-gradient(180deg,#FFFFFF,#EADFFF);
+}
+
+body[data-theme="pink"] .config-warm-page{
+    background:
+    radial-gradient(circle at top,#FFF3F8,transparent 45%),
+    linear-gradient(180deg,#FFFFFF,#FFDCE8);
+}
+.config-switch{
+    transition:.3s;
+}
+
+body[data-theme="green"] .config-switch.activo{
+    background:#4A9516;
+}
+
+body[data-theme="orange"] .con.config-switch.activofig-switch.active{
+    background:#FF7A1A;
+}
+
+body[data-theme="blue"] .config-switch.activo{
+    background:#2979FF;
+}
+
+body[data-theme="purple"] .config-switch.activo{
+    background:#7E57C2;
+}
+
+body[data-theme="pink"] .config-switch.activo{
+    background:#EC407A;
+}
+/* ===========================
+   Selector de colores
+=========================== */
+
+.theme-colors{
+    display:flex;
+    gap:18px;
+    justify-content:center;
+    margin-top:20px;
+}
+
+.theme-color{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    transition:.25s;
+    box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+
+.theme-color:hover{
+    transform:scale(1.12);
+}
+
+.theme-color.green{
+    background:#4A9516;
+}
+
+.theme-color.orange{
+    background:#FF7A1A;
+}
+
+.theme-color.blue{
+    background:#2979FF;
+}
+
+.theme-color.purple{
+    background:#7E57C2;
+}
+
+.theme-color.pink{
+    background:#EC407A;
+}

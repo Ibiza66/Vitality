@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitality - Configuración</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme.css">
 </head>
 
 <body class="config-warm-page">
@@ -65,28 +66,58 @@
     </section>
 
     <section class="config-warm-card">
-      <div class="config-section-title">
-        <span>Apariencia</span>
-        <h2>Modo de visualización</h2>
-      </div>
+  <div class="config-section-title">
+    <span>Apariencia</span>
+    <h2>Modo de visualización</h2>
+  </div>
 
-      <div class="config-row">
-        <div>
-          <strong>Modo oscuro</strong>
-          <p>Cambia entre modo claro y oscuro.</p>
-        </div>
+  <div class="config-row">
+    <div>
+      <strong>Modo oscuro</strong>
+      <p>Cambia entre modo claro y oscuro.</p>
+    </div>
 
-        <button
-          type="button"
-          id="configThemeToggle"
-          class="config-switch"
-          onclick="toggleModoOscuroVitality()"
-          aria-label="Cambiar modo oscuro"
-        >
-          <span></span>
-        </button>
-      </div>
-    </section>
+    <button
+      type="button"
+      id="configThemeToggle"
+      class="config-switch"
+      onclick="toggleModoOscuroVitality()"
+      aria-label="Cambiar modo oscuro">
+      <span></span>
+    </button>
+  </div>
+</section>
+
+
+<section class="config-warm-card">
+
+  <div class="config-section-title">
+    <span>Apariencia</span>
+    <h2>Color del tema</h2>
+  </div>
+
+  <p>Elige el color principal de Vitality.</p>
+
+  <div class="theme-colors">
+
+    <button class="theme-color green"
+      onclick="cambiarColorVitality('green')"></button>
+
+    <button class="theme-color orange"
+      onclick="cambiarColorVitality('orange')"></button>
+
+    <button class="theme-color blue"
+      onclick="cambiarColorVitality('blue')"></button>
+
+    <button class="theme-color purple"
+      onclick="cambiarColorVitality('purple')"></button>
+
+    <button class="theme-color pink"
+      onclick="cambiarColorVitality('pink')"></button>
+
+  </div>
+
+</section>
 
     <section class="config-warm-card">
       <div class="config-section-title">
@@ -177,5 +208,6 @@
 
   <script src="nav.js"></script>
   <script src="script.js"></script>
+  <script src="theme.js"></script>
 </body>
 </html>
